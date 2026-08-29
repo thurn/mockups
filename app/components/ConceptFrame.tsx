@@ -6,12 +6,12 @@ export function ConceptFrame() {
       <FrameLayer inset={21} thickness={8} opacity={1} />
       <FrameLayer inset={30} thickness={3} opacity={0.82} />
       <FrameLayer inset={39} thickness={3} opacity={0.54} />
-      <div style={{ position: "absolute", top: 55, bottom: 121, left: 50, right: 50, clipPath: frameClip, border: "2px solid rgba(80,121,201,.45)", boxShadow: "inset 0 0 18px #000, 0 0 7px rgba(60,126,255,.22)" }} />
+      <FrameLayer inset={50} thickness={2} opacity={0.42} bottom={121} />
     </div>
   );
 }
 
-function FrameLayer({ inset, thickness, opacity }: { inset: number; thickness: number; opacity: number }) {
+function FrameLayer({ inset, thickness, opacity, bottom }: { inset: number; thickness: number; opacity: number; bottom?: number }) {
   return (
     <div
       style={{
@@ -19,7 +19,7 @@ function FrameLayer({ inset, thickness, opacity }: { inset: number; thickness: n
         top: inset,
         left: inset,
         right: inset,
-        bottom: 111 + inset - 21,
+        bottom: bottom ?? 111 + inset - 21,
         padding: thickness,
         boxSizing: "border-box",
         clipPath: frameClip,

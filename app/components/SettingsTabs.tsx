@@ -1,4 +1,5 @@
 import { displayFont } from "./styles";
+import { ClippedInset, tabInnerClip, tabOuterClip } from "./ClippedInset";
 
 const tabs = ["Gameplay", "Graphics", "Sound", "Input"];
 
@@ -17,15 +18,14 @@ export function SettingsTabs() {
               boxSizing: "border-box",
               height: active ? 130 : 127,
               marginTop: active ? 0 : 3,
-              border: active ? "3px solid transparent" : "2px solid #39567b",
-              borderBottom: active ? "3px solid #f14dd7" : "2px solid #39567b",
-              padding: "0 4px",
-              clipPath: "polygon(8% 0, 92% 0, 100% 14%, 100% 100%, 0 100%, 0 14%)",
+              border: 0,
+              padding: 0,
+              clipPath: tabOuterClip,
               color: "#f7f7fb",
               background: active
-                ? "linear-gradient(180deg, #06152d, #030b1c) padding-box, linear-gradient(104deg, #6cf4ff 3%, #6caaff 40%, #ff4dd7 88%) border-box"
-                : "linear-gradient(180deg, #071328, #020817)",
-              boxShadow: active ? "inset 0 0 0 6px #061024, inset 0 0 34px rgba(20,98,226,.52), 0 0 19px rgba(35,133,255,.86)" : "inset 0 0 0 4px #020716",
+                ? "linear-gradient(112deg, #72f5ff 0%, #53afff 44%, #9a83ff 68%, #ff4ed3 100%)"
+                : "linear-gradient(110deg, #45678e, #253f67 52%, #75517d)",
+              filter: active ? "drop-shadow(0 0 10px rgba(35,133,255,.86))" : undefined,
               fontFamily: "'Barlow Condensed', Impact, sans-serif",
               fontWeight: 700,
               fontSize: active ? 55 : 51,
@@ -35,7 +35,13 @@ export function SettingsTabs() {
               cursor: "default",
             }}
           >
-            {tab}
+            <ClippedInset
+              inset={active ? 3 : 2}
+              clipPath={tabInnerClip}
+              background={active ? "linear-gradient(180deg, #071831, #030b1d)" : "linear-gradient(180deg, #071328, #020817)"}
+              boxShadow={active ? "inset 0 0 34px rgba(20,98,226,.52), inset 0 -3px 0 #f14dd7" : "inset 0 0 0 3px #020716"}
+            />
+            <span style={{ position: "relative", zIndex: 1 }}>{tab}</span>
           </button>
         );
       })}

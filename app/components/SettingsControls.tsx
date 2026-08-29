@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { displayFont } from "./styles";
+import { actionInnerClip, actionOuterClip, ClippedInset, controlInnerClip, controlOuterClip } from "./ClippedInset";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
 
@@ -7,28 +8,49 @@ export function SelectControl({ label, options, value, onChange, first = false, 
   return (
     <SettingRow first={first} label={label} rowHeight={158}>
       <div style={{ position: "relative", display: "flex", alignItems: "center", height: "100%", transform: `translateY(${offsetY}px)` }}>
-        <select
-          aria-label={String(label)}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
+        <div
+          aria-hidden="true"
           style={{
+            position: "relative",
             boxSizing: "border-box",
             width: 396,
             height: 106,
-            appearance: "none",
-            border: "3px solid transparent",
-            clipPath: "polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px)",
-            padding: "0 74px 0 36px",
-            outline: 0,
+            display: "flex",
+            alignItems: "center",
+            clipPath: controlOuterClip,
+            padding: "0 74px 0 39px",
             color: "#f5f6fb",
-            background: "linear-gradient(180deg, #050b1c, #020611) padding-box, linear-gradient(106deg, #5df5ff, #a5cbff 48%, #ff4bc9) border-box",
-            boxShadow: "inset 0 0 24px #000, 0 0 12px rgba(42,103,255,.26)",
+            background: "linear-gradient(106deg, #5df5ff, #a5cbff 48%, #ff4bc9)",
+            filter: "drop-shadow(0 0 6px rgba(42,103,255,.38))",
             fontFamily: "'Barlow Condensed', Impact, sans-serif",
             fontWeight: 700,
             fontSize: 60,
             lineHeight: 1,
             textShadow: "2px 4px 0 #19284a, 0 4px 7px #000",
+            pointerEvents: "none",
+          }}
+        >
+          <ClippedInset inset={3} clipPath={controlInnerClip} background="linear-gradient(180deg, #050b1c, #020611)" boxShadow="inset 0 0 24px #000" />
+          <span style={{ position: "relative", zIndex: 1 }}>{value}</span>
+        </div>
+        <select
+          aria-label={String(label)}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          style={{
+            position: "absolute",
+            left: 0,
+            top: "50%",
+            zIndex: 3,
+            width: 396,
+            height: 106,
+            appearance: "none",
+            border: 0,
+            padding: 0,
+            outline: 0,
+            opacity: 0,
             cursor: "pointer",
+            transform: "translateY(-50%)",
           }}
         >
           {options.map((option) => <option key={option}>{option}</option>)}
@@ -55,8 +77,9 @@ export function ToggleControl({ checked, label, ariaLabel, onChange, withInfo = 
 export function EraseControl() {
   return (
     <SettingRow label="Erase Saved Data" last>
-      <button type="button" style={{ boxSizing: "border-box", width: 362, height: 114, marginLeft: 21, border: "4px solid #ff355e", clipPath: "polygon(5% 0, 95% 0, 100% 15%, 100% 85%, 95% 100%, 5% 100%, 0 85%, 0 15%)", color: "#ff3553", background: "radial-gradient(ellipse at 50% 45%, #200511, #07030c 67%, #020208)", boxShadow: "inset 0 0 22px #000, 0 0 15px rgba(255,20,78,.5)", fontFamily: "'Barlow Condensed', Impact, sans-serif", fontWeight: 700, fontSize: 67, textShadow: "0 0 11px rgba(255,25,76,.55)", cursor: "pointer", transform: "translateY(-8px)" }}>
-        Erase
+      <button type="button" style={{ position: "relative", boxSizing: "border-box", width: 362, height: 114, marginLeft: 21, border: 0, padding: 0, clipPath: actionOuterClip, color: "#ff3553", background: "#ff355e", filter: "drop-shadow(0 0 9px rgba(255,20,78,.55))", fontFamily: "'Barlow Condensed', Impact, sans-serif", fontWeight: 700, fontSize: 67, textShadow: "0 0 11px rgba(255,25,76,.55)", cursor: "pointer", transform: "translateY(-8px)" }}>
+        <ClippedInset inset={4} clipPath={actionInnerClip} background="radial-gradient(ellipse at 50% 45%, #200511, #07030c 67%, #020208)" boxShadow="inset 0 0 22px #000" />
+        <span style={{ position: "relative", zIndex: 1 }}>Erase</span>
       </button>
     </SettingRow>
   );
