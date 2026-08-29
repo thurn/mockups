@@ -42,8 +42,6 @@ export function ArcadeMenuTransition({
 }: ArcadeMenuTransitionProps) {
   const direction = screenKey === "/settings" ? 1 : -1;
 
-  if (reduceMotion) return children;
-
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
       <AnimatePresence initial={false} mode="sync" custom={direction}>
@@ -51,12 +49,12 @@ export function ArcadeMenuTransition({
           key={screenKey}
           custom={direction}
           variants={screenVariants}
-          initial="initial"
+          initial={reduceMotion ? false : "initial"}
           animate="animate"
-          exit="exit"
+          exit={reduceMotion ? undefined : "exit"}
           transition={{
-            duration: 0.3,
-            delay: 0.17,
+            duration: reduceMotion ? 0 : 0.3,
+            delay: reduceMotion ? 0 : 0.17,
             ease: [0.16, 1, 0.3, 1],
           }}
           style={{
@@ -75,13 +73,17 @@ export function ArcadeMenuTransition({
       <motion.div
         key={`${screenKey}-scan`}
         aria-hidden="true"
-        initial={{ clipPath: "inset(49.7% 0 49.7% 0)", opacity: 0 }}
-        animate={{
-          clipPath: ["inset(49.7% 0 49.7% 0)", "inset(46% 0 46% 0)", "inset(0% 0 0% 0)"],
-          opacity: [0, 0.88, 0],
-        }}
+        initial={reduceMotion ? false : { clipPath: "inset(49.7% 0 49.7% 0)", opacity: 0 }}
+        animate={
+          reduceMotion
+            ? { clipPath: "inset(0% 0 0% 0)", opacity: 0 }
+            : {
+                clipPath: ["inset(49.7% 0 49.7% 0)", "inset(46% 0 46% 0)", "inset(0% 0 0% 0)"],
+                opacity: [0, 0.88, 0],
+              }
+        }
         transition={{
-          duration: transitionDuration,
+          duration: reduceMotion ? 0 : transitionDuration,
           ease: [0.65, 0, 0.35, 1],
           times: [0, 0.44, 1],
         }}
@@ -101,9 +103,9 @@ export function ArcadeMenuTransition({
       <motion.div
         key={`${screenKey}-beam`}
         aria-hidden="true"
-        initial={{ opacity: 0, scaleX: 0.25 }}
-        animate={{ opacity: [0, 1, 0], scaleX: [0.25, 1, 0.7] }}
-        transition={{ duration: transitionDuration, times: [0, 0.46, 1] }}
+        initial={reduceMotion ? false : { opacity: 0, scaleX: 0.25 }}
+        animate={reduceMotion ? { opacity: 0 } : { opacity: [0, 1, 0], scaleX: [0.25, 1, 0.7] }}
+        transition={{ duration: reduceMotion ? 0 : transitionDuration, times: [0, 0.46, 1] }}
         style={{
           position: "absolute",
           zIndex: 21,
