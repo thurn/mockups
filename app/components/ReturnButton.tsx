@@ -16,10 +16,11 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         boxSizing: "border-box",
         position: "relative",
         zIndex: 4,
-        flex: "0 0 clamp(56px, 9vh, 76px)",
+        alignSelf: "center",
+        height: "clamp(56px, 9vh, 76px)",
         width: mobile ? "min(62%, 310px)" : "min(48%, 360px)",
-        border: "3px solid transparent",
-        margin: "clamp(7px, 1.5vh, 13px) auto 0",
+        border: 0,
+        margin: "0 auto",
         padding: 0,
         clipPath: actionClip,
         color: "transparent",
@@ -42,10 +43,10 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         aria-hidden="true"
         style={{
           position: "absolute",
-          inset: 4,
+          inset: 3,
           clipPath: actionClip,
           background: "linear-gradient(180deg, #0c1a36, #020612)",
-          boxShadow: "inset 0 0 0 4px #020511, inset 0 0 20px #000",
+          boxShadow: "inset 0 0 16px #000",
         }}
       />
       <span

@@ -131,14 +131,14 @@ export function ToggleControl({
             <span
               style={{
                 position: "absolute",
-                left: "23%",
-                top: "4%",
+                left: "50%",
+                top: "50%",
                 width: "38%",
                 height: "65%",
                 boxSizing: "border-box",
                 border: "solid #6ff6ff",
                 borderWidth: "0 5px 5px 0",
-                transform: "rotate(42deg)",
+                transform: "translate(-50%, -50%) rotate(42deg)",
                 filter: "drop-shadow(0 0 5px #21c9ff)",
               }}
             />

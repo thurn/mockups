@@ -14,9 +14,13 @@ export function ArcadeFrame({
   const { mobile, short } = useViewport();
   const frameSize = settings
     ? {
-        width: mobile ? "min(calc(100vw - 28px), 620px)" : "min(94vw, 870px, calc(96svh * 1.15))",
-        height: mobile ? "min(94svh, 760px)" : undefined,
-        aspectRatio: mobile ? undefined : "1.15 / 1",
+        width: mobile ? "min(calc(100vw - 28px), 620px)" : "min(calc(100vw - 28px), 870px)",
+        height: mobile
+          ? "min(94svh, 760px)"
+          : short
+            ? "min(calc(100svh - 28px), 870px)"
+            : "min(calc(100svh - clamp(36px, 7vw, 108px)), 870px)",
+        aspectRatio: undefined,
       }
     : {
         width: mobile
@@ -42,7 +46,7 @@ export function ArcadeFrame({
             "linear-gradient(112deg, #f8fdff 0%, #76dcff 3%, #0d70e8 8%, #041331 11%, #00eaff 28%, #e9faff 46%, #7657ff 61%, #ff25c8 82%, #fff0f8 96%, #ff617c 100%)",
           boxShadow:
             "inset 0 0 0 2px rgb(255 255 255 / 88%), inset 0 0 0 6px rgb(3 11 29 / 88%), inset 0 0 0 9px rgb(109 194 255 / 55%)",
-          alignSelf: settings ? "start" : undefined,
+          alignSelf: settings ? "center" : undefined,
           minHeight: settings ? 0 : undefined,
         },
         frameSize,
@@ -93,10 +97,15 @@ export function ArcadeFrame({
           zIndex: 2,
           height: "100%",
           overflow: settings ? "visible" : "hidden",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: settings ? "flex-start" : "space-evenly",
+          display: settings ? "grid" : "flex",
+          gridTemplateRows: settings
+            ? mobile
+              ? "clamp(84px, 13vh, 106px) minmax(0, 1fr) clamp(56px, 9vh, 76px)"
+              : "clamp(88px, 16vh, 130px) minmax(0, 1fr) clamp(56px, 9vh, 76px)"
+            : undefined,
+          flexDirection: settings ? undefined : "column",
+          alignItems: settings ? "stretch" : "center",
+          justifyContent: settings ? "stretch" : "space-evenly",
           padding: settings
             ? mobile
               ? "clamp(22px, 3.2vh, 34px) 20px clamp(20px, 2.7vh, 30px)"
@@ -114,13 +123,15 @@ export function ArcadeFrame({
       >
         <FrameLine top={17} />
         {children}
-        <FrameLine bottom={17} />
+        <FrameLine
+          bottom={settings ? "calc(clamp(20px, 2.7vh, 30px) + clamp(28px, 4.5vh, 38px))" : 17}
+        />
       </div>
     </section>
   );
 }
 
-function FrameLine({ top, bottom }: { top?: number; bottom?: number }) {
+function FrameLine({ top, bottom }: { top?: number | string; bottom?: number | string }) {
   return (
     <div
       aria-hidden="true"

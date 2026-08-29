@@ -20,7 +20,7 @@ export function ArcadeTitle({ settings = false }: { settings?: boolean }) {
         position: "relative",
         isolation: "isolate",
         width: settings ? (mobile ? "100%" : "88%") : "min(100%, 720px)",
-        margin: 0,
+        margin: settings ? "0 auto" : 0,
         textAlign: "center",
         transform: settings ? "skewX(-4deg)" : "translateY(clamp(4px, 0.8vh, 8px)) skewX(-4deg)",
         flex: settings ? "0 0 clamp(88px, 16vh, 130px)" : undefined,
