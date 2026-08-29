@@ -1,0 +1,180 @@
+import { ToggleControl } from "./SettingsControls";
+import { SettingRow } from "./SettingRow";
+
+export function SoundSettings({
+  masterVolume,
+  musicVolume,
+  effectsVolume,
+  muteInBackground,
+  onMasterVolumeChange,
+  onMusicVolumeChange,
+  onEffectsVolumeChange,
+  onMuteInBackgroundChange,
+}: {
+  masterVolume: number;
+  musicVolume: number;
+  effectsVolume: number;
+  muteInBackground: boolean;
+  onMasterVolumeChange: (value: number) => void;
+  onMusicVolumeChange: (value: number) => void;
+  onEffectsVolumeChange: (value: number) => void;
+  onMuteInBackgroundChange: (checked: boolean) => void;
+}) {
+  return (
+    <div style={{ position: "relative", height: 971 }}>
+      <VolumeControl
+        first
+        label="Master Volume"
+        value={masterVolume}
+        onChange={onMasterVolumeChange}
+      />
+      <VolumeControl label="Music Volume" value={musicVolume} onChange={onMusicVolumeChange} />
+      <VolumeControl
+        label="Effects Volume"
+        value={effectsVolume}
+        onChange={onEffectsVolumeChange}
+      />
+      <ToggleControl
+        checked={muteInBackground}
+        label={
+          <>
+            Mute in
+            <br />
+            Background
+          </>
+        }
+        ariaLabel="Mute in Background"
+        onChange={onMuteInBackgroundChange}
+      />
+    </div>
+  );
+}
+
+function VolumeControl({
+  label,
+  value,
+  onChange,
+  first = false,
+}: {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  first?: boolean;
+}) {
+  return (
+    <SettingRow first={first} label={label}>
+      <div
+        style={{
+          position: "relative",
+          width: 407,
+          height: 82,
+          display: "flex",
+          alignItems: "center",
+          gap: 22,
+        }}
+      >
+        <div style={{ position: "relative", width: 320, height: 64 }}>
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 20,
+              boxSizing: "border-box",
+              width: 320,
+              height: 26,
+              border: "3px solid transparent",
+              borderRadius: 8,
+              background:
+                "linear-gradient(#061125, #061125) padding-box, linear-gradient(90deg, #13e7ff, #735cff 47%, #ff43c7 76%, #ff326e) border-box",
+              boxShadow: "0 0 9px rgba(24,104,255,.72), inset 0 0 8px #000",
+            }}
+          >
+            <div
+              style={{
+                width: `${value}%`,
+                height: "100%",
+                borderRadius: 4,
+                background:
+                  "linear-gradient(90deg, #17e9ff 0%, #286fff 35%, #8f5dff 62%, #ff3abe 86%, #ff326d 100%)",
+                boxShadow: "0 0 8px rgba(45,132,255,.8)",
+              }}
+            />
+          </div>
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 49,
+              width: 320,
+              height: 10,
+              background: "repeating-linear-gradient(90deg, transparent 0 62px, #465ccb 62px 64px)",
+            }}
+          />
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              zIndex: 2,
+              left: `calc(${value}% - 21px)`,
+              top: 0,
+              boxSizing: "border-box",
+              width: 43,
+              height: 64,
+              clipPath:
+                "polygon(23% 0, 77% 0, 100% 17%, 100% 83%, 77% 100%, 23% 100%, 0 83%, 0 17%)",
+              padding: 4,
+              background: "linear-gradient(135deg, #c8ffff, #599cff 55%, #875fff)",
+              filter: "drop-shadow(0 0 7px #1479ff)",
+              pointerEvents: "none",
+            }}
+          >
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                clipPath: "inherit",
+                background: "linear-gradient(180deg, #07142b, #02091b)",
+                boxShadow: "inset 0 0 12px #000",
+              }}
+            />
+          </div>
+          <input
+            aria-label={label}
+            type="range"
+            min={0}
+            max={100}
+            step={1}
+            value={value}
+            onChange={(event) => onChange(Number(event.target.value))}
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 3,
+              width: 320,
+              height: 64,
+              margin: 0,
+              opacity: 0,
+              cursor: "pointer",
+            }}
+          />
+        </div>
+        <output
+          aria-live="polite"
+          style={{
+            width: 65,
+            color: "#f5f5f8",
+            fontFamily: "'Bebas Neue', Impact, sans-serif",
+            fontSize: 55,
+            lineHeight: 1,
+            letterSpacing: "1px",
+            textShadow: "2px 4px 0 #182b4d, 0 5px 7px #000",
+          }}
+        >
+          {value}%
+        </output>
+      </div>
+    </SettingRow>
+  );
+}

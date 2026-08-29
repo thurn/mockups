@@ -8,6 +8,7 @@ import { SettingsTabs, type SettingsTab } from "./SettingsTabs";
 import { ClippedInset } from "./ClippedInset";
 import { ScreenHeader } from "./ScreenHeader";
 import { GraphicsSettings } from "./GraphicsSettings";
+import { SoundSettings } from "./SoundSettings";
 
 export function SettingsScreen() {
   const router = useRouter();
@@ -22,9 +23,13 @@ export function SettingsScreen() {
   const [displayMode, setDisplayMode] = useState("Borderless");
   const [screenshake, setScreenshake] = useState(true);
   const [vsync, setVsync] = useState(true);
+  const [masterVolume, setMasterVolume] = useState(80);
+  const [musicVolume, setMusicVolume] = useState(65);
+  const [effectsVolume, setEffectsVolume] = useState(75);
+  const [muteInBackground, setMuteInBackground] = useState(false);
 
   const handleTabSelect = (tab: SettingsTab) => {
-    if (tab === "Gameplay" || tab === "Graphics") setActiveTab(tab);
+    if (tab !== "Input") setActiveTab(tab);
   };
 
   return (
@@ -74,6 +79,17 @@ export function SettingsScreen() {
                 onDisplayModeChange={setDisplayMode}
                 onScreenshakeChange={setScreenshake}
                 onVsyncChange={setVsync}
+              />
+            ) : activeTab === "Sound" ? (
+              <SoundSettings
+                masterVolume={masterVolume}
+                musicVolume={musicVolume}
+                effectsVolume={effectsVolume}
+                muteInBackground={muteInBackground}
+                onMasterVolumeChange={setMasterVolume}
+                onMusicVolumeChange={setMusicVolume}
+                onEffectsVolumeChange={setEffectsVolume}
+                onMuteInBackgroundChange={setMuteInBackground}
               />
             ) : (
               <>

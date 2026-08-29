@@ -1,4 +1,3 @@
-import { displayFont } from "./styles";
 import { ClippedInset, tabInnerClip, tabOuterClip } from "./ClippedInset";
 
 const tabs = ["Gameplay", "Graphics", "Sound", "Input"];
