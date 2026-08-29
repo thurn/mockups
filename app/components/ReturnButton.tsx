@@ -15,7 +15,7 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         position: "absolute",
         zIndex: 4,
         left: "50%",
-        bottom: -14,
+        bottom: -120,
         height: 100,
         width: 340,
         border: 0,

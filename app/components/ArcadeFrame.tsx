@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Children, type ReactNode } from "react";
 import { frameClip, mergeStyles } from "./styles";
 
 export function ArcadeFrame({
@@ -10,23 +10,42 @@ export function ArcadeFrame({
   settings?: boolean;
   label: string;
 }) {
+  const items = Children.toArray(children);
+  const frameChildren = settings ? items.slice(1, -1) : items;
+
   return (
     <section
       aria-label={label}
       style={mergeStyles({
-        boxSizing: "border-box",
         position: "relative",
         width: settings ? 870 : 820,
         height: settings ? 870 : 820,
-        padding: 15,
         filter: "drop-shadow(0 26px 50px rgb(0 0 0 / 58%))",
+        alignSelf: "center",
+      })}
+    >
+      <FrameSurface settings={settings}>{frameChildren}</FrameSurface>
+      {settings && items[0]}
+      {settings && items.at(-1)}
+    </section>
+  );
+}
+
+function FrameSurface({ children, settings }: { children: ReactNode; settings: boolean }) {
+  return (
+    <div
+      style={{
+        boxSizing: "border-box",
+        position: "absolute",
+        inset: 0,
+        padding: 15,
+        overflow: "hidden",
         clipPath: frameClip,
         background:
           "linear-gradient(112deg, #f8fdff 0%, #76dcff 3%, #0d70e8 8%, #041331 11%, #00eaff 28%, #e9faff 46%, #7657ff 61%, #ff25c8 82%, #fff0f8 96%, #ff617c 100%)",
         boxShadow:
           "inset 0 0 0 2px rgb(255 255 255 / 88%), inset 0 0 0 6px rgb(3 11 29 / 88%), inset 0 0 0 9px rgb(109 194 255 / 55%)",
-        alignSelf: "center",
-      })}
+      }}
     >
       <div
         aria-hidden="true"
@@ -72,13 +91,13 @@ export function ArcadeFrame({
           position: "relative",
           zIndex: 2,
           height: "100%",
-          overflow: settings ? "visible" : "hidden",
+          overflow: "hidden",
           display: settings ? "grid" : "flex",
           gridTemplateRows: settings ? "minmax(0, 1fr)" : undefined,
           flexDirection: settings ? undefined : "column",
           alignItems: settings ? "stretch" : "center",
           justifyContent: settings ? "stretch" : "space-evenly",
-          padding: settings ? "28px 35px 34px" : "0 70px",
+          padding: settings ? "24px 35px" : "0 70px",
           clipPath: frameClip,
           border: "3px solid rgb(201 231 255 / 65%)",
           background:
@@ -89,9 +108,9 @@ export function ArcadeFrame({
       >
         <FrameLine top={17} />
         {children}
-        <FrameLine bottom={settings ? 34 : 17} />
+        <FrameLine bottom={17} />
       </div>
-    </section>
+    </div>
   );
 }
 
