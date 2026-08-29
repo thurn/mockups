@@ -76,7 +76,7 @@ export function SettingsScreen() {
                 fontWeight: 800,
                 lineHeight: 0.82,
                 letterSpacing: "-5px",
-                transform: "scaleX(1.15) skewX(-5deg)",
+                transform: "translate(14px, -7px) scale(1.01, .83) skewX(-5deg)",
                 filter:
                   "drop-shadow(4px 6px 0 #092463) drop-shadow(-3px -2px 0 #61096a) drop-shadow(0 12px 8px #000)",
               }}
@@ -84,7 +84,7 @@ export function SettingsScreen() {
               Settings
             </h1>
           </header>
-          <div style={{ position: "absolute", zIndex: 4, top: 234, left: 69, width: 886 }}>
+          <div style={{ position: "absolute", zIndex: 4, top: 233, left: 68, width: 887 }}>
             <SettingsTabs />
             <div
               style={{
@@ -94,18 +94,18 @@ export function SettingsScreen() {
                 border: "2px solid #395884",
                 clipPath:
                   "polygon(0 0, 98.5% 0, 100% 1.4%, 100% 98.5%, 98.4% 100%, 1.5% 100%, 0 98.5%)",
-                padding: "14px 22px 44px",
+                padding: "16px 22px 30px",
                 background:
-                  "linear-gradient(90deg, rgba(0,83,190,.05), transparent 25% 75%, rgba(126,0,145,.055)), linear-gradient(180deg, #041126 0%, #020b1b 100%)",
+                  "radial-gradient(ellipse at 7% 46%, rgba(5,83,184,.15), transparent 36%), linear-gradient(90deg, rgba(0,83,190,.07), transparent 25% 75%, rgba(126,0,145,.055)), linear-gradient(180deg, #041126 0%, #020b1b 100%)",
                 boxShadow:
                   "inset 0 0 0 2px #020716, inset 0 0 45px #000710, 0 0 9px rgba(28,89,180,.28)",
               }}
             >
-              <SelectControl first label="Language" value={language} options={["English", "Español", "Français", "Deutsch"]} onChange={setLanguage} />
-              <SelectControl label="Text Size" value={textSize} options={["Small", "Medium", "Large"]} onChange={setTextSize} />
-              <ToggleControl checked={reduceMotion} label="Reduce Motion" onChange={setReduceMotion} />
-              <ToggleControl checked={increaseMoveDuration} label={<>Increase Move<br />Duration</>} ariaLabel="Increase Move Duration" onChange={setIncreaseMoveDuration} />
-              <ToggleControl checked={uploadCrashReports} label={<>Upload Crash<br />Reports</>} ariaLabel="Upload Crash Reports" onChange={setUploadCrashReports} withInfo />
+              <SelectControl first label="Language" value={language} options={["English", "Español", "Français", "Deutsch"]} onChange={setLanguage} offsetY={5} />
+              <SelectControl label="Text Size" value={textSize} options={["Small", "Medium", "Large"]} onChange={setTextSize} offsetY={2} />
+              <ToggleControl checked={reduceMotion} label="Reduce Motion" onChange={setReduceMotion} rowHeight={147} offsetY={1} />
+              <ToggleControl checked={increaseMoveDuration} label={<>Increase Move<br />Duration</>} ariaLabel="Increase Move Duration" onChange={setIncreaseMoveDuration} rowHeight={173} offsetY={-7} />
+              <ToggleControl checked={uploadCrashReports} label={<>Upload Crash<br />Reports</>} ariaLabel="Upload Crash Reports" onChange={setUploadCrashReports} withInfo rowHeight={166} offsetY={-8} />
               <EraseControl />
             </div>
           </div>

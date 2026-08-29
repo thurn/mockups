@@ -16,7 +16,7 @@ export default function RootLayout({
           (() => {
             const update = () => {
               const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-              const width = Math.min(1024, Math.max(0, document.documentElement.clientWidth - 16), Math.max(0, viewportHeight - 16) * 2 / 3);
+              const width = Math.min(1024, Math.max(0, document.documentElement.clientWidth), Math.max(0, viewportHeight) * 2 / 3);
               const scale = width / 1024;
               document.documentElement.style.setProperty('--settings-width', width + 'px');
               document.documentElement.style.setProperty('--settings-height', width * 1.5 + 'px');

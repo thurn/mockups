@@ -1,23 +1,23 @@
 import type { ReactNode } from "react";
 import { displayFont } from "./styles";
 
-type BaseProps = { label: ReactNode; first?: boolean };
+type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
 
-export function SelectControl({ label, options, value, onChange, first = false }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
+export function SelectControl({ label, options, value, onChange, first = false, offsetY = 0 }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
   return (
-    <SettingRow first={first} label={label}>
-      <div style={{ position: "relative", display: "flex", alignItems: "center", height: "100%" }}>
+    <SettingRow first={first} label={label} rowHeight={158}>
+      <div style={{ position: "relative", display: "flex", alignItems: "center", height: "100%", transform: `translateY(${offsetY}px)` }}>
         <select
           aria-label={String(label)}
           value={value}
           onChange={(event) => onChange(event.target.value)}
           style={{
             boxSizing: "border-box",
-            width: 397,
-            height: 107,
+            width: 396,
+            height: 106,
             appearance: "none",
             border: "3px solid transparent",
-            borderRadius: 2,
+            clipPath: "polygon(10px 0, calc(100% - 10px) 0, 100% 10px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 10px 100%, 0 calc(100% - 10px), 0 10px)",
             padding: "0 74px 0 36px",
             outline: 0,
             color: "#f5f6fb",
@@ -39,11 +39,11 @@ export function SelectControl({ label, options, value, onChange, first = false }
   );
 }
 
-export function ToggleControl({ checked, label, ariaLabel, onChange, withInfo = false }: BaseProps & { checked: boolean; ariaLabel?: string; onChange: (checked: boolean) => void; withInfo?: boolean }) {
+export function ToggleControl({ checked, label, ariaLabel, onChange, withInfo = false, rowHeight = 159, offsetY = 0 }: BaseProps & { checked: boolean; ariaLabel?: string; onChange: (checked: boolean) => void; withInfo?: boolean }) {
   return (
-    <SettingRow label={<>{label}{withInfo && <InfoBadge />}</>}>
-      <label style={{ display: "flex", alignItems: "center", height: "100%", cursor: "pointer" }}>
-        <input suppressHydrationWarning aria-label={ariaLabel ?? String(label)} checked={checked} onChange={(event) => onChange(event.target.checked)} type="checkbox" style={{ position: "absolute", width: 1, height: 1, opacity: 0 }} />
+    <SettingRow label={<>{label}{withInfo && <InfoBadge />}</>} rowHeight={rowHeight}>
+      <label style={{ position: "relative", display: "flex", alignItems: "center", width: 77, height: 77, marginLeft: 8, cursor: "pointer", transform: `translateY(${offsetY}px)` }}>
+        <input suppressHydrationWarning aria-label={ariaLabel ?? String(label)} checked={checked} onChange={(event) => onChange(event.target.checked)} type="checkbox" style={{ position: "absolute", inset: 0, zIndex: 2, width: 77, height: 77, margin: 0, opacity: 0, cursor: "pointer" }} />
         <span aria-hidden="true" style={{ position: "relative", boxSizing: "border-box", width: 77, height: 77, border: "4px solid #4ba3ff", borderRadius: 11, background: "linear-gradient(180deg, #06142b, #02091a)", boxShadow: "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff" }}>
           {checked && <CheckMark />}
         </span>
@@ -55,17 +55,17 @@ export function ToggleControl({ checked, label, ariaLabel, onChange, withInfo = 
 export function EraseControl() {
   return (
     <SettingRow label="Erase Saved Data" last>
-      <button type="button" style={{ boxSizing: "border-box", width: 362, height: 114, marginLeft: 15, border: "4px solid #ff355e", clipPath: "polygon(5% 0, 95% 0, 100% 15%, 100% 85%, 95% 100%, 5% 100%, 0 85%, 0 15%)", color: "#ff3553", background: "radial-gradient(ellipse at 50% 45%, #200511, #07030c 67%, #020208)", boxShadow: "inset 0 0 22px #000, 0 0 15px rgba(255,20,78,.5)", fontFamily: "'Barlow Condensed', Impact, sans-serif", fontWeight: 700, fontSize: 67, textShadow: "0 0 11px rgba(255,25,76,.55)", cursor: "pointer" }}>
+      <button type="button" style={{ boxSizing: "border-box", width: 362, height: 114, marginLeft: 21, border: "4px solid #ff355e", clipPath: "polygon(5% 0, 95% 0, 100% 15%, 100% 85%, 95% 100%, 5% 100%, 0 85%, 0 15%)", color: "#ff3553", background: "radial-gradient(ellipse at 50% 45%, #200511, #07030c 67%, #020208)", boxShadow: "inset 0 0 22px #000, 0 0 15px rgba(255,20,78,.5)", fontFamily: "'Barlow Condensed', Impact, sans-serif", fontWeight: 700, fontSize: 67, textShadow: "0 0 11px rgba(255,25,76,.55)", cursor: "pointer", transform: "translateY(-8px)" }}>
         Erase
       </button>
     </SettingRow>
   );
 }
 
-function SettingRow({ label, children, first = false, last = false }: BaseProps & { children: ReactNode; last?: boolean }) {
+function SettingRow({ label, children, first = false, last = false, rowHeight }: BaseProps & { children: ReactNode; last?: boolean }) {
   return (
-    <div style={{ boxSizing: "border-box", height: last ? 168 : 159, display: "grid", gridTemplateColumns: "421px 1fr", alignItems: "center", borderTop: first ? 0 : "2px solid rgba(43,74,123,.25)" }}>
-      <div style={{ position: "relative", display: "flex", alignItems: "center", minWidth: 0, height: "100%", paddingLeft: 18, color: "#f5f5f8", fontFamily: displayFont, fontSize: 61, lineHeight: 0.92, letterSpacing: "1.3px", textTransform: "uppercase", textShadow: "2px 4px 0 #182b4d, 0 5px 7px #000" }}>
+    <div style={{ boxSizing: "border-box", height: rowHeight ?? (last ? 169 : 159), display: "grid", gridTemplateColumns: "422px 1fr", alignItems: "center", borderTop: first ? 0 : "2px solid rgba(43,74,123,.25)" }}>
+      <div style={{ position: "relative", display: "flex", alignItems: "center", minWidth: 0, height: "100%", paddingLeft: 18, color: "#f5f5f8", fontFamily: displayFont, fontSize: 61, lineHeight: 0.92, letterSpacing: "1.3px", textTransform: "uppercase", textShadow: "2px 4px 0 #182b4d, 0 5px 7px #000", transform: "scaleX(1.045)", transformOrigin: "left center" }}>
         {label}
       </div>
       {children}

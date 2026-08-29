@@ -25,7 +25,7 @@ export function SettingsTabs() {
               background: active
                 ? "linear-gradient(180deg, #06152d, #030b1c) padding-box, linear-gradient(104deg, #6cf4ff 3%, #6caaff 40%, #ff4dd7 88%) border-box"
                 : "linear-gradient(180deg, #071328, #020817)",
-              boxShadow: active ? "inset 0 0 0 6px #061024, inset 0 0 28px rgba(20,98,226,.42), 0 0 15px rgba(35,133,255,.75)" : "inset 0 0 0 4px #020716",
+              boxShadow: active ? "inset 0 0 0 6px #061024, inset 0 0 34px rgba(20,98,226,.52), 0 0 19px rgba(35,133,255,.86)" : "inset 0 0 0 4px #020716",
               fontFamily: "'Barlow Condensed', Impact, sans-serif",
               fontWeight: 700,
               fontSize: active ? 55 : 51,
