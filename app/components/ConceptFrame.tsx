@@ -4,8 +4,7 @@ export function ConceptFrame() {
   return (
     <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
       <FrameLayer inset={21} thickness={8} opacity={1} />
-      <FrameLayer inset={30} thickness={3} opacity={0.82} />
-      <FrameLayer inset={39} thickness={3} opacity={0.54} />
+      <FrameLayer inset={34} thickness={3} opacity={0.62} />
       <FrameLayer inset={50} thickness={2} opacity={0.42} bottom={121} />
     </div>
   );

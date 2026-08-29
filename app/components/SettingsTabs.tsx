@@ -5,7 +5,7 @@ const tabs = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsTabs() {
   return (
-    <nav aria-label="Settings categories" style={{ height: 129, display: "grid", gridTemplateColumns: "264px 214px 207px 201px", alignItems: "end" }}>
+    <nav aria-label="Settings categories" style={{ height: 129, display: "grid", gridTemplateColumns: "264px 212px 205px 200px", gap: 2, alignItems: "end" }}>
       {tabs.map((tab) => {
         const active = tab === "Gameplay";
         return (
@@ -36,7 +36,7 @@ export function SettingsTabs() {
             }}
           >
             <ClippedInset
-              inset={active ? 3 : 2}
+              inset={active ? 4 : 2}
               clipPath={tabInnerClip}
               background={active ? "linear-gradient(180deg, #071831, #030b1d)" : "linear-gradient(180deg, #071328, #020817)"}
               boxShadow={active ? "inset 0 0 34px rgba(20,98,226,.52), inset 0 -3px 0 #f14dd7" : "inset 0 0 0 3px #020716"}

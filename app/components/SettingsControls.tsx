@@ -77,9 +77,9 @@ export function ToggleControl({ checked, label, ariaLabel, onChange, withInfo = 
 export function EraseControl() {
   return (
     <SettingRow label="Erase Saved Data" last>
-      <button type="button" style={{ position: "relative", boxSizing: "border-box", width: 362, height: 114, marginLeft: 21, border: 0, padding: 0, clipPath: actionOuterClip, color: "#ff3553", background: "#ff355e", filter: "drop-shadow(0 0 9px rgba(255,20,78,.55))", fontFamily: "'Barlow Condensed', Impact, sans-serif", fontWeight: 700, fontSize: 67, textShadow: "0 0 11px rgba(255,25,76,.55)", cursor: "pointer", transform: "translateY(-8px)" }}>
+      <button type="button" style={{ position: "relative", boxSizing: "border-box", width: 362, height: 114, marginLeft: 21, display: "grid", placeItems: "center", border: 0, padding: 0, clipPath: actionOuterClip, color: "#ff3553", background: "#ff355e", filter: "drop-shadow(0 0 9px rgba(255,20,78,.55))", fontFamily: "'Barlow Condensed', Impact, sans-serif", fontWeight: 700, fontSize: 67, textShadow: "0 0 11px rgba(255,25,76,.55)", cursor: "pointer", transform: "translateY(-8px)" }}>
         <ClippedInset inset={4} clipPath={actionInnerClip} background="radial-gradient(ellipse at 50% 45%, #200511, #07030c 67%, #020208)" boxShadow="inset 0 0 22px #000" />
-        <span style={{ position: "relative", zIndex: 1 }}>Erase</span>
+        <span style={{ position: "relative", zIndex: 1, lineHeight: 0.9, transform: "translateY(-1px)" }}>Erase</span>
       </button>
     </SettingRow>
   );
@@ -97,12 +97,12 @@ function SettingRow({ label, children, first = false, last = false, rowHeight }:
 }
 
 function CheckMark() {
-  return <span style={{ position: "absolute", left: 21, top: 12, width: 25, height: 43, border: "solid #61f1ff", borderWidth: "0 8px 8px 0", transform: "rotate(40deg)", filter: "drop-shadow(0 0 7px #128dff)" }} />;
+  return <span style={{ position: "absolute", left: "50%", top: "50%", width: 24, height: 40, border: "solid #61f1ff", borderWidth: "0 7px 7px 0", transform: "translate(-50%, -54%) rotate(42deg)", transformOrigin: "center", filter: "drop-shadow(0 0 7px #128dff)" }} />;
 }
 
 function InfoBadge() {
   return (
-    <span aria-label="Crash reports help diagnose errors" title="Crash reports help diagnose errors" style={{ position: "absolute", left: 193, bottom: 19, boxSizing: "border-box", width: 58, height: 58, display: "grid", placeItems: "center", border: "3px solid #55b8ff", borderRadius: "50%", color: "#bcf4ff", fontFamily: "Georgia, serif", fontSize: 39, fontStyle: "normal", fontWeight: 700, lineHeight: 1, textTransform: "lowercase", boxShadow: "0 0 11px #155eff, inset 0 0 10px rgba(13,76,180,.8)" }}>
+    <span aria-label="Crash reports help diagnose errors" title="Crash reports help diagnose errors" style={{ position: "absolute", left: 201, bottom: 25, boxSizing: "border-box", width: 58, height: 58, display: "grid", placeItems: "center", border: "3px solid #55b8ff", borderRadius: "50%", color: "#bcf4ff", fontFamily: "Georgia, serif", fontSize: 39, fontStyle: "normal", fontWeight: 700, lineHeight: 1, textTransform: "lowercase", boxShadow: "0 0 11px #155eff, inset 0 0 10px rgba(13,76,180,.8)", transform: "scaleX(.957)" }}>
       i
     </span>
   );
