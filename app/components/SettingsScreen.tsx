@@ -83,21 +83,17 @@ export function SettingsScreen() {
                   value={language}
                   options={["English", "Español", "Français", "Deutsch"]}
                   onChange={setLanguage}
-                  offsetY={5}
                 />
                 <SelectControl
                   label="Text Size"
                   value={textSize}
                   options={["Small", "Medium", "Large"]}
                   onChange={setTextSize}
-                  offsetY={2}
                 />
                 <ToggleControl
                   checked={reduceMotion}
                   label="Reduce Motion"
                   onChange={setReduceMotion}
-                  rowHeight={147}
-                  offsetY={1}
                 />
                 <ToggleControl
                   checked={increaseMoveDuration}
@@ -110,8 +106,6 @@ export function SettingsScreen() {
                   }
                   ariaLabel="Increase Move Duration"
                   onChange={setIncreaseMoveDuration}
-                  rowHeight={173}
-                  offsetY={-7}
                 />
                 <ToggleControl
                   checked={uploadCrashReports}
@@ -125,8 +119,6 @@ export function SettingsScreen() {
                   ariaLabel="Upload Crash Reports"
                   onChange={setUploadCrashReports}
                   withInfo
-                  rowHeight={166}
-                  offsetY={-8}
                 />
                 <EraseControl />
               </>
