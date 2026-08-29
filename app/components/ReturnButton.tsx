@@ -1,4 +1,3 @@
-import { actionClip, impactFont, mergeStyles, textGradient } from "./styles";
 import { useInteraction } from "./useInteraction";
 
 export function ReturnButton({ onClick }: { onClick: () => void }) {
@@ -14,56 +13,49 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         boxSizing: "border-box",
         position: "absolute",
         zIndex: 4,
-        left: "50%",
-        bottom: -110,
-        height: 100,
-        width: 340,
-        border: 0,
+        right: -18,
+        bottom: -18,
+        width: 36,
+        height: 36,
+        display: "grid",
+        placeItems: "center",
+        border: "2px solid rgb(224 250 255 / 92%)",
+        borderRadius: "50%",
         margin: 0,
         padding: 0,
-        clipPath: actionClip,
-        color: "transparent",
+        color: "#f5fdff",
         background:
-          "linear-gradient(105deg, #dffbff, #61ddff 24%, #aca1ff 54%, #ff62d5 82%, #fff) border-box",
+          "linear-gradient(135deg, #173d73 0%, #09162f 48%, #411b57 100%) padding-box, linear-gradient(135deg, #bff7ff, #61ddff 34%, #c783ff 68%, #ff62d5) border-box",
         cursor: "pointer",
         outline: 0,
-        filter: highlighted
-          ? "brightness(1.16) drop-shadow(0 0 11px rgb(103 222 255 / 74%))"
-          : "drop-shadow(0 9px 9px rgb(0 0 0 / 72%)) drop-shadow(0 0 7px rgb(147 77 255 / 55%))",
-        transform: state.pressed
-          ? "translate(-50%, 2px) scale(0.98)"
-          : highlighted
-            ? "translateX(-50%) scale(1.015)"
-            : "translateX(-50%)",
+        boxShadow: highlighted
+          ? "inset 0 0 10px rgb(95 225 255 / 34%), 0 0 14px rgb(103 222 255 / 82%)"
+          : "inset 0 0 10px rgb(0 0 0 / 78%), 0 5px 9px rgb(0 0 0 / 72%), 0 0 8px rgb(147 77 255 / 62%)",
+        filter: highlighted ? "brightness(1.14)" : undefined,
+        transform: state.pressed ? "scale(0.92)" : highlighted ? "scale(1.08)" : undefined,
         font: "inherit",
       }}
+      aria-label="Return to main menu"
     >
-      <span
+      <svg
         aria-hidden="true"
+        viewBox="0 0 24 24"
         style={{
-          position: "absolute",
-          inset: 3,
-          clipPath: actionClip,
-          background: "linear-gradient(180deg, #0c1a36, #020612)",
-          boxShadow: "inset 0 0 16px #000",
+          width: 19,
+          height: 19,
+          overflow: "visible",
+          filter: "drop-shadow(0 2px 1px #000) drop-shadow(0 0 3px rgb(98 224 255 / 72%))",
         }}
-      />
-      <span
-        style={mergeStyles(textGradient, {
-          position: "relative",
-          display: "inline-block",
-          paddingRight: "0.18em",
-          transform: "skewX(-7deg)",
-          fontFamily: impactFont,
-          fontSize: 54,
-          fontStyle: "italic",
-          lineHeight: 1,
-          WebkitTextStroke: "0.8px #fff",
-          filter: "drop-shadow(2px 4px 0 #173a74) drop-shadow(0 5px 4px #000)",
-        })}
       >
-        Return
-      </span>
+        <path
+          d="M9.2 6.2 3.8 12l5.4 5.8M4.3 12h9.1c4.2 0 6.8 2.1 6.8 6"
+          fill="none"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2.4"
+        />
+      </svg>
     </button>
   );
 }
