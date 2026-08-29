@@ -12,27 +12,21 @@ type ArcadeMenuTransitionProps = {
 };
 
 const screenVariants = {
-  initial: (direction: number) => ({
+  initial: {
     clipPath: "inset(49.35% 8% 49.35% 8%)",
     filter: "brightness(2.2) saturate(1.8) blur(3px)",
     opacity: 0,
-    scale: 0.985,
-    x: direction * 18,
-  }),
+  },
   animate: {
     clipPath: "inset(0% 0% 0% 0%)",
     filter: "brightness(1) saturate(1) blur(0px)",
     opacity: 1,
-    scale: 1,
-    x: 0,
   },
-  exit: (direction: number) => ({
+  exit: {
     clipPath: "inset(49.35% 8% 49.35% 8%)",
     filter: "brightness(2.35) saturate(1.9) blur(3px)",
     opacity: 0,
-    scale: 0.985,
-    x: direction * -18,
-  }),
+  },
 };
 
 export function ArcadeMenuTransition({
@@ -44,10 +38,9 @@ export function ArcadeMenuTransition({
 
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-      <AnimatePresence initial={false} mode="sync" custom={direction}>
+      <AnimatePresence initial={false} mode="sync">
         <motion.div
           key={screenKey}
-          custom={direction}
           variants={screenVariants}
           initial={reduceMotion ? false : "initial"}
           animate="animate"
@@ -62,8 +55,7 @@ export function ArcadeMenuTransition({
             inset: 0,
             overflow: "hidden",
             pointerEvents: "auto",
-            transformOrigin: "center",
-            willChange: "clip-path, filter, opacity, transform",
+            willChange: "clip-path, filter, opacity",
           }}
         >
           {children}
