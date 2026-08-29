@@ -1,10 +1,10 @@
-import { GameShell } from "./components/GameShell";
 import { MainMenu } from "./components/MainMenu";
+import { PortraitViewport } from "./components/PortraitViewport";
 
 export default function Home() {
   return (
-    <GameShell>
+    <PortraitViewport>
       <MainMenu />
-    </GameShell>
+    </PortraitViewport>
   );
 }

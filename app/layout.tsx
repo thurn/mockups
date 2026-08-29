@@ -1,4 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   title: {
     default: "Chess Chess Revolution",
@@ -19,18 +26,27 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
           (() => {
-            const update = () => {
-              const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-              const width = Math.min(1024, Math.max(0, document.documentElement.clientWidth), Math.max(0, viewportHeight) * 2 / 3);
-              const scale = width / 1024;
-              document.documentElement.style.setProperty('--settings-width', width + 'px');
-              document.documentElement.style.setProperty('--settings-height', width * 1.5 + 'px');
-              document.documentElement.style.setProperty('--settings-scale', String(scale));
+            const root = document.documentElement;
+            const designWidth = 1024;
+            const designHeight = 1536;
+
+            const updatePortraitScale = () => {
+              const viewportWidth = Math.max(0, root.clientWidth || window.innerWidth);
+              const viewportHeight = Math.max(
+                0,
+                window.visualViewport ? window.visualViewport.height : window.innerHeight,
+              );
+              const scale = Math.min(1, viewportWidth / designWidth, viewportHeight / designHeight);
+
+              root.style.setProperty('--portrait-width', designWidth * scale + 'px');
+              root.style.setProperty('--portrait-height', designHeight * scale + 'px');
+              root.style.setProperty('--portrait-scale', String(scale));
             };
-            update();
-            window.addEventListener('resize', update);
-            window.addEventListener('pageshow', update);
-            window.visualViewport?.addEventListener('resize', update);
+
+            updatePortraitScale();
+            window.addEventListener('resize', updatePortraitScale);
+            window.addEventListener('pageshow', updatePortraitScale);
+            window.visualViewport?.addEventListener('resize', updatePortraitScale);
           })();
         `,
           }}
