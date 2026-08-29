@@ -25,19 +25,6 @@ export function GraphicsSettings({
 }) {
   return (
     <div style={{ position: "relative", height: 971 }}>
-      <span
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          zIndex: 2,
-          top: 0,
-          bottom: 0,
-          left: 422,
-          width: 2,
-          background: "rgba(55,91,148,.52)",
-          pointerEvents: "none",
-        }}
-      />
       <SelectControl
         first
         label="Resolution"
