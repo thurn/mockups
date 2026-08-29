@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { ReturnButton } from "./ReturnButton";
 import { EraseControl, SelectControl, ToggleControl } from "./SettingsControls";
 import { SettingsTabs, type SettingsTab } from "./SettingsTabs";
@@ -15,7 +16,9 @@ import { useArcadeNavigation } from "./ArcadeRouteTransition";
 const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsScreen() {
-  const { navigate, reduceMotion, setReduceMotion } = useArcadeNavigation();
+  const { navigate, reduceMotion, routeTransitionPhase, setReduceMotion } = useArcadeNavigation();
+  const exiting = routeTransitionPhase === "exiting";
+  const entering = routeTransitionPhase === "entering";
   const [activeTab, setActiveTab] = useState<SettingsTab>("Graphics");
   const [tabDirection, setTabDirection] = useState(1);
   const [language, setLanguage] = useState("English");
@@ -41,12 +44,72 @@ export function SettingsScreen() {
   return (
     <section
       aria-label={`${activeTab} settings`}
-      style={{ position: "absolute", inset: 0, zIndex: 2, overflow: "hidden" }}
+      style={{
+        position: "absolute",
+        inset: 0,
+        zIndex: 2,
+        overflow: "hidden",
+        pointerEvents: routeTransitionPhase === "idle" ? "auto" : "none",
+      }}
     >
-      <ScreenHeader variant="settings" />
-      <div style={{ position: "absolute", zIndex: 4, top: 233, left: 68, width: 887 }}>
-        <SettingsTabs activeTab={activeTab} onSelect={handleTabSelect} />
-        <div
+      <motion.div
+        initial={false}
+        animate={{ opacity: exiting ? 0 : 1, y: exiting ? -30 : 0 }}
+        transition={{
+          duration: exiting ? 0.27 : 0.38,
+          delay: entering ? 0.02 : 0,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+        style={{ position: "absolute", inset: 0, willChange: "transform, opacity" }}
+      >
+        <ScreenHeader variant="settings" />
+      </motion.div>
+      <motion.div
+        initial={false}
+        animate={{
+          opacity: exiting ? 0 : 1,
+          y: exiting ? 30 : 0,
+          scale: exiting ? 0.985 : 1,
+        }}
+        transition={{
+          duration: exiting ? 0.34 : 0.44,
+          delay: entering ? 0.08 : 0,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+        style={{
+          position: "absolute",
+          zIndex: 4,
+          top: 233,
+          left: 68,
+          width: 887,
+          transformOrigin: "bottom center",
+          willChange: "transform, opacity",
+        }}
+      >
+        <motion.div
+          initial={false}
+          animate={{ opacity: exiting ? 0 : 1, x: exiting ? 54 : 0 }}
+          transition={{
+            duration: exiting ? 0.24 : 0.36,
+            delay: entering ? 0.04 : 0,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+          style={{ willChange: "transform, opacity" }}
+        >
+          <SettingsTabs activeTab={activeTab} onSelect={handleTabSelect} />
+        </motion.div>
+        <motion.div
+          initial={false}
+          animate={{
+            opacity: exiting ? 0 : 1,
+            y: exiting ? 20 : 0,
+            scaleY: exiting ? 0.985 : 1,
+          }}
+          transition={{
+            duration: exiting ? 0.32 : 0.42,
+            delay: entering ? 0.1 : 0,
+            ease: [0.16, 1, 0.3, 1],
+          }}
           style={{
             position: "relative",
             boxSizing: "border-box",
@@ -56,6 +119,8 @@ export function SettingsScreen() {
               "polygon(0 0, 98.5% 0, 100% 1.4%, 100% 98.5%, 98.4% 100%, 1.5% 100%, 0 98.5%)",
             background: "linear-gradient(110deg, #446690, #2c456f 54%, #875984)",
             filter: "drop-shadow(0 0 5px rgba(28,89,180,.28))",
+            transformOrigin: "bottom center",
+            willChange: "transform, opacity",
           }}
         >
           <ClippedInset
@@ -154,9 +219,30 @@ export function SettingsScreen() {
               )}
             </ArcadeTabTransition>
           </div>
-        </div>
-      </div>
-      <ReturnButton onClick={() => navigate("/")} />
+        </motion.div>
+      </motion.div>
+      <motion.div
+        initial={false}
+        animate={{
+          opacity: exiting ? 0 : 1,
+          y: exiting ? 26 : 0,
+          scale: exiting ? 1.045 : 1,
+        }}
+        transition={{
+          duration: exiting ? 0.28 : 0.38,
+          delay: entering ? 0.22 : 0,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+        style={{
+          position: "absolute",
+          zIndex: 8,
+          inset: 0,
+          pointerEvents: routeTransitionPhase === "idle" ? "auto" : "none",
+          willChange: "transform, opacity",
+        }}
+      >
+        <ReturnButton onClick={() => navigate("/")} />
+      </motion.div>
     </section>
   );
 }
