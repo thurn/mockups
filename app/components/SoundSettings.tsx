@@ -1,3 +1,4 @@
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { ToggleControl } from "./SettingsControls";
 import { SettingRow } from "./SettingRow";
 
@@ -61,6 +62,12 @@ function VolumeControl({
   onChange: (value: number) => void;
   first?: boolean;
 }) {
+  const updateFromPointer = (event: ReactPointerEvent<HTMLInputElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const ratio = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
+    onChange(Math.round(ratio * 100));
+  };
+
   return (
     <SettingRow first={first} label={label}>
       <div
@@ -148,15 +155,35 @@ function VolumeControl({
             step={1}
             value={value}
             onChange={(event) => onChange(Number(event.target.value))}
+            onPointerDown={(event) => {
+              event.currentTarget.focus();
+              event.currentTarget.setPointerCapture(event.pointerId);
+              updateFromPointer(event);
+            }}
+            onPointerMove={(event) => {
+              if (event.currentTarget.hasPointerCapture(event.pointerId)) updateFromPointer(event);
+            }}
+            onPointerUp={(event) => {
+              updateFromPointer(event);
+              event.currentTarget.releasePointerCapture(event.pointerId);
+            }}
+            onPointerCancel={(event) => {
+              if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                event.currentTarget.releasePointerCapture(event.pointerId);
+              }
+            }}
             style={{
               position: "absolute",
-              inset: 0,
+              left: 0,
+              top: -34,
               zIndex: 3,
               width: 320,
-              height: 64,
+              height: 132,
               margin: 0,
               opacity: 0,
               cursor: "pointer",
+              touchAction: "none",
+              userSelect: "none",
             }}
           />
         </div>
