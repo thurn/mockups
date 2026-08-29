@@ -1,0 +1,74 @@
+"use client";
+
+import type { ReactNode } from "react";
+import { actionInnerClip, actionOuterClip, ClippedInset } from "./ClippedInset";
+import { useInteraction } from "./useInteraction";
+
+export function ActionButton({ children, onClick }: { children: ReactNode; onClick?: () => void }) {
+  const { state, handlers } = useInteraction();
+  const highlighted = state.hovered || state.focused;
+
+  return (
+    <button
+      {...handlers}
+      onClick={onClick}
+      type="button"
+      style={{
+        position: "relative",
+        boxSizing: "border-box",
+        width: "100%",
+        height: "100%",
+        display: "grid",
+        placeItems: "center",
+        border: 0,
+        padding: 0,
+        clipPath: actionOuterClip,
+        color: "transparent",
+        outline: 0,
+        background: highlighted
+          ? "linear-gradient(110deg, #fff, #70d7ff 22%, #c0b6ff 56%, #ff73da 90%)"
+          : "linear-gradient(110deg, #b9fbff, #3bb9ff 22%, #a49cff 56%, #ff4bd1 90%)",
+        filter: state.pressed
+          ? "brightness(.82) drop-shadow(0 0 8px rgba(58,154,255,.65))"
+          : highlighted
+            ? "brightness(1.12) drop-shadow(0 0 16px rgba(118,182,255,.88))"
+            : "drop-shadow(0 0 10px rgba(58,154,255,.65))",
+        cursor: "pointer",
+        transition: "filter 140ms ease, background 140ms ease",
+        font: "inherit",
+      }}
+    >
+      <ClippedInset
+        inset={6}
+        clipPath={actionInnerClip}
+        background="linear-gradient(180deg, #071027, #020613)"
+        boxShadow="inset 0 0 0 4px #071127, inset 0 0 27px #000"
+      />
+      <span
+        style={{
+          position: "relative",
+          zIndex: 1,
+          display: "inline-block",
+          paddingRight: ".12em",
+          color: "transparent",
+          background:
+            "linear-gradient(174deg, #fff 5%, #dff8ff 31%, #52baff 49%, #f8faff 57%, #806eff 77%, #ff6dda 100%)",
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          WebkitTextStroke: "1px #f7ffff",
+          fontFamily: "'Barlow Condensed', Impact, sans-serif",
+          fontSize: 91,
+          fontStyle: "italic",
+          fontWeight: 800,
+          lineHeight: 0.9,
+          letterSpacing: "-2px",
+          transform: "translateY(-1px) skewX(-5deg)",
+          filter: "drop-shadow(3px 5px 0 #122964) drop-shadow(0 7px 5px #000)",
+        }}
+      >
+        {children}
+      </span>
+    </button>
+  );
+}

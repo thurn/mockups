@@ -6,6 +6,7 @@ import { ReturnButton } from "./ReturnButton";
 import { EraseControl, SelectControl, ToggleControl } from "./SettingsControls";
 import { SettingsTabs } from "./SettingsTabs";
 import { ClippedInset } from "./ClippedInset";
+import { ScreenHeader } from "./ScreenHeader";
 
 export function SettingsScreen() {
   const router = useRouter();
@@ -20,47 +21,7 @@ export function SettingsScreen() {
       aria-label="Gameplay settings"
       style={{ position: "absolute", inset: 0, zIndex: 2, overflow: "hidden" }}
     >
-      <header
-        style={{
-          position: "absolute",
-          zIndex: 5,
-          top: 74,
-          left: 84,
-          width: 854,
-          height: 122,
-          display: "grid",
-          placeItems: "center",
-        }}
-      >
-        <StripeBar side="left" />
-        <StripeBar side="right" />
-        <h1
-          style={{
-            position: "relative",
-            zIndex: 2,
-            margin: "-20px 0 -26px",
-            padding: "20px 20px 36px 4px",
-            color: "transparent",
-            background:
-              "linear-gradient(174deg, #ffffff 2%, #e5f5ff 20%, #74c9ff 38%, #f8fbff 51%, #8d72ff 70%, #ff68d9 94%)",
-            backgroundClip: "text",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            WebkitTextStroke: "1.4px #f9ffff",
-            fontFamily: "'Barlow Condensed', Impact, sans-serif",
-            fontSize: 165,
-            fontStyle: "italic",
-            fontWeight: 800,
-            lineHeight: 0.82,
-            letterSpacing: "-5px",
-            transform: "translate(14px, -7px) scale(1.01, .83) skewX(-5deg)",
-            filter:
-              "drop-shadow(4px 6px 0 #092463) drop-shadow(-3px -2px 0 #61096a) drop-shadow(0 12px 8px #000)",
-          }}
-        >
-          Settings
-        </h1>
-      </header>
+      <ScreenHeader variant="settings" />
       <div style={{ position: "absolute", zIndex: 4, top: 233, left: 68, width: 887 }}>
         <SettingsTabs />
         <div
@@ -147,28 +108,5 @@ export function SettingsScreen() {
       </div>
       <ReturnButton onClick={() => router.push("/")} />
     </section>
-  );
-}
-
-function StripeBar({ side }: { side: "left" | "right" }) {
-  const isLeft = side === "left";
-  return (
-    <div
-      aria-hidden="true"
-      style={{
-        position: "absolute",
-        top: 44,
-        [isLeft ? "left" : "right"]: 0,
-        width: 314,
-        height: 58,
-        clipPath: isLeft
-          ? "polygon(0 0, 100% 0, 93% 100%, 0 100%)"
-          : "polygon(7% 0, 100% 0, 100% 100%, 0 100%)",
-        background: isLeft
-          ? "repeating-linear-gradient(132deg, #075fff 0 17px, #05164b 17px 32px)"
-          : "repeating-linear-gradient(132deg, #f21160 0 17px, #4b0827 17px 32px)",
-        boxShadow: isLeft ? "0 0 18px #075fff" : "0 0 18px #f21160",
-      }}
-    />
   );
 }
