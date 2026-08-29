@@ -18,8 +18,8 @@ export function ArcadeFrame({
       aria-label={label}
       style={mergeStyles({
         position: "relative",
-        width: settings ? 870 : 820,
-        height: settings ? 870 : 820,
+        width: 820,
+        height: 820,
         filter: "drop-shadow(0 26px 50px rgb(0 0 0 / 58%))",
         alignSelf: "center",
       })}

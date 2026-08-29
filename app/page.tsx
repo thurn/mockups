@@ -9,7 +9,7 @@ export default function Home() {
   const [screen, setScreen] = useState<"menu" | "settings">("menu");
 
   return (
-    <GameShell compact={screen === "settings"}>
+    <GameShell>
       {screen === "menu" ? (
         <MainMenu onOpenSettings={() => setScreen("settings")} />
       ) : (

@@ -1,21 +1,7 @@
 import type { ReactNode } from "react";
-import {
-  DESIGN_SIZE,
-  settingsCanvasTop,
-  settingsScale,
-  settingsSquareSize,
-  settingsStageHeight,
-  squareScale,
-  squareSize,
-} from "./squareScale";
+import { DESIGN_SIZE, squareScale, squareSize } from "./squareScale";
 
-export function GameShell({
-  children,
-  compact = false,
-}: {
-  children: ReactNode;
-  compact?: boolean;
-}) {
+export function GameShell({ children }: { children: ReactNode }) {
   return (
     <main
       style={{
@@ -30,23 +16,22 @@ export function GameShell({
       <div
         style={{
           position: "relative",
-          width: compact ? settingsSquareSize : squareSize,
-          height: compact ? settingsStageHeight : squareSize,
+          width: squareSize,
+          height: squareSize,
         }}
       >
         <div
           style={{
             position: "absolute",
-            top: compact ? settingsCanvasTop : 0,
+            top: 0,
             left: "50%",
             width: DESIGN_SIZE,
             height: DESIGN_SIZE,
-            overflow: compact ? "visible" : "hidden",
+            overflow: "visible",
             isolation: "isolate",
             display: "grid",
-            gridTemplateRows: compact ? "minmax(0, 1fr)" : undefined,
             placeItems: "center",
-            transform: `translateX(-50%) scale(${compact ? settingsScale : squareScale})`,
+            transform: `translateX(-50%) scale(${squareScale})`,
             transformOrigin: "top center",
             background:
               "radial-gradient(circle at 18% 22%, rgb(15 111 255 / 18%), transparent 30%), radial-gradient(circle at 84% 76%, rgb(255 13 100 / 18%), transparent 31%), linear-gradient(128deg, #010713 0%, #03020c 50%, #090013 100%)",
