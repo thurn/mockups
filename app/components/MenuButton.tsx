@@ -1,11 +1,9 @@
 import type { ReactNode } from "react";
 import { buttonClip, impactFont, mergeStyles, textGradient } from "./styles";
 import { useInteraction } from "./useInteraction";
-import { useViewport } from "./useViewport";
 
 export function MenuButton({ children, onClick }: { children: ReactNode; onClick?: () => void }) {
   const { state, handlers } = useInteraction();
-  const { short } = useViewport();
   const highlighted = state.hovered || state.focused;
 
   return (
@@ -16,7 +14,7 @@ export function MenuButton({ children, onClick }: { children: ReactNode; onClick
       style={{
         boxSizing: "border-box",
         position: "relative",
-        height: short ? "clamp(58px, 8.4vh, 72px)" : "clamp(68px, 9vh, 88px)",
+        height: 78,
         border: 0,
         padding: 3,
         cursor: "pointer",
@@ -89,7 +87,7 @@ export function MenuButton({ children, onClick }: { children: ReactNode; onClick
           marginLeft: "-0.04em",
           transform: "skewX(-7deg)",
           fontFamily: impactFont,
-          fontSize: short ? "clamp(2rem, 5.4vh, 3.4rem)" : "clamp(2.25rem, 4.9vw, 4.1rem)",
+          fontSize: 56,
           fontStyle: "italic",
           lineHeight: 1,
           letterSpacing: "0.01em",

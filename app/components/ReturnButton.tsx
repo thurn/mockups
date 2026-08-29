@@ -1,10 +1,8 @@
 import { actionClip, impactFont, mergeStyles, textGradient } from "./styles";
 import { useInteraction } from "./useInteraction";
-import { useViewport } from "./useViewport";
 
 export function ReturnButton({ onClick }: { onClick: () => void }) {
   const { state, handlers } = useInteraction();
-  const { mobile } = useViewport();
   const highlighted = state.hovered || state.focused;
 
   return (
@@ -17,8 +15,8 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         position: "relative",
         zIndex: 4,
         alignSelf: "center",
-        height: "clamp(56px, 9vh, 76px)",
-        width: mobile ? "min(62%, 310px)" : "min(48%, 360px)",
+        height: 66,
+        width: 340,
         border: 0,
         margin: "0 auto",
         padding: 0,
@@ -56,7 +54,7 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
           paddingRight: "0.18em",
           transform: "skewX(-7deg)",
           fontFamily: impactFont,
-          fontSize: "clamp(2.1rem, 5.8vh, 3.6rem)",
+          fontSize: 48,
           fontStyle: "italic",
           lineHeight: 1,
           WebkitTextStroke: "0.8px #fff",

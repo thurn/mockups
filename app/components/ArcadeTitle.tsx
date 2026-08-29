@@ -1,29 +1,19 @@
 import type { CSSProperties } from "react";
 import { impactFont, mergeStyles, textGradient } from "./styles";
-import { useViewport } from "./useViewport";
 
 export function ArcadeTitle({ settings = false }: { settings?: boolean }) {
-  const { mobile, short } = useViewport();
-  const titleSize = settings
-    ? mobile
-      ? "clamp(3.25rem, 18vw, 4.5rem)"
-      : "clamp(4rem, 11.5vh, 7rem)"
-    : mobile
-      ? "clamp(2.7rem, 13vw, 5rem)"
-      : short
-        ? "clamp(3.3rem, 8.6vh, 5rem)"
-        : "clamp(3rem, 7.2vw, 6.2rem)";
+  const titleSize = settings ? 96 : 82;
 
   return (
     <header
       style={{
         position: "relative",
         isolation: "isolate",
-        width: settings ? (mobile ? "100%" : "88%") : "min(100%, 720px)",
+        width: settings ? "88%" : "min(100%, 720px)",
         margin: settings ? "0 auto" : 0,
         textAlign: "center",
-        transform: settings ? "skewX(-4deg)" : "translateY(clamp(4px, 0.8vh, 8px)) skewX(-4deg)",
-        flex: settings ? "0 0 clamp(88px, 16vh, 130px)" : undefined,
+        transform: settings ? "skewX(-4deg)" : "translateY(7px) skewX(-4deg)",
+        flex: settings ? "0 0 120px" : undefined,
         display: settings ? "grid" : undefined,
         placeItems: settings ? "center" : undefined,
       }}
@@ -106,7 +96,7 @@ function TitleBar({ side, settings }: { side: "left" | "right"; settings: boolea
         top: "50%",
         zIndex: 0,
         width: settings ? "54%" : "68%",
-        height: settings ? "clamp(32px, 6vh, 52px)" : "clamp(26px, 5vw, 48px)",
+        height: settings ? 48 : 42,
         transform: "translateY(-50%)",
         opacity: settings ? undefined : 0.9,
         pointerEvents: "none",

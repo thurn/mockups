@@ -10,7 +10,7 @@ export function MainMenu({ onOpenSettings }: { onOpenSettings: () => void }) {
       <ArcadeTitle />
       <nav
         aria-label="Main navigation"
-        style={{ width: "min(100%, 700px)", display: "grid", gap: "clamp(13px, 1.9vh, 20px)" }}
+        style={{ width: "min(100%, 700px)", display: "grid", gap: 16 }}
       >
         {menuItems.map((item) => (
           <MenuButton key={item} onClick={item === "Settings" ? onOpenSettings : undefined}>
