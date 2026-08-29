@@ -9,6 +9,7 @@ import { ClippedInset } from "./ClippedInset";
 import { ScreenHeader } from "./ScreenHeader";
 import { GraphicsSettings } from "./GraphicsSettings";
 import { SoundSettings } from "./SoundSettings";
+import { InputSettings } from "./InputSettings";
 
 export function SettingsScreen() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export function SettingsScreen() {
   const [muteInBackground, setMuteInBackground] = useState(false);
 
   const handleTabSelect = (tab: SettingsTab) => {
-    if (tab !== "Input") setActiveTab(tab);
+    setActiveTab(tab);
   };
 
   return (
@@ -91,6 +92,8 @@ export function SettingsScreen() {
                 onEffectsVolumeChange={setEffectsVolume}
                 onMuteInBackgroundChange={setMuteInBackground}
               />
+            ) : activeTab === "Input" ? (
+              <InputSettings />
             ) : (
               <>
                 <SelectControl
