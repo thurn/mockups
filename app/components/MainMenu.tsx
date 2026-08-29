@@ -14,10 +14,7 @@ const menuHeight = menuItems.length * menuButtonHeight + (menuItems.length - 1) 
 const menuTop = gameWordmarkBottom + (soundRecommendationTop - gameWordmarkBottom - menuHeight) / 2;
 
 export function MainMenu() {
-  const { navigate, routeTransitionPhase, transitionDestination } = useArcadeNavigation();
-  const exiting = routeTransitionPhase === "exiting";
-  const entering = routeTransitionPhase === "entering";
-  const leavingMainMenu = exiting && transitionDestination === "/settings";
+  const { navigate, reduceMotion } = useArcadeNavigation();
 
   return (
     <section
@@ -27,19 +24,14 @@ export function MainMenu() {
         inset: 0,
         zIndex: 2,
         overflow: "hidden",
-        pointerEvents: routeTransitionPhase === "idle" ? "auto" : "none",
+        pointerEvents: "auto",
       }}
     >
       <motion.div
-        initial={false}
-        animate={{
-          opacity: exiting ? 0 : 1,
-          y: exiting ? -34 : 0,
-          scale: exiting ? 0.99 : 1,
-        }}
+        initial={reduceMotion ? false : { opacity: 0.72, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{
-          duration: exiting ? 0.3 : 0.42,
-          delay: entering ? 0.02 : 0,
+          duration: reduceMotion ? 0 : 0.18,
           ease: [0.16, 1, 0.3, 1],
         }}
         style={{ position: "absolute", inset: 0, willChange: "transform, opacity" }}
@@ -59,21 +51,16 @@ export function MainMenu() {
         }}
       >
         {menuItems.map((item, index) => {
-          const selected = item === "Settings";
-          const travel = index % 2 === 0 ? -118 : 118;
+          const travel = index % 2 === 0 ? -14 : 14;
 
           return (
             <motion.div
               key={item}
-              initial={false}
-              animate={{
-                opacity: exiting ? (selected && leavingMainMenu ? 1 : 0) : 1,
-                x: exiting && !selected ? travel : 0,
-                scale: selected && leavingMainMenu ? 1.045 : 1,
-              }}
+              initial={reduceMotion ? false : { opacity: 0.68, x: travel, scale: 0.99 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
               transition={{
-                duration: exiting ? (selected ? 0.28 : 0.34) : 0.4,
-                delay: exiting ? index * 0.025 : entering ? 0.08 + index * 0.055 : 0,
+                duration: reduceMotion ? 0 : 0.22,
+                delay: reduceMotion ? 0 : 0.025 + index * 0.025,
                 ease: [0.16, 1, 0.3, 1],
               }}
               style={{ height: menuButtonHeight, willChange: "transform, opacity" }}
@@ -86,11 +73,11 @@ export function MainMenu() {
         })}
       </nav>
       <motion.p
-        initial={false}
-        animate={{ opacity: exiting ? 0 : 1, y: exiting ? 34 : 0 }}
+        initial={reduceMotion ? false : { opacity: 0.68, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{
-          duration: exiting ? 0.28 : 0.38,
-          delay: entering ? 0.2 : 0,
+          duration: reduceMotion ? 0 : 0.2,
+          delay: reduceMotion ? 0 : 0.1,
           ease: [0.16, 1, 0.3, 1],
         }}
         style={{

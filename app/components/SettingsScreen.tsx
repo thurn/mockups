@@ -16,11 +16,7 @@ import { useArcadeNavigation } from "./ArcadeRouteTransition";
 const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsScreen() {
-  const { navigate, reduceMotion, routeTransitionPhase, setReduceMotion, transitionDestination } =
-    useArcadeNavigation();
-  const exiting = routeTransitionPhase === "exiting";
-  const entering = routeTransitionPhase === "entering";
-  const leavingSettings = exiting && transitionDestination === "/";
+  const { navigate, reduceMotion, setReduceMotion } = useArcadeNavigation();
   const [activeTab, setActiveTab] = useState<SettingsTab>("Graphics");
   const [tabDirection, setTabDirection] = useState(1);
   const [language, setLanguage] = useState("English");
@@ -51,15 +47,14 @@ export function SettingsScreen() {
         inset: 0,
         zIndex: 2,
         overflow: "hidden",
-        pointerEvents: routeTransitionPhase === "idle" ? "auto" : "none",
+        pointerEvents: "auto",
       }}
     >
       <motion.div
-        initial={false}
-        animate={{ opacity: exiting ? 0 : 1, y: exiting ? -30 : 0 }}
+        initial={reduceMotion ? false : { opacity: 0.72, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{
-          duration: exiting ? 0.27 : 0.38,
-          delay: entering ? 0.02 : 0,
+          duration: reduceMotion ? 0 : 0.18,
           ease: [0.16, 1, 0.3, 1],
         }}
         style={{ position: "absolute", inset: 0, willChange: "transform, opacity" }}
@@ -67,15 +62,11 @@ export function SettingsScreen() {
         <ScreenHeader variant="settings" />
       </motion.div>
       <motion.div
-        initial={false}
-        animate={{
-          opacity: exiting ? 0 : 1,
-          y: exiting ? 30 : 0,
-          scale: exiting ? 0.985 : 1,
-        }}
+        initial={reduceMotion ? false : { opacity: 0.7, y: 12, scale: 0.995 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{
-          duration: exiting ? 0.34 : 0.44,
-          delay: entering ? 0.08 : 0,
+          duration: reduceMotion ? 0 : 0.22,
+          delay: reduceMotion ? 0 : 0.025,
           ease: [0.16, 1, 0.3, 1],
         }}
         style={{
@@ -89,11 +80,11 @@ export function SettingsScreen() {
         }}
       >
         <motion.div
-          initial={false}
-          animate={{ opacity: exiting ? 0 : 1, x: exiting ? 54 : 0 }}
+          initial={reduceMotion ? false : { opacity: 0.72, x: 14 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{
-            duration: exiting ? 0.24 : 0.36,
-            delay: entering ? 0.04 : 0,
+            duration: reduceMotion ? 0 : 0.18,
+            delay: reduceMotion ? 0 : 0.04,
             ease: [0.16, 1, 0.3, 1],
           }}
           style={{ willChange: "transform, opacity" }}
@@ -101,15 +92,11 @@ export function SettingsScreen() {
           <SettingsTabs activeTab={activeTab} onSelect={handleTabSelect} />
         </motion.div>
         <motion.div
-          initial={false}
-          animate={{
-            opacity: exiting ? 0 : 1,
-            y: exiting ? 20 : 0,
-            scaleY: exiting ? 0.985 : 1,
-          }}
+          initial={reduceMotion ? false : { opacity: 0.76, y: 8, scaleY: 0.995 }}
+          animate={{ opacity: 1, y: 0, scaleY: 1 }}
           transition={{
-            duration: exiting ? 0.32 : 0.42,
-            delay: entering ? 0.1 : 0,
+            duration: reduceMotion ? 0 : 0.2,
+            delay: reduceMotion ? 0 : 0.065,
             ease: [0.16, 1, 0.3, 1],
           }}
           style={{
@@ -224,15 +211,11 @@ export function SettingsScreen() {
         </motion.div>
       </motion.div>
       <motion.div
-        initial={false}
-        animate={{
-          opacity: exiting ? (leavingSettings ? 1 : 0) : 1,
-          y: exiting ? (leavingSettings ? 10 : 26) : 0,
-          scale: leavingSettings ? 1.045 : 1,
-        }}
+        initial={reduceMotion ? false : { opacity: 0.68, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{
-          duration: exiting ? 0.28 : 0.38,
-          delay: entering ? 0.22 : 0,
+          duration: reduceMotion ? 0 : 0.2,
+          delay: reduceMotion ? 0 : 0.1,
           ease: [0.16, 1, 0.3, 1],
         }}
         style={{
@@ -243,7 +226,7 @@ export function SettingsScreen() {
           willChange: "transform, opacity",
         }}
       >
-        <ReturnButton disabled={routeTransitionPhase !== "idle"} onClick={() => navigate("/")} />
+        <ReturnButton onClick={() => navigate("/")} />
       </motion.div>
     </section>
   );

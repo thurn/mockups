@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { PortraitViewport } from "./components/PortraitViewport";
 import { ScreenFrame } from "./components/ScreenFrame";
 import { ArcadeRouteTransition } from "./components/ArcadeRouteTransition";
+import { ArcadeScreenRouter } from "./components/ArcadeScreenRouter";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -73,7 +74,9 @@ export default function RootLayout({
       >
         <PortraitViewport>
           <ScreenFrame>
-            <ArcadeRouteTransition>{children}</ArcadeRouteTransition>
+            <ArcadeRouteTransition>
+              <ArcadeScreenRouter />
+            </ArcadeRouteTransition>
           </ScreenFrame>
         </PortraitViewport>
       </body>

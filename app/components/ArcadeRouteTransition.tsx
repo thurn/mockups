@@ -6,99 +6,57 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import { useReducedMotion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 
-export type RouteTransitionPhase = "idle" | "exiting" | "entering";
-
 type ArcadeNavigationContextValue = {
+  activePath: string;
   navigate: (href: string) => void;
   reduceMotion: boolean;
-  routeTransitionPhase: RouteTransitionPhase;
   setReduceMotion: (reduceMotion: boolean) => void;
-  transitionDestination: string | null;
 };
 
 const ArcadeNavigationContext = createContext<ArcadeNavigationContextValue | null>(null);
-
-const exitDuration = 390;
-const enterDuration = 520;
 
 export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const prefersReducedMotion = useReducedMotion();
   const [reduceMotion, setReduceMotionState] = useState(false);
-  const reduceMotionPreference = useRef(false);
-  const [routeTransitionPhase, setRouteTransitionPhase] = useState<RouteTransitionPhase>("idle");
-  const [transitionDestination, setTransitionDestination] = useState<string | null>(null);
-  const pendingHref = useRef<string | null>(null);
-  const transitionTimer = useRef<number | null>(null);
-  const motionDisabled = reduceMotionPreference.current || Boolean(prefersReducedMotion);
+  const [activePath, setActivePath] = useState(pathname);
 
   const setReduceMotion = useCallback((value: boolean) => {
-    reduceMotionPreference.current = value;
     setReduceMotionState(value);
-  }, []);
-
-  const clearTransitionTimer = useCallback(() => {
-    if (transitionTimer.current !== null) {
-      window.clearTimeout(transitionTimer.current);
-      transitionTimer.current = null;
-    }
   }, []);
 
   const navigate = useCallback(
     (href: string) => {
-      if (href === pathname || routeTransitionPhase !== "idle") return;
+      if (href === activePath) return;
 
-      if (motionDisabled) {
-        router.push(href);
-        return;
-      }
-
-      clearTransitionTimer();
-      pendingHref.current = href;
-      setTransitionDestination(href);
-      setRouteTransitionPhase("exiting");
-      transitionTimer.current = window.setTimeout(() => {
-        router.push(href);
-      }, exitDuration);
+      setActivePath(href);
+      router.push(href);
     },
-    [clearTransitionTimer, motionDisabled, pathname, routeTransitionPhase, router],
+    [activePath, router],
   );
 
   useEffect(() => {
-    if (pendingHref.current !== pathname) return;
-
-    clearTransitionTimer();
-    pendingHref.current = null;
-    setTransitionDestination(null);
-    setRouteTransitionPhase("entering");
-    transitionTimer.current = window.setTimeout(() => {
-      setRouteTransitionPhase("idle");
-      transitionTimer.current = null;
-    }, enterDuration);
-  }, [clearTransitionTimer, pathname]);
+    setActivePath(pathname);
+  }, [pathname]);
 
   useEffect(() => {
     router.prefetch("/");
     router.prefetch("/settings");
   }, [router]);
 
-  useEffect(() => clearTransitionTimer, [clearTransitionTimer]);
-
   return (
     <ArcadeNavigationContext.Provider
       value={{
+        activePath,
         navigate,
-        reduceMotion,
-        routeTransitionPhase,
+        reduceMotion: reduceMotion || Boolean(prefersReducedMotion),
         setReduceMotion,
-        transitionDestination,
       }}
     >
       {children}
