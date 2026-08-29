@@ -1,13 +1,37 @@
 import type { ReactNode } from "react";
-import { actionInnerClip, actionOuterClip, ClippedInset, controlInnerClip, controlOuterClip } from "./ClippedInset";
+import {
+  actionInnerClip,
+  actionOuterClip,
+  ClippedInset,
+  controlInnerClip,
+  controlOuterClip,
+} from "./ClippedInset";
 import { SettingRow } from "./SettingRow";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
 
-export function SelectControl({ label, options, value, onChange, first = false, offsetY = 0, rowHeight }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
+export function SelectControl({
+  label,
+  options,
+  value,
+  onChange,
+  first = false,
+  offsetY = 0,
+  rowHeight,
+}: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
   return (
     <SettingRow first={first} label={label} rowHeight={rowHeight}>
-      <div style={{ position: "relative", display: "flex", alignItems: "center", height: "100%", transform: `translateY(${offsetY}px)` }}>
+      <div
+        style={{
+          position: "relative",
+          width: 396,
+          height: "100%",
+          flex: "none",
+          display: "flex",
+          alignItems: "center",
+          transform: `translateY(${offsetY}px)`,
+        }}
+      >
         <div
           aria-hidden="true"
           style={{
@@ -30,7 +54,12 @@ export function SelectControl({ label, options, value, onChange, first = false, 
             pointerEvents: "none",
           }}
         >
-          <ClippedInset inset={3} clipPath={controlInnerClip} background="linear-gradient(180deg, #050b1c, #020611)" boxShadow="inset 0 0 24px #000" />
+          <ClippedInset
+            inset={3}
+            clipPath={controlInnerClip}
+            background="linear-gradient(180deg, #050b1c, #020611)"
+            boxShadow="inset 0 0 24px #000"
+          />
           <span style={{ position: "relative", zIndex: 1 }}>{value}</span>
         </div>
         <select
@@ -53,20 +82,97 @@ export function SelectControl({ label, options, value, onChange, first = false, 
             transform: "translateY(-50%)",
           }}
         >
-          {options.map((option) => <option key={option}>{option}</option>)}
+          {options.map((option) => (
+            <option key={option}>{option}</option>
+          ))}
         </select>
-        <span aria-hidden="true" style={{ position: "absolute", right: 45, width: 0, height: 0, borderLeft: "15px solid transparent", borderRight: "15px solid transparent", borderTop: "18px solid #f4f5fa", filter: "drop-shadow(0 3px 2px #000)", pointerEvents: "none" }} />
+        <span
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            top: "50%",
+            right: 45,
+            width: 0,
+            height: 0,
+            borderLeft: "15px solid transparent",
+            borderRight: "15px solid transparent",
+            borderTop: "18px solid #f4f5fa",
+            filter: "drop-shadow(0 3px 2px #000)",
+            pointerEvents: "none",
+            transform: "translateY(-50%)",
+          }}
+        />
       </div>
     </SettingRow>
   );
 }
 
-export function ToggleControl({ checked, label, ariaLabel, onChange, withInfo = false, rowHeight, offsetY = 0 }: BaseProps & { checked: boolean; ariaLabel?: string; onChange: (checked: boolean) => void; withInfo?: boolean }) {
+export function ToggleControl({
+  checked,
+  label,
+  ariaLabel,
+  onChange,
+  withInfo = false,
+  rowHeight,
+  offsetY = 0,
+}: BaseProps & {
+  checked: boolean;
+  ariaLabel?: string;
+  onChange: (checked: boolean) => void;
+  withInfo?: boolean;
+}) {
   return (
-    <SettingRow label={<>{label}{withInfo && <InfoBadge />}</>} rowHeight={rowHeight}>
-      <label style={{ position: "relative", display: "flex", alignItems: "center", width: 77, height: 77, marginLeft: 8, cursor: "pointer", transform: `translateY(${offsetY}px)` }}>
-        <input suppressHydrationWarning aria-label={ariaLabel ?? String(label)} checked={checked} onChange={(event) => onChange(event.target.checked)} type="checkbox" style={{ position: "absolute", inset: 0, zIndex: 2, width: 77, height: 77, margin: 0, opacity: 0, cursor: "pointer" }} />
-        <span aria-hidden="true" style={{ position: "relative", boxSizing: "border-box", width: 77, height: 77, border: "4px solid #4ba3ff", borderRadius: 11, background: "linear-gradient(180deg, #06142b, #02091a)", boxShadow: "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff" }}>
+    <SettingRow
+      label={
+        <>
+          {label}
+          {withInfo && <InfoBadge />}
+        </>
+      }
+      rowHeight={rowHeight}
+    >
+      <label
+        style={{
+          position: "relative",
+          display: "flex",
+          alignItems: "center",
+          width: 77,
+          height: 77,
+          marginLeft: 8,
+          cursor: "pointer",
+          transform: `translateY(${offsetY}px)`,
+        }}
+      >
+        <input
+          suppressHydrationWarning
+          aria-label={ariaLabel ?? String(label)}
+          checked={checked}
+          onChange={(event) => onChange(event.target.checked)}
+          type="checkbox"
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 2,
+            width: 77,
+            height: 77,
+            margin: 0,
+            opacity: 0,
+            cursor: "pointer",
+          }}
+        />
+        <span
+          aria-hidden="true"
+          style={{
+            position: "relative",
+            boxSizing: "border-box",
+            width: 77,
+            height: 77,
+            border: "4px solid #4ba3ff",
+            borderRadius: 11,
+            background: "linear-gradient(180deg, #06142b, #02091a)",
+            boxShadow: "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff",
+          }}
+        >
           {checked && <CheckMark />}
         </span>
       </label>
@@ -77,21 +183,96 @@ export function ToggleControl({ checked, label, ariaLabel, onChange, withInfo = 
 export function EraseControl() {
   return (
     <SettingRow label="Erase Saved Data">
-      <button type="button" style={{ position: "relative", boxSizing: "border-box", width: 362, height: 114, marginLeft: 21, display: "grid", placeItems: "center", border: 0, padding: 0, clipPath: actionOuterClip, color: "#ff3553", background: "#ff355e", filter: "drop-shadow(0 0 9px rgba(255,20,78,.55))", fontFamily: "'Barlow Condensed', Impact, sans-serif", fontWeight: 700, fontSize: 67, textShadow: "0 0 11px rgba(255,25,76,.55)", cursor: "pointer", transform: "translateY(-8px)" }}>
-        <ClippedInset inset={4} clipPath={actionInnerClip} background="radial-gradient(ellipse at 50% 45%, #200511, #07030c 67%, #020208)" boxShadow="inset 0 0 22px #000" />
-        <span style={{ position: "relative", zIndex: 1, lineHeight: 0.9, transform: "translateY(-1px)" }}>ERASE</span>
+      <button
+        type="button"
+        style={{
+          position: "relative",
+          boxSizing: "border-box",
+          width: 362,
+          height: 114,
+          marginLeft: 21,
+          display: "grid",
+          placeItems: "center",
+          border: 0,
+          padding: 0,
+          clipPath: actionOuterClip,
+          color: "#ff3553",
+          background: "#ff355e",
+          filter: "drop-shadow(0 0 9px rgba(255,20,78,.55))",
+          fontFamily: "'Barlow Condensed', Impact, sans-serif",
+          fontWeight: 700,
+          fontSize: 67,
+          textShadow: "0 0 11px rgba(255,25,76,.55)",
+          cursor: "pointer",
+          transform: "translateY(-8px)",
+        }}
+      >
+        <ClippedInset
+          inset={4}
+          clipPath={actionInnerClip}
+          background="radial-gradient(ellipse at 50% 45%, #200511, #07030c 67%, #020208)"
+          boxShadow="inset 0 0 22px #000"
+        />
+        <span
+          style={{
+            position: "relative",
+            zIndex: 1,
+            lineHeight: 0.9,
+            transform: "translateY(-1px)",
+          }}
+        >
+          ERASE
+        </span>
       </button>
     </SettingRow>
   );
 }
 
 function CheckMark() {
-  return <span style={{ position: "absolute", left: "50%", top: "50%", width: 50, height: 44, clipPath: "polygon(0 47%, 14% 32%, 35% 58%, 85% 0, 100% 14%, 35% 100%)", background: "#61f1ff", transform: "translate(-50%, -50%)", filter: "drop-shadow(0 0 7px #128dff)" }} />;
+  return (
+    <span
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        width: 50,
+        height: 44,
+        clipPath: "polygon(0 47%, 14% 32%, 35% 58%, 85% 0, 100% 14%, 35% 100%)",
+        background: "#61f1ff",
+        transform: "translate(-50%, -50%)",
+        filter: "drop-shadow(0 0 7px #128dff)",
+      }}
+    />
+  );
 }
 
 function InfoBadge() {
   return (
-    <span aria-label="Crash reports help diagnose errors" title="Crash reports help diagnose errors" style={{ position: "absolute", left: 201, bottom: 25, boxSizing: "border-box", width: 58, height: 58, display: "grid", placeItems: "center", border: "3px solid #55b8ff", borderRadius: "50%", color: "#bcf4ff", fontFamily: "Georgia, serif", fontSize: 39, fontStyle: "normal", fontWeight: 700, lineHeight: 1, textTransform: "lowercase", boxShadow: "0 0 11px #155eff, inset 0 0 10px rgba(13,76,180,.8)", transform: "scaleX(.957)" }}>
+    <span
+      aria-label="Crash reports help diagnose errors"
+      title="Crash reports help diagnose errors"
+      style={{
+        position: "absolute",
+        left: 201,
+        bottom: 25,
+        boxSizing: "border-box",
+        width: 58,
+        height: 58,
+        display: "grid",
+        placeItems: "center",
+        border: "3px solid #55b8ff",
+        borderRadius: "50%",
+        color: "#bcf4ff",
+        fontFamily: "Georgia, serif",
+        fontSize: 39,
+        fontStyle: "normal",
+        fontWeight: 700,
+        lineHeight: 1,
+        textTransform: "lowercase",
+        boxShadow: "0 0 11px #155eff, inset 0 0 10px rgba(13,76,180,.8)",
+        transform: "scaleX(.957)",
+      }}
+    >
       i
     </span>
   );
