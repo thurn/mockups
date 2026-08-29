@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 export const metadata: Metadata = {
-  title: "Settings",
-  description: "A neon arcade gameplay settings screen.",
+  title: {
+    default: "Chess Chess Revolution",
+    template: "%s | Chess Chess Revolution",
+  },
+  description: "A neon arcade chess experience.",
 };
 
 export default function RootLayout({
@@ -12,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning style={{ minHeight: "100%", background: "#02050d" }}>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: `
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
           (() => {
             const update = () => {
               const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
@@ -27,7 +32,9 @@ export default function RootLayout({
             window.addEventListener('pageshow', update);
             window.visualViewport?.addEventListener('resize', update);
           })();
-        ` }} />
+        `,
+          }}
+        />
         <style>{`
           @font-face { font-family: 'Bebas Neue'; src: url('/fonts/bebas-neue.ttf') format('truetype'); font-display: swap; }
           @font-face { font-family: 'Barlow Condensed'; src: url('/fonts/barlow-condensed-700.ttf') format('truetype'); font-style: normal; font-weight: 700; font-display: swap; }

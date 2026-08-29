@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ConceptFrame } from "./ConceptFrame";
 import { ReturnButton } from "./ReturnButton";
 import { EraseControl, SelectControl, ToggleControl } from "./SettingsControls";
@@ -10,6 +11,7 @@ import { ClippedInset } from "./ClippedInset";
 const DESIGN_WIDTH = 1024;
 const DESIGN_HEIGHT = 1536;
 export function SettingsScreen() {
+  const router = useRouter();
   const [language, setLanguage] = useState("English");
   const [textSize, setTextSize] = useState("Medium");
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -27,7 +29,13 @@ export function SettingsScreen() {
         background: "#000",
       }}
     >
-      <div style={{ position: "relative", width: "var(--settings-width, 1024px)", height: "var(--settings-height, 1536px)" }}>
+      <div
+        style={{
+          position: "relative",
+          width: "var(--settings-width, 1024px)",
+          height: "var(--settings-height, 1536px)",
+        }}
+      >
         <section
           aria-label="Gameplay settings"
           style={{
@@ -105,17 +113,71 @@ export function SettingsScreen() {
                 background="radial-gradient(ellipse at 7% 46%, rgba(5,83,184,.15), transparent 36%), linear-gradient(90deg, rgba(0,83,190,.07), transparent 25% 75%, rgba(126,0,145,.055)), linear-gradient(180deg, #041126 0%, #020b1b 100%)"
                 boxShadow="inset 0 0 45px #000710"
               />
-              <div style={{ position: "relative", zIndex: 1, boxSizing: "border-box", height: "100%", padding: "18px 24px 32px" }}>
-                <SelectControl first label="Language" value={language} options={["English", "Español", "Français", "Deutsch"]} onChange={setLanguage} offsetY={5} />
-                <SelectControl label="Text Size" value={textSize} options={["Small", "Medium", "Large"]} onChange={setTextSize} offsetY={2} />
-                <ToggleControl checked={reduceMotion} label="Reduce Motion" onChange={setReduceMotion} rowHeight={147} offsetY={1} />
-                <ToggleControl checked={increaseMoveDuration} label={<>Increase Move<br />Duration</>} ariaLabel="Increase Move Duration" onChange={setIncreaseMoveDuration} rowHeight={173} offsetY={-7} />
-                <ToggleControl checked={uploadCrashReports} label={<>Upload Crash<br />Reports</>} ariaLabel="Upload Crash Reports" onChange={setUploadCrashReports} withInfo rowHeight={166} offsetY={-8} />
+              <div
+                style={{
+                  position: "relative",
+                  zIndex: 1,
+                  boxSizing: "border-box",
+                  height: "100%",
+                  padding: "18px 24px 32px",
+                }}
+              >
+                <SelectControl
+                  first
+                  label="Language"
+                  value={language}
+                  options={["English", "Español", "Français", "Deutsch"]}
+                  onChange={setLanguage}
+                  offsetY={5}
+                />
+                <SelectControl
+                  label="Text Size"
+                  value={textSize}
+                  options={["Small", "Medium", "Large"]}
+                  onChange={setTextSize}
+                  offsetY={2}
+                />
+                <ToggleControl
+                  checked={reduceMotion}
+                  label="Reduce Motion"
+                  onChange={setReduceMotion}
+                  rowHeight={147}
+                  offsetY={1}
+                />
+                <ToggleControl
+                  checked={increaseMoveDuration}
+                  label={
+                    <>
+                      Increase Move
+                      <br />
+                      Duration
+                    </>
+                  }
+                  ariaLabel="Increase Move Duration"
+                  onChange={setIncreaseMoveDuration}
+                  rowHeight={173}
+                  offsetY={-7}
+                />
+                <ToggleControl
+                  checked={uploadCrashReports}
+                  label={
+                    <>
+                      Upload Crash
+                      <br />
+                      Reports
+                    </>
+                  }
+                  ariaLabel="Upload Crash Reports"
+                  onChange={setUploadCrashReports}
+                  withInfo
+                  rowHeight={166}
+                  offsetY={-8}
+                />
                 <EraseControl />
               </div>
             </div>
           </div>
-          <ReturnButton />
+          <ReturnButton onClick={() => router.push("/")} />
         </section>
       </div>
     </main>
@@ -133,7 +195,9 @@ function StripeBar({ side }: { side: "left" | "right" }) {
         [isLeft ? "left" : "right"]: 0,
         width: 314,
         height: 58,
-        clipPath: isLeft ? "polygon(0 0, 100% 0, 93% 100%, 0 100%)" : "polygon(7% 0, 100% 0, 100% 100%, 0 100%)",
+        clipPath: isLeft
+          ? "polygon(0 0, 100% 0, 93% 100%, 0 100%)"
+          : "polygon(7% 0, 100% 0, 100% 100%, 0 100%)",
         background: isLeft
           ? "repeating-linear-gradient(132deg, #075fff 0 17px, #05164b 17px 32px)"
           : "repeating-linear-gradient(132deg, #f21160 0 17px, #4b0827 17px 32px)",
