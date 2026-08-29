@@ -37,47 +37,6 @@ export function GameShell({ children }: { children: ReactNode }) {
             boxShadow: "0 28px 70px rgb(0 0 0 / 72%)",
           }}
         >
-          <div
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              inset: 0,
-              zIndex: -2,
-              overflow: "hidden",
-              pointerEvents: "none",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                opacity: 0.36,
-                backgroundImage:
-                  "linear-gradient(rgb(57 167 255 / 8%) 1px, transparent 1px), linear-gradient(90deg, rgb(57 167 255 / 8%) 1px, transparent 1px)",
-                backgroundSize: "72px 72px",
-                transform: "perspective(640px) rotateX(61deg) scale(1.8) translateY(34%)",
-                transformOrigin: "50% 100%",
-                maskImage: "linear-gradient(to top, #000, transparent 76%)",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(90deg, rgb(0 234 255 / 16%), transparent 12% 88%, rgb(255 33 189 / 16%)), radial-gradient(ellipse at center, transparent 44%, rgb(0 0 0 / 72%) 100%)",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                inset: "-30%",
-                opacity: 0.55,
-                background:
-                  "conic-gradient(from 210deg at 50% 50%, transparent, rgb(0 234 255 / 10%), transparent 38%, rgb(255 33 189 / 11%), transparent 72%)",
-              }}
-            />
-          </div>
           {children}
         </div>
       </div>
