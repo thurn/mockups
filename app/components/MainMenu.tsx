@@ -46,17 +46,21 @@ export function MainMenu() {
           bottom: 164,
           left: 80,
           margin: 0,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           color: "#fff",
           fontFamily: "'Barlow Condensed', Impact, sans-serif",
-          fontSize: 40,
+          fontSize: 56,
           fontWeight: 700,
-          lineHeight: 1.1,
+          lineHeight: 1.02,
           letterSpacing: ".3px",
           textAlign: "center",
           textShadow: "0 3px 8px #000, 0 0 8px rgba(111,188,255,.35)",
         }}
       >
-        Playing with sound on is recommended!
+        <span>Playing with sound</span>
+        <span>is recommended!</span>
       </p>
     </section>
   );
