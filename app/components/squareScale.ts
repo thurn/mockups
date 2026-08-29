@@ -1,10 +1,10 @@
 export const DESIGN_SIZE = 900;
-export const PORTRAIT_DESIGN_HEIGHT = 1040;
+export const PORTRAIT_DESIGN_HEIGHT = 1120;
 
 export const squareSize = "var(--prototype-square-size, 900px)";
 export const squareScale = "var(--prototype-square-scale, 1)";
 export const portraitWidth = "var(--prototype-portrait-width, 900px)";
-export const portraitHeight = "var(--prototype-portrait-height, 1040px)";
+export const portraitHeight = "var(--prototype-portrait-height, 1120px)";
 export const portraitScale = "var(--prototype-portrait-scale, 1)";
 
 export const squareScaleScript = `

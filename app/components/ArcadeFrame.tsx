@@ -19,7 +19,7 @@ export function ArcadeFrame({
       style={mergeStyles({
         position: "relative",
         width: 820,
-        height: settings ? 900 : 820,
+        height: settings ? 980 : 820,
         filter: "drop-shadow(0 26px 50px rgb(0 0 0 / 58%))",
         alignSelf: "center",
       })}
@@ -95,7 +95,7 @@ function FrameSurface({ children, settings }: { children: ReactNode; settings: b
           flexDirection: settings ? undefined : "column",
           alignItems: settings ? "stretch" : "center",
           justifyContent: settings ? "stretch" : "space-evenly",
-          padding: settings ? "24px 35px" : "0 70px",
+          padding: settings ? "64px 35px" : "0 70px",
           clipPath: frameClip,
           border: "3px solid rgb(201 231 255 / 65%)",
           background:
