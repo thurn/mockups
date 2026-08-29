@@ -21,7 +21,7 @@ export function SelectControl({
       <span
         style={mergeStyles(cellStyle, {
           position: "relative",
-          padding: "7px 18px",
+          padding: "0 12px",
         })}
       >
         <select
@@ -43,7 +43,7 @@ export function SelectControl({
               "linear-gradient(180deg, #07142e, #020718) padding-box, linear-gradient(105deg, #57ecff, #b6d8ff 48%, #ff43cf) border-box",
             boxShadow: "inset 0 0 17px rgb(0 0 0 / 75%), 0 0 10px rgb(89 114 255 / 34%)",
             fontFamily: impactFont,
-            fontSize: 27,
+            fontSize: 30,
             textShadow: "2px 3px 0 #19325d, 0 3px 4px #000",
             cursor: "pointer",
             outline: 0,
@@ -95,7 +95,7 @@ export function ToggleControl({
       <label
         {...handlers}
         style={mergeStyles(cellStyle, {
-          padding: "7px 18px",
+          padding: "0 12px",
           cursor: "pointer",
         })}
       >
@@ -142,44 +142,6 @@ export function ToggleControl({
           )}
         </span>
       </label>
-    </SettingRow>
-  );
-}
-
-export function EraseControl() {
-  const { state, handlers } = useInteraction();
-
-  return (
-    <SettingRow label={<SettingName>Erase Saved Data</SettingName>}>
-      <span style={mergeStyles(cellStyle, { padding: "7px 18px" })}>
-        <button
-          {...handlers}
-          type="button"
-          style={{
-            boxSizing: "border-box",
-            minWidth: 158,
-            height: 50,
-            border: "3px solid #ff3153",
-            padding: "0 20px",
-            color: state.hovered || state.focused ? "#fff" : "#ff4565",
-            clipPath: "polygon(8% 0, 92% 0, 100% 20%, 100% 80%, 92% 100%, 8% 100%, 0 80%, 0 20%)",
-            background: "linear-gradient(180deg, #29101b, #100610)",
-            boxShadow:
-              "inset 0 0 0 4px #12050c, inset 0 0 0 6px #861528, 0 0 10px rgb(255 35 77 / 58%)",
-            fontFamily: impactFont,
-            fontSize: 27,
-            cursor: "pointer",
-            outline: 0,
-            filter:
-              state.hovered || state.focused
-                ? "brightness(1.25) drop-shadow(0 0 7px #ff244c)"
-                : undefined,
-            transform: state.pressed ? "translateY(2px) scale(0.96)" : undefined,
-          }}
-        >
-          Erase
-        </button>
-      </span>
     </SettingRow>
   );
 }

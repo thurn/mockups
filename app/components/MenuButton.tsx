@@ -14,7 +14,7 @@ export function MenuButton({ children, onClick }: { children: ReactNode; onClick
       style={{
         boxSizing: "border-box",
         position: "relative",
-        height: 78,
+        height: 104,
         border: 0,
         padding: 3,
         cursor: "pointer",

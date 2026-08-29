@@ -2,18 +2,18 @@ import type { CSSProperties } from "react";
 import { impactFont, mergeStyles, textGradient } from "./styles";
 
 export function ArcadeTitle({ settings = false }: { settings?: boolean }) {
-  const titleSize = settings ? 96 : 82;
+  const titleSize = settings ? 64 : 82;
 
   return (
     <header
       style={{
         position: "relative",
         isolation: "isolate",
-        width: settings ? "88%" : "min(100%, 720px)",
+        width: settings ? "76%" : "min(100%, 720px)",
         margin: settings ? "0 auto" : 0,
         textAlign: "center",
         transform: settings ? "skewX(-4deg)" : "translateY(7px) skewX(-4deg)",
-        flex: settings ? "0 0 120px" : undefined,
+        flex: settings ? "0 0 80px" : undefined,
         display: settings ? "grid" : undefined,
         placeItems: settings ? "center" : undefined,
       }}
@@ -96,7 +96,7 @@ function TitleBar({ side, settings }: { side: "left" | "right"; settings: boolea
         top: "50%",
         zIndex: 0,
         width: settings ? "54%" : "68%",
-        height: settings ? 48 : 42,
+        height: settings ? 34 : 42,
         transform: "translateY(-50%)",
         opacity: settings ? undefined : 0.9,
         pointerEvents: "none",

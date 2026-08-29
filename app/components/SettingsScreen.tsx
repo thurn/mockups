@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArcadeFrame } from "./ArcadeFrame";
 import { ArcadeTitle } from "./ArcadeTitle";
 import { ReturnButton } from "./ReturnButton";
-import { EraseControl, SelectControl, ToggleControl } from "./SettingsControls";
+import { SelectControl, ToggleControl } from "./SettingsControls";
 import { SettingsTabs } from "./SettingsTabs";
 
 export function SettingsScreen({ onReturn }: { onReturn: () => void }) {
@@ -35,9 +35,9 @@ export function SettingsScreen({ onReturn }: { onReturn: () => void }) {
             position: "relative",
             flex: "1 1 auto",
             display: "grid",
-            gridTemplateRows: "repeat(6, minmax(0, 1fr))",
+            gridTemplateRows: "repeat(5, minmax(0, 1fr))",
             border: "2px solid transparent",
-            padding: "20px 20px 18px",
+            padding: "8px 10px",
             clipPath: "polygon(2% 0, 98% 0, 100% 4%, 100% 96%, 98% 100%, 2% 100%, 0 96%, 0 4%)",
             background:
               "linear-gradient(180deg, rgb(3 11 30 / 97%), rgb(2 8 22 / 98%)) padding-box, linear-gradient(110deg, #68eaff, #6b7fea 52%, #fc45ce) border-box",
@@ -70,7 +70,6 @@ export function SettingsScreen({ onReturn }: { onReturn: () => void }) {
             onChange={setUploadCrashReports}
             withInfo
           />
-          <EraseControl />
         </div>
       </div>
       <ReturnButton onClick={onReturn} />

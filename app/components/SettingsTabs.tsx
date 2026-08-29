@@ -26,7 +26,7 @@ export function SettingsTabs() {
             style={{
               boxSizing: "border-box",
               minWidth: 0,
-              height: 54,
+              height: 100,
               border: `2px solid ${active ? "#74efff" : "#294d85"}`,
               borderBottom: 0,
               padding: "0 8px",
@@ -39,7 +39,7 @@ export function SettingsTabs() {
                 ? "inset 0 0 0 4px #041026, inset 0 0 24px rgb(0 184 255 / 24%), 0 0 12px rgb(65 160 255 / 65%)"
                 : "inset 0 0 0 3px #020717, inset 0 0 0 5px rgb(61 115 194 / 18%)",
               fontFamily: impactFont,
-              fontSize: 25,
+              fontSize: 30,
               letterSpacing: "0.02em",
               textShadow: "1px 2px 0 #102957, 0 3px 4px #000",
               opacity: 1,

@@ -16,8 +16,8 @@ export function ArcadeFrame({
       style={mergeStyles({
         boxSizing: "border-box",
         position: "relative",
-        width: 820,
-        height: 820,
+        width: settings ? 870 : 820,
+        height: settings ? 870 : 820,
         padding: 15,
         filter: "drop-shadow(0 26px 50px rgb(0 0 0 / 58%))",
         clipPath: frameClip,
@@ -74,11 +74,11 @@ export function ArcadeFrame({
           height: "100%",
           overflow: settings ? "visible" : "hidden",
           display: settings ? "grid" : "flex",
-          gridTemplateRows: settings ? "120px minmax(0, 1fr) 70px" : undefined,
+          gridTemplateRows: settings ? "80px minmax(0, 1fr) 100px" : undefined,
           flexDirection: settings ? undefined : "column",
           alignItems: settings ? "stretch" : "center",
           justifyContent: settings ? "stretch" : "space-evenly",
-          padding: settings ? "28px 58px 24px" : "0 70px",
+          padding: settings ? "10px 35px" : "0 70px",
           clipPath: frameClip,
           border: "3px solid rgb(201 231 255 / 65%)",
           background:
@@ -89,7 +89,7 @@ export function ArcadeFrame({
       >
         <FrameLine top={17} />
         {children}
-        <FrameLine bottom={settings ? 58 : 17} />
+        <FrameLine bottom={settings ? 34 : 17} />
       </div>
     </section>
   );
