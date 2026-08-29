@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { ActionButton } from "./ActionButton";
 import { useArcadeNavigation } from "./ArcadeRouteTransition";
 import { ScreenHeader } from "./ScreenHeader";
@@ -14,7 +13,7 @@ const menuHeight = menuItems.length * menuButtonHeight + (menuItems.length - 1) 
 const menuTop = gameWordmarkBottom + (soundRecommendationTop - gameWordmarkBottom - menuHeight) / 2;
 
 export function MainMenu() {
-  const { navigate, reduceMotion } = useArcadeNavigation();
+  const { navigate } = useArcadeNavigation();
 
   return (
     <section
@@ -27,17 +26,9 @@ export function MainMenu() {
         pointerEvents: "auto",
       }}
     >
-      <motion.div
-        initial={reduceMotion ? false : { opacity: 0.72, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: reduceMotion ? 0 : 0.18,
-          ease: [0.16, 1, 0.3, 1],
-        }}
-        style={{ position: "absolute", inset: 0, willChange: "transform, opacity" }}
-      >
+      <div style={{ position: "absolute", inset: 0 }}>
         <ScreenHeader variant="game" />
-      </motion.div>
+      </div>
       <nav
         aria-label="Main navigation"
         style={{
@@ -50,36 +41,15 @@ export function MainMenu() {
           gap: menuGap,
         }}
       >
-        {menuItems.map((item, index) => {
-          const travel = index % 2 === 0 ? -14 : 14;
-
-          return (
-            <motion.div
-              key={item}
-              initial={reduceMotion ? false : { opacity: 0.68, x: travel, scale: 0.99 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              transition={{
-                duration: reduceMotion ? 0 : 0.22,
-                delay: reduceMotion ? 0 : 0.025 + index * 0.025,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              style={{ height: menuButtonHeight, willChange: "transform, opacity" }}
-            >
-              <ActionButton onClick={item === "Settings" ? () => navigate("/settings") : undefined}>
-                {item.toUpperCase()}
-              </ActionButton>
-            </motion.div>
-          );
-        })}
+        {menuItems.map((item) => (
+          <div key={item} style={{ height: menuButtonHeight }}>
+            <ActionButton onClick={item === "Settings" ? () => navigate("/settings") : undefined}>
+              {item.toUpperCase()}
+            </ActionButton>
+          </div>
+        ))}
       </nav>
-      <motion.p
-        initial={reduceMotion ? false : { opacity: 0.68, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{
-          duration: reduceMotion ? 0 : 0.2,
-          delay: reduceMotion ? 0 : 0.1,
-          ease: [0.16, 1, 0.3, 1],
-        }}
+      <p
         style={{
           position: "absolute",
           zIndex: 4,
@@ -98,12 +68,11 @@ export function MainMenu() {
           letterSpacing: ".3px",
           textAlign: "center",
           textShadow: "0 3px 8px #000, 0 0 8px rgba(111,188,255,.35)",
-          willChange: "transform, opacity",
         }}
       >
         <span>Playing with sound</span>
         <span>is recommended!</span>
-      </motion.p>
+      </p>
     </section>
   );
 }
