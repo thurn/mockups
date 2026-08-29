@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ArcadeFrame } from "./ArcadeFrame";
 import { ArcadeTitle } from "./ArcadeTitle";
 import { MenuButton } from "./MenuButton";
 
@@ -11,21 +10,38 @@ export function MainMenu() {
   const router = useRouter();
 
   return (
-    <ArcadeFrame label="Chess Chess Revolution main menu">
-      <ArcadeTitle />
-      <nav
-        aria-label="Main navigation"
-        style={{ width: "min(100%, 700px)", display: "grid", gap: 16 }}
+    <section
+      aria-label="Chess Chess Revolution main menu"
+      style={{ position: "absolute", inset: 0, zIndex: 2, overflow: "hidden" }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          top: 290,
+          left: 102,
+          width: 820,
+          height: 820,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-evenly",
+        }}
       >
-        {menuItems.map((item) => (
-          <MenuButton
-            key={item}
-            onClick={item === "Settings" ? () => router.push("/settings") : undefined}
-          >
-            {item}
-          </MenuButton>
-        ))}
-      </nav>
-    </ArcadeFrame>
+        <ArcadeTitle />
+        <nav
+          aria-label="Main navigation"
+          style={{ width: "min(100%, 700px)", display: "grid", gap: 16 }}
+        >
+          {menuItems.map((item) => (
+            <MenuButton
+              key={item}
+              onClick={item === "Settings" ? () => router.push("/settings") : undefined}
+            >
+              {item}
+            </MenuButton>
+          ))}
+        </nav>
+      </div>
+    </section>
   );
 }

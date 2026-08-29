@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { PortraitViewport } from "./components/PortraitViewport";
+import { ScreenFrame } from "./components/ScreenFrame";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -68,7 +70,9 @@ export default function RootLayout({
           fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
         }}
       >
-        {children}
+        <PortraitViewport>
+          <ScreenFrame>{children}</ScreenFrame>
+        </PortraitViewport>
       </body>
     </html>
   );
