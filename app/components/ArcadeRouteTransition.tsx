@@ -30,11 +30,17 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const prefersReducedMotion = useReducedMotion();
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [reduceMotion, setReduceMotionState] = useState(false);
+  const reduceMotionPreference = useRef(false);
   const [routeTransitionPhase, setRouteTransitionPhase] = useState<RouteTransitionPhase>("idle");
   const pendingHref = useRef<string | null>(null);
   const transitionTimer = useRef<number | null>(null);
-  const motionDisabled = reduceMotion || Boolean(prefersReducedMotion);
+  const motionDisabled = reduceMotionPreference.current || Boolean(prefersReducedMotion);
+
+  const setReduceMotion = useCallback((value: boolean) => {
+    reduceMotionPreference.current = value;
+    setReduceMotionState(value);
+  }, []);
 
   const clearTransitionTimer = useCallback(() => {
     if (transitionTimer.current !== null) {
