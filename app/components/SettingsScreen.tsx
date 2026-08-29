@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { ArcadeFrame } from "./ArcadeFrame";
-import { ArcadeTitle } from "./ArcadeTitle";
+import { ConceptFrame } from "./ConceptFrame";
 import { ReturnButton } from "./ReturnButton";
-import { SelectControl, ToggleControl } from "./SettingsControls";
+import { EraseControl, SelectControl, ToggleControl } from "./SettingsControls";
 import { SettingsTabs } from "./SettingsTabs";
 
-export function SettingsScreen({ onReturn }: { onReturn: () => void }) {
+const DESIGN_WIDTH = 1024;
+const DESIGN_HEIGHT = 1536;
+export function SettingsScreen() {
   const [language, setLanguage] = useState("English");
   const [textSize, setTextSize] = useState("Medium");
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -15,65 +16,123 @@ export function SettingsScreen({ onReturn }: { onReturn: () => void }) {
   const [uploadCrashReports, setUploadCrashReports] = useState(true);
 
   return (
-    <ArcadeFrame label="Gameplay settings" settings>
-      <ArcadeTitle settings />
-      <div
-        style={{
-          position: "relative",
-          zIndex: 3,
-          width: "100%",
-          height: "100%",
-          minHeight: 0,
-          display: "flex",
-          flex: "1 1 auto",
-          flexDirection: "column",
-        }}
-      >
-        <SettingsTabs />
-        <div
+    <main
+      style={{
+        width: "100%",
+        minHeight: "100svh",
+        display: "grid",
+        placeItems: "center",
+        overflow: "hidden",
+        background: "#000",
+      }}
+    >
+      <div style={{ position: "relative", width: "var(--settings-width, 1024px)", height: "var(--settings-height, 1536px)" }}>
+        <section
+          aria-label="Gameplay settings"
           style={{
-            boxSizing: "border-box",
-            position: "relative",
-            flex: "1 1 auto",
-            display: "grid",
-            gridTemplateRows: "repeat(5, minmax(0, 1fr))",
-            border: "2px solid transparent",
-            padding: "12px 10px",
-            clipPath: "polygon(2% 0, 98% 0, 100% 4%, 100% 96%, 98% 100%, 2% 100%, 0 96%, 0 4%)",
+            position: "absolute",
+            inset: 0,
+            width: DESIGN_WIDTH,
+            height: DESIGN_HEIGHT,
+            overflow: "hidden",
+            transform: "scale(var(--settings-scale, 1))",
+            transformOrigin: "top left",
+            color: "#f7f8ff",
             background:
-              "linear-gradient(180deg, rgb(3 11 30 / 97%), rgb(2 8 22 / 98%)) padding-box, linear-gradient(110deg, #68eaff, #6b7fea 52%, #fc45ce) border-box",
-            boxShadow:
-              "inset 0 0 0 8px #020819, inset 0 0 0 10px rgb(75 130 207 / 58%), inset 0 0 36px #000",
+              "radial-gradient(circle at 50% 43%, #06152c 0, #020817 42%, #01030b 70%, #000107 100%)",
           }}
         >
-          <SelectControl
-            first
-            label="Language"
-            onChange={setLanguage}
-            options={["English", "Español", "Français", "Deutsch"]}
-            value={language}
-          />
-          <SelectControl
-            label="Text Size"
-            onChange={setTextSize}
-            options={["Small", "Medium", "Large"]}
-            value={textSize}
-          />
-          <ToggleControl checked={reduceMotion} label="Reduce Motion" onChange={setReduceMotion} />
-          <ToggleControl
-            checked={increaseMoveDuration}
-            label="Increase Move Duration"
-            onChange={setIncreaseMoveDuration}
-          />
-          <ToggleControl
-            checked={uploadCrashReports}
-            label="Upload Crash Reports"
-            onChange={setUploadCrashReports}
-            withInfo
-          />
-        </div>
+          <ConceptFrame />
+          <header
+            style={{
+              position: "absolute",
+              zIndex: 5,
+              top: 74,
+              left: 84,
+              width: 854,
+              height: 122,
+              display: "grid",
+              placeItems: "center",
+            }}
+          >
+            <StripeBar side="left" />
+            <StripeBar side="right" />
+            <h1
+              style={{
+                position: "relative",
+                zIndex: 2,
+                margin: 0,
+                padding: "0 20px 10px 4px",
+                color: "transparent",
+                background:
+                  "linear-gradient(174deg, #ffffff 2%, #e5f5ff 20%, #74c9ff 38%, #f8fbff 51%, #8d72ff 70%, #ff68d9 94%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                WebkitTextStroke: "1.4px #f9ffff",
+                fontFamily: "'Barlow Condensed', Impact, sans-serif",
+                fontSize: 165,
+                fontStyle: "italic",
+                fontWeight: 800,
+                lineHeight: 0.82,
+                letterSpacing: "-5px",
+                transform: "scaleX(1.15) skewX(-5deg)",
+                filter:
+                  "drop-shadow(4px 6px 0 #092463) drop-shadow(-3px -2px 0 #61096a) drop-shadow(0 12px 8px #000)",
+              }}
+            >
+              Settings
+            </h1>
+          </header>
+          <div style={{ position: "absolute", zIndex: 4, top: 234, left: 69, width: 886 }}>
+            <SettingsTabs />
+            <div
+              style={{
+                position: "relative",
+                boxSizing: "border-box",
+                height: 1021,
+                border: "2px solid #395884",
+                clipPath:
+                  "polygon(0 0, 98.5% 0, 100% 1.4%, 100% 98.5%, 98.4% 100%, 1.5% 100%, 0 98.5%)",
+                padding: "14px 22px 44px",
+                background:
+                  "linear-gradient(90deg, rgba(0,83,190,.05), transparent 25% 75%, rgba(126,0,145,.055)), linear-gradient(180deg, #041126 0%, #020b1b 100%)",
+                boxShadow:
+                  "inset 0 0 0 2px #020716, inset 0 0 45px #000710, 0 0 9px rgba(28,89,180,.28)",
+              }}
+            >
+              <SelectControl first label="Language" value={language} options={["English", "Español", "Français", "Deutsch"]} onChange={setLanguage} />
+              <SelectControl label="Text Size" value={textSize} options={["Small", "Medium", "Large"]} onChange={setTextSize} />
+              <ToggleControl checked={reduceMotion} label="Reduce Motion" onChange={setReduceMotion} />
+              <ToggleControl checked={increaseMoveDuration} label={<>Increase Move<br />Duration</>} ariaLabel="Increase Move Duration" onChange={setIncreaseMoveDuration} />
+              <ToggleControl checked={uploadCrashReports} label={<>Upload Crash<br />Reports</>} ariaLabel="Upload Crash Reports" onChange={setUploadCrashReports} withInfo />
+              <EraseControl />
+            </div>
+          </div>
+          <ReturnButton />
+        </section>
       </div>
-      <ReturnButton onClick={onReturn} />
-    </ArcadeFrame>
+    </main>
+  );
+}
+
+function StripeBar({ side }: { side: "left" | "right" }) {
+  const isLeft = side === "left";
+  return (
+    <div
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        top: 44,
+        [isLeft ? "left" : "right"]: 0,
+        width: 314,
+        height: 58,
+        clipPath: isLeft ? "polygon(0 0, 100% 0, 93% 100%, 0 100%)" : "polygon(7% 0, 100% 0, 100% 100%, 0 100%)",
+        background: isLeft
+          ? "repeating-linear-gradient(132deg, #075fff 0 17px, #05164b 17px 32px)"
+          : "repeating-linear-gradient(132deg, #f21160 0 17px, #4b0827 17px 32px)",
+        boxShadow: isLeft ? "0 0 18px #075fff" : "0 0 18px #f21160",
+      }}
+    />
   );
 }

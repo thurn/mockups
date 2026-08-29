@@ -1,10 +1,11 @@
 import type { CSSProperties } from "react";
 
-export const impactFont = "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
+export const displayFont = "'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
+export const impactFont = displayFont;
 export const frameClip =
-  "polygon(5.2% 0, 18% 0, 19.8% 2.4%, 80.2% 2.4%, 82% 0, 94.8% 0, 100% 6.3%, 100% 38%, 98.2% 40.2%, 98.2% 59.8%, 100% 62%, 100% 93.7%, 94.8% 100%, 82% 100%, 80.2% 97.6%, 19.8% 97.6%, 18% 100%, 5.2% 100%, 0 93.7%, 0 62%, 1.8% 59.8%, 1.8% 40.2%, 0 38%, 0 6.3%)";
+  "polygon(4.5% 0, 14.7% 0, 17% 1.9%, 83% 1.9%, 85.3% 0, 95.5% 0, 100% 3.2%, 100% 18.7%, 98.1% 20%, 98.1% 98.6%, 96.5% 100%, 3.5% 100%, 1.9% 98.6%, 1.9% 20%, 0 18.7%, 0 3.2%)";
 export const frameMetalGradient =
-  "linear-gradient(112deg, #f8fdff 0%, #76dcff 3%, #0d70e8 8%, #041331 11%, #00eaff 28%, #e9faff 46%, #7657ff 61%, #ff25c8 82%, #fff0f8 96%, #ff617c 100%)";
+  "linear-gradient(110deg, #f4ffff 0%, #53dcff 4%, #0874ef 12%, #09234c 18%, #19ddff 32%, #e9fbff 50%, #806cff 64%, #ff39c9 83%, #ffd4f4 96%, #ff5ec2 100%)";
 export const frameBezelGradient =
   "linear-gradient(112deg, #05091a, #173361 21%, #06102b 36% 64%, #3f174a 83%, #130715)";
 export const buttonClip =

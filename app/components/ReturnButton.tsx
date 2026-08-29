@@ -1,19 +1,9 @@
-import { MenuButton } from "./MenuButton";
-
-export function ReturnButton({ onClick }: { onClick: () => void }) {
+export function ReturnButton() {
   return (
-    <div
-      style={{
-        position: "absolute",
-        zIndex: 6,
-        left: "50%",
-        bottom: "calc(2.4% - 52px)",
-        width: 340,
-        display: "grid",
-        transform: "translateX(-50%)",
-      }}
-    >
-      <MenuButton onClick={onClick}>Return</MenuButton>
-    </div>
+    <button type="button" style={{ position: "absolute", zIndex: 8, left: 328, top: 1358, boxSizing: "border-box", width: 368, height: 120, border: "6px solid transparent", padding: 0, clipPath: "polygon(6% 0, 94% 0, 100% 19%, 100% 81%, 94% 100%, 6% 100%, 0 81%, 0 19%)", color: "transparent", background: "linear-gradient(180deg, #071027, #020613) padding-box, linear-gradient(110deg, #b9fbff, #3bb9ff 22%, #a49cff 56%, #ff4bd1 90%) border-box", boxShadow: "inset 0 0 0 5px #071127, inset 0 0 27px #000, 0 0 17px rgba(58,154,255,.65)", cursor: "pointer" }}>
+      <span style={{ display: "inline-block", paddingRight: 12, color: "transparent", background: "linear-gradient(174deg, #fff 5%, #dff8ff 31%, #52baff 49%, #f8faff 57%, #806eff 77%, #ff6dda 100%)", backgroundClip: "text", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", WebkitTextStroke: "1px #f7ffff", fontFamily: "'Barlow Condensed', Impact, sans-serif", fontSize: 91, fontStyle: "italic", fontWeight: 800, lineHeight: 1, letterSpacing: "-2px", transform: "skewX(-5deg)", filter: "drop-shadow(3px 5px 0 #122964) drop-shadow(0 7px 5px #000)" }}>
+        Return
+      </span>
+    </button>
   );
 }
