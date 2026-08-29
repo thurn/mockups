@@ -2,6 +2,10 @@ import type { PointerEvent as ReactPointerEvent } from "react";
 import { ToggleControl } from "./SettingsControls";
 import { SettingRow } from "./SettingRow";
 
+const sliderTrackWidth = 320;
+const sliderHorizontalTouchPadding = 42;
+const sliderTouchWidth = sliderTrackWidth + sliderHorizontalTouchPadding * 2;
+
 export function SoundSettings({
   masterVolume,
   musicVolume,
@@ -64,7 +68,10 @@ function VolumeControl({
 }) {
   const updateFromPointer = (event: ReactPointerEvent<HTMLInputElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
+    const trackLeft =
+      bounds.left + bounds.width * (sliderHorizontalTouchPadding / sliderTouchWidth);
+    const trackWidth = bounds.width * (sliderTrackWidth / sliderTouchWidth);
+    const ratio = Math.max(0, Math.min(1, (event.clientX - trackLeft) / trackWidth));
     onChange(Math.round(ratio * 100));
   };
 
@@ -158,14 +165,20 @@ function VolumeControl({
             onPointerDown={(event) => {
               event.currentTarget.focus();
               event.currentTarget.setPointerCapture(event.pointerId);
+              event.preventDefault();
               updateFromPointer(event);
             }}
             onPointerMove={(event) => {
-              if (event.currentTarget.hasPointerCapture(event.pointerId)) updateFromPointer(event);
+              if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                event.preventDefault();
+                updateFromPointer(event);
+              }
             }}
             onPointerUp={(event) => {
               updateFromPointer(event);
-              event.currentTarget.releasePointerCapture(event.pointerId);
+              if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                event.currentTarget.releasePointerCapture(event.pointerId);
+              }
             }}
             onPointerCancel={(event) => {
               if (event.currentTarget.hasPointerCapture(event.pointerId)) {
@@ -174,10 +187,10 @@ function VolumeControl({
             }}
             style={{
               position: "absolute",
-              left: 0,
+              left: -sliderHorizontalTouchPadding,
               top: -34,
               zIndex: 3,
-              width: 320,
+              width: sliderTouchWidth,
               height: 132,
               margin: 0,
               opacity: 0,
