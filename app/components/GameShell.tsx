@@ -10,7 +10,7 @@ export function GameShell({ children }: { children: ReactNode }) {
         overflow: "hidden",
         display: "grid",
         placeItems: "center",
-        background: "#00030a",
+        background: "#000",
       }}
     >
       <div
@@ -33,8 +33,7 @@ export function GameShell({ children }: { children: ReactNode }) {
             placeItems: "center",
             transform: `translateX(-50%) scale(${squareScale})`,
             transformOrigin: "top center",
-            background:
-              "radial-gradient(circle at 18% 22%, rgb(15 111 255 / 18%), transparent 30%), radial-gradient(circle at 84% 76%, rgb(255 13 100 / 18%), transparent 31%), linear-gradient(128deg, #010713 0%, #03020c 50%, #090013 100%)",
+            background: "#000",
             boxShadow: "0 28px 70px rgb(0 0 0 / 72%)",
           }}
         >
