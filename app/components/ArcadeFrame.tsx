@@ -74,11 +74,11 @@ export function ArcadeFrame({
           height: "100%",
           overflow: settings ? "visible" : "hidden",
           display: settings ? "grid" : "flex",
-          gridTemplateRows: settings ? "80px minmax(0, 1fr) 100px" : undefined,
+          gridTemplateRows: settings ? "minmax(0, 1fr)" : undefined,
           flexDirection: settings ? undefined : "column",
           alignItems: settings ? "stretch" : "center",
           justifyContent: settings ? "stretch" : "space-evenly",
-          padding: settings ? "10px 35px" : "0 70px",
+          padding: settings ? "28px 35px 34px" : "0 70px",
           clipPath: frameClip,
           border: "3px solid rgb(201 231 255 / 65%)",
           background:

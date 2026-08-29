@@ -21,20 +21,20 @@ export function SelectControl({
       <span
         style={mergeStyles(cellStyle, {
           position: "relative",
-          padding: "0 12px",
+          padding: "14px 18px",
         })}
       >
-        <select
-          {...handlers}
-          aria-label={label}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
+        <span
+          aria-hidden="true"
           style={{
             boxSizing: "border-box",
+            position: "relative",
+            zIndex: 1,
             width: "100%",
             height: "100%",
             minHeight: 42,
-            appearance: "none",
+            display: "flex",
+            alignItems: "center",
             border: "2px solid transparent",
             borderRadius: 2,
             padding: "0 48px 0 20px",
@@ -45,12 +45,31 @@ export function SelectControl({
             fontFamily: impactFont,
             fontSize: 30,
             textShadow: "2px 3px 0 #19325d, 0 3px 4px #000",
-            cursor: "pointer",
-            outline: 0,
+            pointerEvents: "none",
             filter:
               state.hovered || state.focused
                 ? "brightness(1.18) drop-shadow(0 0 5px rgb(66 222 255 / 70%))"
                 : undefined,
+          }}
+        >
+          {value}
+        </span>
+        <select
+          {...handlers}
+          aria-label={label}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 2,
+            width: "100%",
+            height: "100%",
+            appearance: "none",
+            border: 0,
+            opacity: 0,
+            cursor: "pointer",
+            outline: 0,
           }}
         >
           {options.map((option) => (
@@ -62,6 +81,7 @@ export function SelectControl({
           style={{
             position: "absolute",
             right: 34,
+            zIndex: 1,
             width: 0,
             height: 0,
             borderInline: "8px solid transparent",
@@ -185,7 +205,7 @@ function SettingName({ children, withInfo = false }: { children: ReactNode; with
         gap: 10,
         padding: withInfo ? "0 54px 0 18px" : "0 18px",
         fontFamily: impactFont,
-        fontSize: withInfo ? 21 : 25,
+        fontSize: withInfo ? 30 : 36,
         lineHeight: 0.95,
         letterSpacing: "0.025em",
         textTransform: "uppercase",

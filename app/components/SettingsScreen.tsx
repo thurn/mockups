@@ -22,6 +22,7 @@ export function SettingsScreen({ onReturn }: { onReturn: () => void }) {
           position: "relative",
           zIndex: 3,
           width: "100%",
+          height: "100%",
           minHeight: 0,
           display: "flex",
           flex: "1 1 auto",
@@ -37,7 +38,7 @@ export function SettingsScreen({ onReturn }: { onReturn: () => void }) {
             display: "grid",
             gridTemplateRows: "repeat(5, minmax(0, 1fr))",
             border: "2px solid transparent",
-            padding: "8px 10px",
+            padding: "48px 10px",
             clipPath: "polygon(2% 0, 98% 0, 100% 4%, 100% 96%, 98% 100%, 2% 100%, 0 96%, 0 4%)",
             background:
               "linear-gradient(180deg, rgb(3 11 30 / 97%), rgb(2 8 22 / 98%)) padding-box, linear-gradient(110deg, #68eaff, #6b7fea 52%, #fc45ce) border-box",

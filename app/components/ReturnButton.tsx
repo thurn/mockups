@@ -12,13 +12,14 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
       type="button"
       style={{
         boxSizing: "border-box",
-        position: "relative",
+        position: "absolute",
         zIndex: 4,
-        alignSelf: "center",
+        left: "50%",
+        bottom: -14,
         height: 100,
         width: 340,
         border: 0,
-        margin: "0 auto",
+        margin: 0,
         padding: 0,
         clipPath: actionClip,
         color: "transparent",
@@ -30,10 +31,10 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
           ? "brightness(1.16) drop-shadow(0 0 11px rgb(103 222 255 / 74%))"
           : "drop-shadow(0 9px 9px rgb(0 0 0 / 72%)) drop-shadow(0 0 7px rgb(147 77 255 / 55%))",
         transform: state.pressed
-          ? "translateY(2px) scale(0.98)"
+          ? "translate(-50%, 2px) scale(0.98)"
           : highlighted
-            ? "scale(1.015)"
-            : undefined,
+            ? "translateX(-50%) scale(1.015)"
+            : "translateX(-50%)",
         font: "inherit",
       }}
     >

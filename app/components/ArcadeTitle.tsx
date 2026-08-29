@@ -7,19 +7,22 @@ export function ArcadeTitle({ settings = false }: { settings?: boolean }) {
   return (
     <header
       style={{
-        position: "relative",
+        position: settings ? "absolute" : "relative",
         isolation: "isolate",
-        width: settings ? "76%" : "min(100%, 720px)",
-        margin: settings ? "0 auto" : 0,
+        zIndex: settings ? 6 : undefined,
+        top: settings ? 128 : undefined,
+        left: settings ? "29%" : undefined,
+        width: settings ? "44%" : "min(100%, 720px)",
+        height: settings ? 80 : undefined,
+        margin: 0,
         textAlign: "center",
-        transform: settings ? "skewX(-4deg)" : "translateY(7px) skewX(-4deg)",
-        flex: settings ? "0 0 80px" : undefined,
+        transform: settings ? "translate(-50%, -50%) skewX(-4deg)" : "translateY(7px) skewX(-4deg)",
         display: settings ? "grid" : undefined,
         placeItems: settings ? "center" : undefined,
       }}
     >
-      <TitleBar side="left" settings={settings} />
-      <TitleBar side="right" settings={settings} />
+      {!settings && <TitleBar side="left" settings={settings} />}
+      {!settings && <TitleBar side="right" settings={settings} />}
       {settings ? (
         <h1
           style={mergeStyles(textGradient, {
