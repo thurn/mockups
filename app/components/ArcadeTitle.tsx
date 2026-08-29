@@ -10,7 +10,7 @@ export function ArcadeTitle({ settings = false }: { settings?: boolean }) {
         position: settings ? "absolute" : "relative",
         isolation: "isolate",
         zIndex: settings ? 6 : undefined,
-        top: settings ? -83 : undefined,
+        top: settings ? -73 : undefined,
         left: settings ? "50%" : undefined,
         width: settings ? "44%" : "min(100%, 720px)",
         height: settings ? 80 : undefined,
