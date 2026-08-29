@@ -1,7 +1,25 @@
 import type { ReactNode } from "react";
-import { DESIGN_SIZE, squareScale, squareSize } from "./squareScale";
+import {
+  DESIGN_SIZE,
+  portraitHeight,
+  portraitScale,
+  portraitWidth,
+  PORTRAIT_DESIGN_HEIGHT,
+  squareScale,
+  squareSize,
+} from "./squareScale";
 
-export function GameShell({ children }: { children: ReactNode }) {
+export function GameShell({
+  children,
+  portrait = false,
+}: {
+  children: ReactNode;
+  portrait?: boolean;
+}) {
+  const canvasWidth = portrait ? portraitWidth : squareSize;
+  const canvasHeight = portrait ? portraitHeight : squareSize;
+  const canvasScale = portrait ? portraitScale : squareScale;
+
   return (
     <main
       style={{
@@ -16,8 +34,8 @@ export function GameShell({ children }: { children: ReactNode }) {
       <div
         style={{
           position: "relative",
-          width: squareSize,
-          height: squareSize,
+          width: canvasWidth,
+          height: canvasHeight,
         }}
       >
         <div
@@ -26,12 +44,12 @@ export function GameShell({ children }: { children: ReactNode }) {
             top: 0,
             left: "50%",
             width: DESIGN_SIZE,
-            height: DESIGN_SIZE,
+            height: portrait ? PORTRAIT_DESIGN_HEIGHT : DESIGN_SIZE,
             overflow: "visible",
             isolation: "isolate",
             display: "grid",
             placeItems: "center",
-            transform: `translateX(-50%) scale(${squareScale})`,
+            transform: `translateX(-50%) scale(${canvasScale})`,
             transformOrigin: "top center",
             background: "#000",
             boxShadow: "0 28px 70px rgb(0 0 0 / 72%)",

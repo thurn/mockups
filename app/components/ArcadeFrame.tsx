@@ -19,7 +19,7 @@ export function ArcadeFrame({
       style={mergeStyles({
         position: "relative",
         width: 820,
-        height: 820,
+        height: settings ? 900 : 820,
         filter: "drop-shadow(0 26px 50px rgb(0 0 0 / 58%))",
         alignSelf: "center",
       })}
