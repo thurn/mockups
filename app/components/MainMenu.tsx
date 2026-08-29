@@ -14,9 +14,10 @@ const menuHeight = menuItems.length * menuButtonHeight + (menuItems.length - 1) 
 const menuTop = gameWordmarkBottom + (soundRecommendationTop - gameWordmarkBottom - menuHeight) / 2;
 
 export function MainMenu() {
-  const { navigate, routeTransitionPhase } = useArcadeNavigation();
+  const { navigate, routeTransitionPhase, transitionDestination } = useArcadeNavigation();
   const exiting = routeTransitionPhase === "exiting";
   const entering = routeTransitionPhase === "entering";
+  const leavingMainMenu = exiting && transitionDestination === "/settings";
 
   return (
     <section
@@ -66,9 +67,9 @@ export function MainMenu() {
               key={item}
               initial={false}
               animate={{
-                opacity: exiting ? 0 : 1,
+                opacity: exiting ? (selected && leavingMainMenu ? 1 : 0) : 1,
                 x: exiting && !selected ? travel : 0,
-                scale: exiting && selected ? 1.045 : 1,
+                scale: selected && leavingMainMenu ? 1.045 : 1,
               }}
               transition={{
                 duration: exiting ? (selected ? 0.28 : 0.34) : 0.4,

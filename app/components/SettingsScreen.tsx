@@ -16,9 +16,11 @@ import { useArcadeNavigation } from "./ArcadeRouteTransition";
 const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsScreen() {
-  const { navigate, reduceMotion, routeTransitionPhase, setReduceMotion } = useArcadeNavigation();
+  const { navigate, reduceMotion, routeTransitionPhase, setReduceMotion, transitionDestination } =
+    useArcadeNavigation();
   const exiting = routeTransitionPhase === "exiting";
   const entering = routeTransitionPhase === "entering";
+  const leavingSettings = exiting && transitionDestination === "/";
   const [activeTab, setActiveTab] = useState<SettingsTab>("Graphics");
   const [tabDirection, setTabDirection] = useState(1);
   const [language, setLanguage] = useState("English");
@@ -224,9 +226,9 @@ export function SettingsScreen() {
       <motion.div
         initial={false}
         animate={{
-          opacity: exiting ? 0 : 1,
-          y: exiting ? 26 : 0,
-          scale: exiting ? 1.045 : 1,
+          opacity: exiting ? (leavingSettings ? 1 : 0) : 1,
+          y: exiting ? (leavingSettings ? 10 : 26) : 0,
+          scale: leavingSettings ? 1.045 : 1,
         }}
         transition={{
           duration: exiting ? 0.28 : 0.38,

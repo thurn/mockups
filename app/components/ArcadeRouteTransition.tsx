@@ -19,6 +19,7 @@ type ArcadeNavigationContextValue = {
   reduceMotion: boolean;
   routeTransitionPhase: RouteTransitionPhase;
   setReduceMotion: (reduceMotion: boolean) => void;
+  transitionDestination: string | null;
 };
 
 const ArcadeNavigationContext = createContext<ArcadeNavigationContextValue | null>(null);
@@ -33,6 +34,7 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
   const [reduceMotion, setReduceMotionState] = useState(false);
   const reduceMotionPreference = useRef(false);
   const [routeTransitionPhase, setRouteTransitionPhase] = useState<RouteTransitionPhase>("idle");
+  const [transitionDestination, setTransitionDestination] = useState<string | null>(null);
   const pendingHref = useRef<string | null>(null);
   const transitionTimer = useRef<number | null>(null);
   const motionDisabled = reduceMotionPreference.current || Boolean(prefersReducedMotion);
@@ -60,6 +62,7 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
 
       clearTransitionTimer();
       pendingHref.current = href;
+      setTransitionDestination(href);
       setRouteTransitionPhase("exiting");
       transitionTimer.current = window.setTimeout(() => {
         router.push(href);
@@ -73,6 +76,7 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
 
     clearTransitionTimer();
     pendingHref.current = null;
+    setTransitionDestination(null);
     setRouteTransitionPhase("entering");
     transitionTimer.current = window.setTimeout(() => {
       setRouteTransitionPhase("idle");
@@ -80,11 +84,22 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
     }, enterDuration);
   }, [clearTransitionTimer, pathname]);
 
+  useEffect(() => {
+    router.prefetch("/");
+    router.prefetch("/settings");
+  }, [router]);
+
   useEffect(() => clearTransitionTimer, [clearTransitionTimer]);
 
   return (
     <ArcadeNavigationContext.Provider
-      value={{ navigate, reduceMotion, routeTransitionPhase, setReduceMotion }}
+      value={{
+        navigate,
+        reduceMotion,
+        routeTransitionPhase,
+        setReduceMotion,
+        transitionDestination,
+      }}
     >
       {children}
     </ArcadeNavigationContext.Provider>
