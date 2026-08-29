@@ -46,7 +46,7 @@ export default defineConfig(async () => {
   return {
     css: { postcss: { plugins: [tailwindcss()] } },
     server: {
-      allowedHosts: ["grown-develop-brochures-dishes.trycloudflare.com"],
+      allowedHosts: [".trycloudflare.com"],
       ...(isCodexSeatbeltSandbox ? { watch: { useFsEvents: false, usePolling: true } } : {}),
     },
     plugins: [
