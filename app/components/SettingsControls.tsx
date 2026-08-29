@@ -2,11 +2,11 @@ import type { ReactNode } from "react";
 import { displayFont } from "./styles";
 import { actionInnerClip, actionOuterClip, ClippedInset, controlInnerClip, controlOuterClip } from "./ClippedInset";
 
-type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
+type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number; strongRule?: boolean };
 
-export function SelectControl({ label, options, value, onChange, first = false, offsetY = 0, rowHeight = 158 }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
+export function SelectControl({ label, options, value, onChange, first = false, offsetY = 0, rowHeight = 158, strongRule = false }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
   return (
-    <SettingRow first={first} label={label} rowHeight={rowHeight}>
+    <SettingRow first={first} label={label} rowHeight={rowHeight} strongRule={strongRule}>
       <div style={{ position: "relative", display: "flex", alignItems: "center", height: "100%", transform: `translateY(${offsetY}px)` }}>
         <div
           aria-hidden="true"
@@ -61,9 +61,9 @@ export function SelectControl({ label, options, value, onChange, first = false, 
   );
 }
 
-export function ToggleControl({ checked, label, ariaLabel, onChange, withInfo = false, rowHeight = 159, offsetY = 0 }: BaseProps & { checked: boolean; ariaLabel?: string; onChange: (checked: boolean) => void; withInfo?: boolean }) {
+export function ToggleControl({ checked, label, ariaLabel, onChange, withInfo = false, rowHeight = 159, offsetY = 0, strongRule = false }: BaseProps & { checked: boolean; ariaLabel?: string; onChange: (checked: boolean) => void; withInfo?: boolean }) {
   return (
-    <SettingRow label={<>{label}{withInfo && <InfoBadge />}</>} rowHeight={rowHeight}>
+    <SettingRow label={<>{label}{withInfo && <InfoBadge />}</>} rowHeight={rowHeight} strongRule={strongRule}>
       <label style={{ position: "relative", display: "flex", alignItems: "center", width: 77, height: 77, marginLeft: 8, cursor: "pointer", transform: `translateY(${offsetY}px)` }}>
         <input suppressHydrationWarning aria-label={ariaLabel ?? String(label)} checked={checked} onChange={(event) => onChange(event.target.checked)} type="checkbox" style={{ position: "absolute", inset: 0, zIndex: 2, width: 77, height: 77, margin: 0, opacity: 0, cursor: "pointer" }} />
         <span aria-hidden="true" style={{ position: "relative", boxSizing: "border-box", width: 77, height: 77, border: "4px solid #4ba3ff", borderRadius: 11, background: "linear-gradient(180deg, #06142b, #02091a)", boxShadow: "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff" }}>
@@ -85,9 +85,9 @@ export function EraseControl() {
   );
 }
 
-function SettingRow({ label, children, first = false, last = false, rowHeight }: BaseProps & { children: ReactNode; last?: boolean }) {
+function SettingRow({ label, children, first = false, last = false, rowHeight, strongRule = false }: BaseProps & { children: ReactNode; last?: boolean }) {
   return (
-    <div style={{ boxSizing: "border-box", height: rowHeight ?? (last ? 169 : 159), display: "grid", gridTemplateColumns: "422px 1fr", alignItems: "center", borderTop: first ? 0 : "2px solid rgba(43,74,123,.25)" }}>
+    <div style={{ boxSizing: "border-box", height: rowHeight ?? (last ? 169 : 159), display: "grid", gridTemplateColumns: "422px 1fr", alignItems: "center", borderTop: first ? 0 : `2px solid rgba(55,91,148,${strongRule ? ".52" : ".25"})` }}>
       <div style={{ position: "relative", display: "flex", alignItems: "center", minWidth: 0, height: "100%", paddingLeft: 18, color: "#f5f5f8", fontFamily: displayFont, fontSize: 61, lineHeight: 0.92, letterSpacing: "1.3px", textTransform: "uppercase", textShadow: "2px 4px 0 #182b4d, 0 5px 7px #000", transform: "scaleX(1.045)", transformOrigin: "left center" }}>
         {label}
       </div>

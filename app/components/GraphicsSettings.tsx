@@ -24,7 +24,20 @@ export function GraphicsSettings({
   onVsyncChange: (checked: boolean) => void;
 }) {
   return (
-    <>
+    <div style={{ position: "relative", height: 971 }}>
+      <span
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          zIndex: 2,
+          top: 0,
+          bottom: 0,
+          left: 422,
+          width: 2,
+          background: "rgba(55,91,148,.52)",
+          pointerEvents: "none",
+        }}
+      />
       <SelectControl
         first
         label="Resolution"
@@ -32,6 +45,7 @@ export function GraphicsSettings({
         options={["1920 × 1080", "2560 × 1440", "3840 × 2160"]}
         onChange={onResolutionChange}
         rowHeight={194}
+        strongRule
       />
       <SelectControl
         label="Max Framerate"
@@ -39,6 +53,7 @@ export function GraphicsSettings({
         options={["60 FPS", "120 FPS", "144 FPS", "240 FPS"]}
         onChange={onMaxFramerateChange}
         rowHeight={194}
+        strongRule
       />
       <SelectControl
         label="Display Mode"
@@ -46,14 +61,16 @@ export function GraphicsSettings({
         options={["Borderless", "Fullscreen", "Windowed"]}
         onChange={onDisplayModeChange}
         rowHeight={194}
+        strongRule
       />
       <ToggleControl
         checked={screenshake}
         label="Screenshake"
         onChange={onScreenshakeChange}
         rowHeight={194}
+        strongRule
       />
-      <ToggleControl checked={vsync} label="VSync" onChange={onVsyncChange} rowHeight={195} />
-    </>
+      <ToggleControl checked={vsync} label="VSync" onChange={onVsyncChange} rowHeight={195} strongRule />
+    </div>
   );
 }
