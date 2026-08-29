@@ -2,6 +2,7 @@ export const DESIGN_SIZE = 900;
 
 export const squareSize = "var(--prototype-square-size, 900px)";
 export const squareScale = "var(--prototype-square-scale, 1)";
+export const squareInverseScale = "var(--prototype-square-inverse-scale, 1)";
 
 export const squareScaleScript = `
   (() => {
@@ -16,9 +17,11 @@ export const squareScaleScript = `
       const availableWidth = Math.max(0, root.clientWidth - gutter);
       const availableHeight = Math.max(0, viewportHeight - gutter);
       const renderedSize = Math.min(designSize, availableWidth, availableHeight);
+      const scale = renderedSize / designSize;
 
       root.style.setProperty("--prototype-square-size", renderedSize + "px");
-      root.style.setProperty("--prototype-square-scale", String(renderedSize / designSize));
+      root.style.setProperty("--prototype-square-scale", String(scale));
+      root.style.setProperty("--prototype-square-inverse-scale", String(1 / scale));
     };
 
     updateSquareScale();

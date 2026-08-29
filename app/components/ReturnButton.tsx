@@ -1,4 +1,5 @@
 import { useInteraction } from "./useInteraction";
+import { squareInverseScale } from "./squareScale";
 
 export function ReturnButton({ onClick }: { onClick: () => void }) {
   const { state, handlers } = useInteraction();
@@ -13,13 +14,13 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         boxSizing: "border-box",
         position: "absolute",
         zIndex: 4,
-        right: -18,
-        bottom: -18,
-        width: 36,
-        height: 36,
+        right: `calc(2.6% - 18px * ${squareInverseScale})`,
+        bottom: `calc(3.15% - 18px * ${squareInverseScale})`,
+        width: `calc(36px * ${squareInverseScale})`,
+        height: `calc(36px * ${squareInverseScale})`,
         display: "grid",
         placeItems: "center",
-        border: "2px solid rgb(224 250 255 / 92%)",
+        border: `calc(2px * ${squareInverseScale}) solid rgb(224 250 255 / 92%)`,
         borderRadius: "50%",
         margin: 0,
         padding: 0,
@@ -41,8 +42,8 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         aria-hidden="true"
         viewBox="0 0 24 24"
         style={{
-          width: 19,
-          height: 19,
+          width: `calc(19px * ${squareInverseScale})`,
+          height: `calc(19px * ${squareInverseScale})`,
           overflow: "visible",
           filter: "drop-shadow(0 2px 1px #000) drop-shadow(0 0 3px rgb(98 224 255 / 72%))",
         }}
