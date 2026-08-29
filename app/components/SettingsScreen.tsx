@@ -10,10 +10,14 @@ import { ScreenHeader } from "./ScreenHeader";
 import { GraphicsSettings } from "./GraphicsSettings";
 import { SoundSettings } from "./SoundSettings";
 import { InputSettings } from "./InputSettings";
+import { ArcadeTabTransition } from "./ArcadeTabTransition";
+
+const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<SettingsTab>("Graphics");
+  const [tabDirection, setTabDirection] = useState(1);
   const [language, setLanguage] = useState("English");
   const [textSize, setTextSize] = useState("Medium");
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -30,6 +34,8 @@ export function SettingsScreen() {
   const [muteInBackground, setMuteInBackground] = useState(false);
 
   const handleTabSelect = (tab: SettingsTab) => {
+    if (tab === activeTab) return;
+    setTabDirection(settingsTabs.indexOf(tab) > settingsTabs.indexOf(activeTab) ? 1 : -1);
     setActiveTab(tab);
   };
 
@@ -68,80 +74,86 @@ export function SettingsScreen() {
               padding: "18px 24px 32px",
             }}
           >
-            {activeTab === "Graphics" ? (
-              <GraphicsSettings
-                resolution={resolution}
-                maxFramerate={maxFramerate}
-                displayMode={displayMode}
-                screenshake={screenshake}
-                vsync={vsync}
-                onResolutionChange={setResolution}
-                onMaxFramerateChange={setMaxFramerate}
-                onDisplayModeChange={setDisplayMode}
-                onScreenshakeChange={setScreenshake}
-                onVsyncChange={setVsync}
-              />
-            ) : activeTab === "Sound" ? (
-              <SoundSettings
-                masterVolume={masterVolume}
-                musicVolume={musicVolume}
-                effectsVolume={effectsVolume}
-                muteInBackground={muteInBackground}
-                onMasterVolumeChange={setMasterVolume}
-                onMusicVolumeChange={setMusicVolume}
-                onEffectsVolumeChange={setEffectsVolume}
-                onMuteInBackgroundChange={setMuteInBackground}
-              />
-            ) : activeTab === "Input" ? (
-              <InputSettings />
-            ) : (
-              <>
-                <SelectControl
-                  first
-                  label="Language"
-                  value={language}
-                  options={["English", "Español", "Français", "Deutsch"]}
-                  onChange={setLanguage}
+            <ArcadeTabTransition
+              activeKey={activeTab}
+              direction={tabDirection}
+              reduceMotion={reduceMotion}
+            >
+              {activeTab === "Graphics" ? (
+                <GraphicsSettings
+                  resolution={resolution}
+                  maxFramerate={maxFramerate}
+                  displayMode={displayMode}
+                  screenshake={screenshake}
+                  vsync={vsync}
+                  onResolutionChange={setResolution}
+                  onMaxFramerateChange={setMaxFramerate}
+                  onDisplayModeChange={setDisplayMode}
+                  onScreenshakeChange={setScreenshake}
+                  onVsyncChange={setVsync}
                 />
-                <SelectControl
-                  label="Text Size"
-                  value={textSize}
-                  options={["Small", "Medium", "Large"]}
-                  onChange={setTextSize}
+              ) : activeTab === "Sound" ? (
+                <SoundSettings
+                  masterVolume={masterVolume}
+                  musicVolume={musicVolume}
+                  effectsVolume={effectsVolume}
+                  muteInBackground={muteInBackground}
+                  onMasterVolumeChange={setMasterVolume}
+                  onMusicVolumeChange={setMusicVolume}
+                  onEffectsVolumeChange={setEffectsVolume}
+                  onMuteInBackgroundChange={setMuteInBackground}
                 />
-                <ToggleControl
-                  checked={reduceMotion}
-                  label="Reduce Motion"
-                  onChange={setReduceMotion}
-                />
-                <ToggleControl
-                  checked={increaseMoveDuration}
-                  label={
-                    <>
-                      Increase Move
-                      <br />
-                      Duration
-                    </>
-                  }
-                  ariaLabel="Increase Move Duration"
-                  onChange={setIncreaseMoveDuration}
-                />
-                <ToggleControl
-                  checked={uploadCrashReports}
-                  label={
-                    <>
-                      Upload Crash
-                      <br />
-                      Reports
-                    </>
-                  }
-                  ariaLabel="Upload Crash Reports"
-                  onChange={setUploadCrashReports}
-                  withInfo
-                />
-                <EraseControl />
-              </>
-            )}
+              ) : activeTab === "Input" ? (
+                <InputSettings />
+              ) : (
+                <>
+                  <SelectControl
+                    first
+                    label="Language"
+                    value={language}
+                    options={["English", "Español", "Français", "Deutsch"]}
+                    onChange={setLanguage}
+                  />
+                  <SelectControl
+                    label="Text Size"
+                    value={textSize}
+                    options={["Small", "Medium", "Large"]}
+                    onChange={setTextSize}
+                  />
+                  <ToggleControl
+                    checked={reduceMotion}
+                    label="Reduce Motion"
+                    onChange={setReduceMotion}
+                  />
+                  <ToggleControl
+                    checked={increaseMoveDuration}
+                    label={
+                      <>
+                        Increase Move
+                        <br />
+                        Duration
+                      </>
+                    }
+                    ariaLabel="Increase Move Duration"
+                    onChange={setIncreaseMoveDuration}
+                  />
+                  <ToggleControl
+                    checked={uploadCrashReports}
+                    label={
+                      <>
+                        Upload Crash
+                        <br />
+                        Reports
+                      </>
+                    }
+                    ariaLabel="Upload Crash Reports"
+                    onChange={setUploadCrashReports}
+                    withInfo
+                  />
+                  <EraseControl />
+                </>
+              )}
+            </ArcadeTabTransition>
           </div>
         </div>
       </div>

@@ -1,25 +1,47 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { ClippedInset, tabInnerClip, tabOuterClip } from "./ClippedInset";
 
 const tabs = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export type SettingsTab = (typeof tabs)[number];
 
-export function SettingsTabs({ activeTab, onSelect }: { activeTab: SettingsTab; onSelect: (tab: SettingsTab) => void }) {
+export function SettingsTabs({
+  activeTab,
+  onSelect,
+}: {
+  activeTab: SettingsTab;
+  onSelect: (tab: SettingsTab) => void;
+}) {
   return (
-    <nav aria-label="Settings categories" style={{ height: 129, display: "grid", gridTemplateColumns: "264px 212px 205px 200px", gap: 2, alignItems: "end" }}>
+    <nav
+      aria-label="Settings categories"
+      style={{
+        height: 129,
+        display: "grid",
+        gridTemplateColumns: "264px 212px 205px 200px",
+        gap: 2,
+        alignItems: "end",
+      }}
+    >
       {tabs.map((tab) => {
         const active = tab === activeTab;
         return (
-          <button
+          <motion.button
             key={tab}
             type="button"
             onClick={() => onSelect(tab)}
             aria-current={active ? "page" : undefined}
+            animate={{ y: active ? 0 : 3, scale: active ? 1 : 0.985 }}
+            whileHover={{ y: active ? 0 : -1, scale: 1 }}
+            whileTap={{ scale: 0.955 }}
+            transition={{ type: "spring", stiffness: 520, damping: 32, mass: 0.7 }}
             style={{
               position: "relative",
               boxSizing: "border-box",
               height: active ? 130 : 127,
-              marginTop: active ? 0 : 3,
+              marginTop: 0,
               border: 0,
               padding: 0,
               clipPath: tabOuterClip,
@@ -40,11 +62,19 @@ export function SettingsTabs({ activeTab, onSelect }: { activeTab: SettingsTab; 
             <ClippedInset
               inset={active ? 4 : 2}
               clipPath={tabInnerClip}
-              background={active ? "linear-gradient(180deg, #071831, #030b1d)" : "linear-gradient(180deg, #071328, #020817)"}
-              boxShadow={active ? "inset 0 0 34px rgba(20,98,226,.52), inset 0 -3px 0 #f14dd7" : "inset 0 0 0 3px #020716"}
+              background={
+                active
+                  ? "linear-gradient(180deg, #071831, #030b1d)"
+                  : "linear-gradient(180deg, #071328, #020817)"
+              }
+              boxShadow={
+                active
+                  ? "inset 0 0 34px rgba(20,98,226,.52), inset 0 -3px 0 #f14dd7"
+                  : "inset 0 0 0 3px #020716"
+              }
             />
             <span style={{ position: "relative", zIndex: 1 }}>{tab}</span>
-          </button>
+          </motion.button>
         );
       })}
     </nav>
