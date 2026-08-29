@@ -237,11 +237,11 @@ export function SettingsScreen() {
           position: "absolute",
           zIndex: 8,
           inset: 0,
-          pointerEvents: routeTransitionPhase === "idle" ? "auto" : "none",
+          pointerEvents: "none",
           willChange: "transform, opacity",
         }}
       >
-        <ReturnButton onClick={() => navigate("/")} />
+        <ReturnButton disabled={routeTransitionPhase !== "idle"} onClick={() => navigate("/")} />
       </motion.div>
     </section>
   );

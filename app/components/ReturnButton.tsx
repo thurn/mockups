@@ -1,6 +1,12 @@
 import { ActionButton } from "./ActionButton";
 
-export function ReturnButton({ onClick }: { onClick: () => void }) {
+export function ReturnButton({
+  disabled = false,
+  onClick,
+}: {
+  disabled?: boolean;
+  onClick: () => void;
+}) {
   return (
     <div
       style={{
@@ -10,9 +16,10 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         top: 1358,
         width: 368,
         height: 120,
+        pointerEvents: disabled ? "none" : "auto",
       }}
     >
-      <ActionButton onClick={onClick}>RETURN</ActionButton>
+      <ActionButton onClick={disabled ? undefined : onClick}>RETURN</ActionButton>
     </div>
   );
 }
