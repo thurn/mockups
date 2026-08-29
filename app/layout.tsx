@@ -1,8 +1,8 @@
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Chess Chess Revolution',
-  description: 'A neon arcade main menu concept.',
+  title: "Chess Chess Revolution",
+  description: "A neon arcade main menu concept.",
 };
 
 export default function RootLayout({
@@ -11,14 +11,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" style={{ minHeight: '100%', background: '#02050d' }}>
+    <html lang="en" style={{ minHeight: "100%", background: "#02050d" }}>
       <body
         style={{
-          minHeight: '100%',
+          minHeight: "100%",
           margin: 0,
-          background: '#02050d',
-          color: '#f5fbff',
-          fontFamily: 'Inter, ui-sans-serif, system-ui, sans-serif',
+          background: "#02050d",
+          color: "#f5fbff",
+          fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
         }}
       >
         {children}

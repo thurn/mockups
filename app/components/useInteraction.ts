@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export function useInteraction() {
   const [hovered, setHovered] = useState(false);
@@ -11,9 +11,15 @@ export function useInteraction() {
     state: { hovered, focused, pressed },
     handlers: {
       onMouseEnter: () => setHovered(true),
-      onMouseLeave: () => { setHovered(false); setPressed(false); },
+      onMouseLeave: () => {
+        setHovered(false);
+        setPressed(false);
+      },
       onFocus: () => setFocused(true),
-      onBlur: () => { setFocused(false); setPressed(false); },
+      onBlur: () => {
+        setFocused(false);
+        setPressed(false);
+      },
       onPointerDown: () => setPressed(true),
       onPointerUp: () => setPressed(false),
     },
