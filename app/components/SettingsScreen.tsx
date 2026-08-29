@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { ReturnButton } from "./ReturnButton";
 import { EraseControl, SelectControl, ToggleControl } from "./SettingsControls";
 import { SettingsTabs, type SettingsTab } from "./SettingsTabs";
@@ -11,16 +10,16 @@ import { GraphicsSettings } from "./GraphicsSettings";
 import { SoundSettings } from "./SoundSettings";
 import { InputSettings } from "./InputSettings";
 import { ArcadeTabTransition } from "./ArcadeTabTransition";
+import { useArcadeNavigation } from "./ArcadeRouteTransition";
 
 const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsScreen() {
-  const router = useRouter();
+  const { navigate, reduceMotion, setReduceMotion } = useArcadeNavigation();
   const [activeTab, setActiveTab] = useState<SettingsTab>("Graphics");
   const [tabDirection, setTabDirection] = useState(1);
   const [language, setLanguage] = useState("English");
   const [textSize, setTextSize] = useState("Medium");
-  const [reduceMotion, setReduceMotion] = useState(false);
   const [increaseMoveDuration, setIncreaseMoveDuration] = useState(true);
   const [uploadCrashReports, setUploadCrashReports] = useState(true);
   const [resolution, setResolution] = useState("1920 × 1080");
@@ -157,7 +156,7 @@ export function SettingsScreen() {
           </div>
         </div>
       </div>
-      <ReturnButton onClick={() => router.push("/")} />
+      <ReturnButton onClick={() => navigate("/")} />
     </section>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { ActionButton } from "./ActionButton";
+import { useArcadeNavigation } from "./ArcadeRouteTransition";
 import { ScreenHeader } from "./ScreenHeader";
 
 const menuItems = ["Play", "Settings", "About", "Quit"];
@@ -10,11 +10,10 @@ const menuGap = 24;
 const gameWordmarkBottom = 335;
 const soundRecommendationTop = 1258;
 const menuHeight = menuItems.length * menuButtonHeight + (menuItems.length - 1) * menuGap;
-const menuTop =
-  gameWordmarkBottom + (soundRecommendationTop - gameWordmarkBottom - menuHeight) / 2;
+const menuTop = gameWordmarkBottom + (soundRecommendationTop - gameWordmarkBottom - menuHeight) / 2;
 
 export function MainMenu() {
-  const router = useRouter();
+  const { navigate } = useArcadeNavigation();
 
   return (
     <section
@@ -38,7 +37,7 @@ export function MainMenu() {
           <div key={item} style={{ height: menuButtonHeight }}>
             <ActionButton
               key={item}
-              onClick={item === "Settings" ? () => router.push("/settings") : undefined}
+              onClick={item === "Settings" ? () => navigate("/settings") : undefined}
             >
               {item.toUpperCase()}
             </ActionButton>
