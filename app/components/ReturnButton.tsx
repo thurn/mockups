@@ -1,6 +1,6 @@
 import { useInteraction } from "./useInteraction";
 import { squareInverseScale } from "./squareScale";
-import { frameBezelGradient, frameClip, frameMetalGradient } from "./styles";
+import { frameBezelGradient, frameMetalGradient } from "./styles";
 
 export function ReturnButton({ onClick }: { onClick: () => void }) {
   const { state, handlers } = useInteraction();
@@ -24,7 +24,7 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         border: 0,
         margin: 0,
         padding: 0,
-        clipPath: frameClip,
+        borderRadius: "50%",
         color: "#f5fdff",
         background: frameMetalGradient,
         cursor: "pointer",
@@ -43,7 +43,8 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         style={{
           position: "absolute",
           inset: `calc(3px * ${squareInverseScale})`,
-          clipPath: frameClip,
+          boxSizing: "border-box",
+          borderRadius: "50%",
           border: `calc(1px * ${squareInverseScale}) solid rgb(235 250 255 / 72%)`,
           background: frameBezelGradient,
           boxShadow: `inset 0 0 0 calc(2px * ${squareInverseScale}) rgb(1 4 14 / 92%), inset 0 0 0 calc(3px * ${squareInverseScale}) rgb(145 159 255 / 42%)`,
@@ -54,7 +55,8 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         style={{
           position: "absolute",
           inset: `calc(7px * ${squareInverseScale})`,
-          clipPath: frameClip,
+          boxSizing: "border-box",
+          borderRadius: "50%",
           border: `calc(1px * ${squareInverseScale}) solid rgb(106 165 255 / 48%)`,
           background: "linear-gradient(135deg, #0c1b38, #020612 58%, #25102f)",
           boxShadow: "inset 0 0 9px rgb(0 0 0 / 94%)",
