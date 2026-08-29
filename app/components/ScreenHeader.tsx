@@ -6,16 +6,16 @@ export function ScreenHeader({ variant }: { variant: "game" | "settings" }) {
       style={{
         position: "absolute",
         zIndex: 5,
-        top: game ? 58 : 74,
+        top: game ? 42 : 74,
         left: 84,
         width: 854,
-        height: game ? 300 : 122,
+        height: game ? 330 : 122,
         display: "grid",
         placeItems: "center",
       }}
     >
-      <StripeBar side="left" top={game ? 117 : 44} />
-      <StripeBar side="right" top={game ? 117 : 44} />
+      <StripeBar side="left" top={game ? 132 : 44} />
+      <StripeBar side="right" top={game ? 132 : 44} />
       {game ? <GameWordmark /> : <SettingsTitle />}
     </header>
   );
@@ -40,7 +40,7 @@ function GameWordmark() {
         WebkitTextFillColor: "transparent",
         WebkitTextStroke: "1.4px #f9ffff",
         fontFamily: "'Barlow Condensed', Impact, sans-serif",
-        fontSize: 132,
+        fontSize: 160,
         fontStyle: "italic",
         fontWeight: 800,
         lineHeight: 0.74,

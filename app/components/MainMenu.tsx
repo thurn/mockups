@@ -38,6 +38,26 @@ export function MainMenu() {
           </div>
         ))}
       </nav>
+      <p
+        style={{
+          position: "absolute",
+          zIndex: 4,
+          right: 80,
+          bottom: 164,
+          left: 80,
+          margin: 0,
+          color: "#fff",
+          fontFamily: "'Barlow Condensed', Impact, sans-serif",
+          fontSize: 40,
+          fontWeight: 700,
+          lineHeight: 1.1,
+          letterSpacing: ".3px",
+          textAlign: "center",
+          textShadow: "0 3px 8px #000, 0 0 8px rgba(111,188,255,.35)",
+        }}
+      >
+        Playing with sound on is recommended!
+      </p>
     </section>
   );
 }
