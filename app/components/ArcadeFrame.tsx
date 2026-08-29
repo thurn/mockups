@@ -1,5 +1,5 @@
 import { Children, type ReactNode } from "react";
-import { frameClip, mergeStyles } from "./styles";
+import { frameBezelGradient, frameClip, frameMetalGradient, mergeStyles } from "./styles";
 
 export function ArcadeFrame({
   children,
@@ -41,8 +41,7 @@ function FrameSurface({ children, settings }: { children: ReactNode; settings: b
         padding: 15,
         overflow: "hidden",
         clipPath: frameClip,
-        background:
-          "linear-gradient(112deg, #f8fdff 0%, #76dcff 3%, #0d70e8 8%, #041331 11%, #00eaff 28%, #e9faff 46%, #7657ff 61%, #ff25c8 82%, #fff0f8 96%, #ff617c 100%)",
+        background: frameMetalGradient,
         boxShadow:
           "inset 0 0 0 2px rgb(255 255 255 / 88%), inset 0 0 0 6px rgb(3 11 29 / 88%), inset 0 0 0 9px rgb(109 194 255 / 55%)",
       }}
@@ -68,8 +67,7 @@ function FrameSurface({ children, settings }: { children: ReactNode; settings: b
           pointerEvents: "none",
           clipPath: frameClip,
           border: "2px solid rgb(235 250 255 / 72%)",
-          background:
-            "linear-gradient(112deg, #05091a, #173361 21%, #06102b 36% 64%, #3f174a 83%, #130715)",
+          background: frameBezelGradient,
           boxShadow: "inset 0 0 0 4px rgb(1 4 14 / 92%), inset 0 0 0 7px rgb(145 159 255 / 42%)",
         }}
       />

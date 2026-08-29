@@ -1,5 +1,6 @@
 import { useInteraction } from "./useInteraction";
 import { squareInverseScale } from "./squareScale";
+import { frameBezelGradient, frameClip, frameMetalGradient } from "./styles";
 
 export function ReturnButton({ onClick }: { onClick: () => void }) {
   const { state, handlers } = useInteraction();
@@ -14,19 +15,18 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         boxSizing: "border-box",
         position: "absolute",
         zIndex: 4,
-        right: `calc(2.6% - 18px * ${squareInverseScale})`,
-        bottom: `calc(3.15% - 18px * ${squareInverseScale})`,
-        width: `calc(36px * ${squareInverseScale})`,
-        height: `calc(36px * ${squareInverseScale})`,
+        right: `calc(2.6% - 23.5px * ${squareInverseScale})`,
+        bottom: `calc(3.15% - 23.5px * ${squareInverseScale})`,
+        width: `calc(47px * ${squareInverseScale})`,
+        height: `calc(47px * ${squareInverseScale})`,
         display: "grid",
         placeItems: "center",
-        border: `calc(2px * ${squareInverseScale}) solid rgb(224 250 255 / 92%)`,
-        borderRadius: "50%",
+        border: 0,
         margin: 0,
         padding: 0,
+        clipPath: frameClip,
         color: "#f5fdff",
-        background:
-          "linear-gradient(135deg, #173d73 0%, #09162f 48%, #411b57 100%) padding-box, linear-gradient(135deg, #bff7ff, #61ddff 34%, #c783ff 68%, #ff62d5) border-box",
+        background: frameMetalGradient,
         cursor: "pointer",
         outline: 0,
         boxShadow: highlighted
@@ -38,18 +38,42 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
       }}
       aria-label="Return to main menu"
     >
+      <span
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: `calc(3px * ${squareInverseScale})`,
+          clipPath: frameClip,
+          border: `calc(1px * ${squareInverseScale}) solid rgb(235 250 255 / 72%)`,
+          background: frameBezelGradient,
+          boxShadow: `inset 0 0 0 calc(2px * ${squareInverseScale}) rgb(1 4 14 / 92%), inset 0 0 0 calc(3px * ${squareInverseScale}) rgb(145 159 255 / 42%)`,
+        }}
+      />
+      <span
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          inset: `calc(7px * ${squareInverseScale})`,
+          clipPath: frameClip,
+          border: `calc(1px * ${squareInverseScale}) solid rgb(106 165 255 / 48%)`,
+          background: "linear-gradient(135deg, #0c1b38, #020612 58%, #25102f)",
+          boxShadow: "inset 0 0 9px rgb(0 0 0 / 94%)",
+        }}
+      />
       <svg
         aria-hidden="true"
         viewBox="0 0 24 24"
         style={{
-          width: `calc(19px * ${squareInverseScale})`,
-          height: `calc(19px * ${squareInverseScale})`,
+          position: "relative",
+          width: `calc(21px * ${squareInverseScale})`,
+          height: `calc(21px * ${squareInverseScale})`,
+          zIndex: 1,
           overflow: "visible",
           filter: "drop-shadow(0 2px 1px #000) drop-shadow(0 0 3px rgb(98 224 255 / 72%))",
         }}
       >
         <path
-          d="M9.2 6.2 3.8 12l5.4 5.8M4.3 12h9.1c4.2 0 6.8 2.1 6.8 6"
+          d="M10 5.5 3.5 12l6.5 6.5M4 12h16.5"
           fill="none"
           stroke="currentColor"
           strokeLinecap="round"
