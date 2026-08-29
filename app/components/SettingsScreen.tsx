@@ -62,8 +62,8 @@ export function SettingsScreen() {
               style={{
                 position: "relative",
                 zIndex: 2,
-                margin: 0,
-                padding: "0 20px 10px 4px",
+                margin: "-20px 0 -26px",
+                padding: "20px 20px 36px 4px",
                 color: "transparent",
                 background:
                   "linear-gradient(174deg, #ffffff 2%, #e5f5ff 20%, #74c9ff 38%, #f8fbff 51%, #8d72ff 70%, #ff68d9 94%)",

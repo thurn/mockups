@@ -55,7 +55,7 @@ export function SelectControl({ label, options, value, onChange, first = false, 
         >
           {options.map((option) => <option key={option}>{option}</option>)}
         </select>
-        <span aria-hidden="true" style={{ position: "absolute", right: 31, width: 0, height: 0, borderLeft: "15px solid transparent", borderRight: "15px solid transparent", borderTop: "18px solid #f4f5fa", filter: "drop-shadow(0 3px 2px #000)", pointerEvents: "none" }} />
+        <span aria-hidden="true" style={{ position: "absolute", right: 45, width: 0, height: 0, borderLeft: "15px solid transparent", borderRight: "15px solid transparent", borderTop: "18px solid #f4f5fa", filter: "drop-shadow(0 3px 2px #000)", pointerEvents: "none" }} />
       </div>
     </SettingRow>
   );
@@ -79,7 +79,7 @@ export function EraseControl() {
     <SettingRow label="Erase Saved Data" last>
       <button type="button" style={{ position: "relative", boxSizing: "border-box", width: 362, height: 114, marginLeft: 21, display: "grid", placeItems: "center", border: 0, padding: 0, clipPath: actionOuterClip, color: "#ff3553", background: "#ff355e", filter: "drop-shadow(0 0 9px rgba(255,20,78,.55))", fontFamily: "'Barlow Condensed', Impact, sans-serif", fontWeight: 700, fontSize: 67, textShadow: "0 0 11px rgba(255,25,76,.55)", cursor: "pointer", transform: "translateY(-8px)" }}>
         <ClippedInset inset={4} clipPath={actionInnerClip} background="radial-gradient(ellipse at 50% 45%, #200511, #07030c 67%, #020208)" boxShadow="inset 0 0 22px #000" />
-        <span style={{ position: "relative", zIndex: 1, lineHeight: 0.9, transform: "translateY(-1px)" }}>Erase</span>
+        <span style={{ position: "relative", zIndex: 1, lineHeight: 0.9, transform: "translateY(-1px)" }}>ERASE</span>
       </button>
     </SettingRow>
   );
@@ -97,7 +97,7 @@ function SettingRow({ label, children, first = false, last = false, rowHeight }:
 }
 
 function CheckMark() {
-  return <span style={{ position: "absolute", left: "50%", top: "50%", width: 24, height: 40, border: "solid #61f1ff", borderWidth: "0 7px 7px 0", transform: "translate(-50%, -54%) rotate(42deg)", transformOrigin: "center", filter: "drop-shadow(0 0 7px #128dff)" }} />;
+  return <span style={{ position: "absolute", left: "50%", top: "50%", width: 50, height: 44, clipPath: "polygon(0 47%, 14% 32%, 35% 58%, 85% 0, 100% 14%, 35% 100%)", background: "#61f1ff", transform: "translate(-50%, -50%)", filter: "drop-shadow(0 0 7px #128dff)" }} />;
 }
 
 function InfoBadge() {
