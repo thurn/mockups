@@ -5,6 +5,13 @@ import { ActionButton } from "./ActionButton";
 import { ScreenHeader } from "./ScreenHeader";
 
 const menuItems = ["Play", "Settings", "About", "Quit"];
+const menuButtonHeight = 140;
+const menuGap = 24;
+const gameWordmarkBottom = 335;
+const soundRecommendationTop = 1258;
+const menuHeight = menuItems.length * menuButtonHeight + (menuItems.length - 1) * menuGap;
+const menuTop =
+  gameWordmarkBottom + (soundRecommendationTop - gameWordmarkBottom - menuHeight) / 2;
 
 export function MainMenu() {
   const router = useRouter();
@@ -20,15 +27,15 @@ export function MainMenu() {
         style={{
           position: "absolute",
           zIndex: 4,
-          top: 474,
-          left: 162,
-          width: 700,
+          top: menuTop,
+          left: 132,
+          width: 760,
           display: "grid",
-          gap: 24,
+          gap: menuGap,
         }}
       >
         {menuItems.map((item) => (
-          <div key={item} style={{ height: 120 }}>
+          <div key={item} style={{ height: menuButtonHeight }}>
             <ActionButton
               key={item}
               onClick={item === "Settings" ? () => router.push("/settings") : undefined}
