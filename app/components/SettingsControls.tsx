@@ -4,9 +4,9 @@ import { actionInnerClip, actionOuterClip, ClippedInset, controlInnerClip, contr
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
 
-export function SelectControl({ label, options, value, onChange, first = false, offsetY = 0 }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
+export function SelectControl({ label, options, value, onChange, first = false, offsetY = 0, rowHeight = 158 }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
   return (
-    <SettingRow first={first} label={label} rowHeight={158}>
+    <SettingRow first={first} label={label} rowHeight={rowHeight}>
       <div style={{ position: "relative", display: "flex", alignItems: "center", height: "100%", transform: `translateY(${offsetY}px)` }}>
         <div
           aria-hidden="true"

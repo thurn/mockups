@@ -3,15 +3,18 @@ import { ClippedInset, tabInnerClip, tabOuterClip } from "./ClippedInset";
 
 const tabs = ["Gameplay", "Graphics", "Sound", "Input"];
 
-export function SettingsTabs() {
+export type SettingsTab = (typeof tabs)[number];
+
+export function SettingsTabs({ activeTab, onSelect }: { activeTab: SettingsTab; onSelect: (tab: SettingsTab) => void }) {
   return (
     <nav aria-label="Settings categories" style={{ height: 129, display: "grid", gridTemplateColumns: "264px 212px 205px 200px", gap: 2, alignItems: "end" }}>
       {tabs.map((tab) => {
-        const active = tab === "Gameplay";
+        const active = tab === activeTab;
         return (
           <button
             key={tab}
             type="button"
+            onClick={() => onSelect(tab)}
             aria-current={active ? "page" : undefined}
             style={{
               position: "relative",
@@ -32,7 +35,7 @@ export function SettingsTabs() {
               lineHeight: 1,
               letterSpacing: "1px",
               textShadow: "2px 4px 0 #182b50, 0 5px 7px #000",
-              cursor: "default",
+              cursor: "pointer",
             }}
           >
             <ClippedInset
