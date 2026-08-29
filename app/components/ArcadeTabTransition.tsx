@@ -36,8 +36,8 @@ export function ArcadeTabTransition({
         variants={{
           enter: (travelDirection: number) => ({
             opacity: 0,
-            x: travelDirection * 74,
-            scale: 0.985,
+            x: travelDirection * 58,
+            scale: 0.99,
           }),
           center: {
             opacity: 1,
@@ -69,13 +69,13 @@ export function ArcadeTabTransition({
         <motion.div
           aria-hidden="true"
           initial={{
-            x: direction > 0 ? "-170%" : "570%",
+            x: direction > 0 ? -90 : 940,
             opacity: 0,
             skewX: direction > 0 ? -12 : 12,
           }}
           animate={{
-            x: direction > 0 ? "570%" : "-170%",
-            opacity: [0, 0.94, 0.94, 0],
+            x: direction > 0 ? 940 : -90,
+            opacity: [0, 0.68, 0.68, 0],
           }}
           transition={{
             duration: 0.34,
@@ -88,10 +88,10 @@ export function ArcadeTabTransition({
             top: "-8%",
             bottom: "-8%",
             left: 0,
-            width: "18%",
+            width: "7%",
             pointerEvents: "none",
             background:
-              "linear-gradient(90deg, transparent 0 15%, rgba(35,213,255,.22) 15% 35%, rgba(211,250,255,.92) 35% 43%, rgba(255,68,210,.62) 43% 56%, rgba(72,136,255,.18) 56% 78%, transparent 78%)",
+              "linear-gradient(90deg, transparent 0 28%, rgba(35,213,255,.16) 28% 42%, rgba(211,250,255,.92) 42% 47%, rgba(255,68,210,.62) 47% 53%, rgba(72,136,255,.13) 53% 69%, transparent 69%)",
             willChange: "transform, opacity",
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
@@ -101,7 +101,7 @@ export function ArcadeTabTransition({
         <motion.div
           aria-hidden="true"
           initial={{ y: -12, opacity: 0 }}
-          animate={{ y: 1000, opacity: [0, 0.66, 0.4, 0] }}
+          animate={{ y: 1000, opacity: [0, 0.38, 0.22, 0] }}
           transition={{ duration: 0.42, ease: "linear", times: [0, 0.1, 0.72, 1] }}
           style={{
             position: "absolute",
