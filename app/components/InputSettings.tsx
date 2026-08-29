@@ -1,4 +1,8 @@
 import type { ReactNode } from "react";
+import { ArrowDownIcon } from "@phosphor-icons/react/dist/csr/ArrowDown";
+import { ArrowLeftIcon } from "@phosphor-icons/react/dist/csr/ArrowLeft";
+import { ArrowRightIcon } from "@phosphor-icons/react/dist/csr/ArrowRight";
+import { ArrowUpIcon } from "@phosphor-icons/react/dist/csr/ArrowUp";
 import { controlInnerClip, controlOuterClip, ClippedInset } from "./ClippedInset";
 import { ControllerButton, DPadIcon } from "./InputBindingIcons";
 import { settingsRowHeight } from "./SettingRow";
@@ -7,12 +11,33 @@ import { displayFont } from "./styles";
 const bindings: Array<{
   action: string;
   keyboard: string;
+  keyboardDirection?: "left" | "right" | "up" | "down";
   controller: ReactNode;
 }> = [
-  { action: "Left", keyboard: "←", controller: <DPadIcon direction="left" /> },
-  { action: "Right", keyboard: "→", controller: <DPadIcon direction="right" /> },
-  { action: "Up", keyboard: "↑", controller: <DPadIcon direction="up" /> },
-  { action: "Down", keyboard: "↓", controller: <DPadIcon direction="down" /> },
+  {
+    action: "Left",
+    keyboard: "Left arrow",
+    keyboardDirection: "left",
+    controller: <DPadIcon direction="left" />,
+  },
+  {
+    action: "Right",
+    keyboard: "Right arrow",
+    keyboardDirection: "right",
+    controller: <DPadIcon direction="right" />,
+  },
+  {
+    action: "Up",
+    keyboard: "Up arrow",
+    keyboardDirection: "up",
+    controller: <DPadIcon direction="up" />,
+  },
+  {
+    action: "Down",
+    keyboard: "Down arrow",
+    keyboardDirection: "down",
+    controller: <DPadIcon direction="down" />,
+  },
   {
     action: "Move Piece",
     keyboard: "Space",
@@ -83,7 +108,7 @@ export function InputSettings() {
             {binding.action}
           </div>
           <div role="cell" style={{ display: "grid", placeItems: "center" }}>
-            <KeyCap value={binding.keyboard} />
+            <KeyCap value={binding.keyboard} direction={binding.keyboardDirection} />
           </div>
           <div role="cell" style={{ display: "grid", placeItems: "center" }}>
             {binding.controller}
@@ -113,7 +138,13 @@ function ColumnHeading({ children }: { children: ReactNode }) {
   );
 }
 
-function KeyCap({ value }: { value: string }) {
+function KeyCap({
+  value,
+  direction,
+}: {
+  value: string;
+  direction?: "left" | "right" | "up" | "down";
+}) {
   return (
     <div
       aria-label={`${value} key`}
@@ -143,9 +174,29 @@ function KeyCap({ value }: { value: string }) {
         background="linear-gradient(180deg, #050b1c, #020611)"
         boxShadow="inset 0 0 22px #000"
       />
-      <span style={{ position: "relative", zIndex: 1 }}>{value}</span>
+      <span style={{ position: "relative", zIndex: 1 }}>
+        {direction ? <KeyboardArrow direction={direction} /> : value}
+      </span>
     </div>
   );
+}
+
+function KeyboardArrow({ direction }: { direction: "left" | "right" | "up" | "down" }) {
+  const props = {
+    "aria-hidden": true,
+    color: "currentColor",
+    size: 65,
+    weight: "bold" as const,
+    style: {
+      display: "block",
+      filter: "drop-shadow(2px 4px 0 #19284a) drop-shadow(0 4px 5px #000)",
+    },
+  };
+
+  if (direction === "left") return <ArrowLeftIcon {...props} />;
+  if (direction === "right") return <ArrowRightIcon {...props} />;
+  if (direction === "up") return <ArrowUpIcon {...props} />;
+  return <ArrowDownIcon {...props} />;
 }
 
 const labelStyle = {
