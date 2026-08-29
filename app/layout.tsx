@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { squareScaleScript } from "./components/squareScale";
 
 export const metadata: Metadata = {
   title: "Chess Chess Revolution",
@@ -11,7 +12,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" style={{ minHeight: "100%", background: "#02050d" }}>
+    <html lang="en" suppressHydrationWarning style={{ minHeight: "100%", background: "#02050d" }}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: squareScaleScript }} />
+      </head>
       <body
         style={{
           minHeight: "100%",

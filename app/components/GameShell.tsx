@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { DESIGN_SIZE, useSquareScale } from "./useSquareScale";
+import { DESIGN_SIZE, squareScale, squareSize } from "./squareScale";
 
 export function GameShell({
   children,
@@ -8,9 +8,6 @@ export function GameShell({
   children: ReactNode;
   compact?: boolean;
 }) {
-  const scale = useSquareScale();
-  const renderedSize = DESIGN_SIZE * scale;
-
   return (
     <main
       style={{
@@ -22,7 +19,7 @@ export function GameShell({
         background: "#00030a",
       }}
     >
-      <div style={{ position: "relative", width: renderedSize, height: renderedSize }}>
+      <div style={{ position: "relative", width: squareSize, height: squareSize }}>
         <div
           style={{
             position: "absolute",
@@ -34,7 +31,7 @@ export function GameShell({
             display: "grid",
             gridTemplateRows: compact ? "minmax(0, 1fr)" : undefined,
             placeItems: "center",
-            transform: `translate(-50%, -50%) scale(${scale})`,
+            transform: `translate(-50%, -50%) scale(${squareScale})`,
             background:
               "radial-gradient(circle at 18% 22%, rgb(15 111 255 / 18%), transparent 30%), radial-gradient(circle at 84% 76%, rgb(255 13 100 / 18%), transparent 31%), linear-gradient(128deg, #010713 0%, #03020c 50%, #090013 100%)",
             boxShadow: "0 28px 70px rgb(0 0 0 / 72%)",
