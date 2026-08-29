@@ -1,6 +1,5 @@
 import { useInteraction } from "./useInteraction";
 import { squareInverseScale } from "./squareScale";
-import { frameBezelGradient, frameMetalGradient } from "./styles";
 
 export function ReturnButton({ onClick }: { onClick: () => void }) {
   const { state, handlers } = useInteraction();
@@ -26,12 +25,12 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         padding: 0,
         borderRadius: "50%",
         color: "#f5fdff",
-        background: frameMetalGradient,
+        background: "linear-gradient(135deg, #bdf8ff 0%, #55dfff 32%, #8f7dff 62%, #ff4dcd 100%)",
         cursor: "pointer",
         outline: 0,
         boxShadow: highlighted
-          ? "inset 0 0 10px rgb(95 225 255 / 34%), 0 0 14px rgb(103 222 255 / 82%)"
-          : "inset 0 0 10px rgb(0 0 0 / 78%), 0 5px 9px rgb(0 0 0 / 72%), 0 0 8px rgb(147 77 255 / 62%)",
+          ? "0 0 12px rgb(103 222 255 / 72%)"
+          : "0 4px 8px rgb(0 0 0 / 72%), 0 0 6px rgb(147 77 255 / 48%)",
         filter: highlighted ? "brightness(1.14)" : undefined,
         transform: state.pressed ? "scale(0.92)" : highlighted ? "scale(1.08)" : undefined,
         font: "inherit",
@@ -42,24 +41,10 @@ export function ReturnButton({ onClick }: { onClick: () => void }) {
         aria-hidden="true"
         style={{
           position: "absolute",
-          inset: `calc(3px * ${squareInverseScale})`,
+          inset: `calc(2px * ${squareInverseScale})`,
           boxSizing: "border-box",
           borderRadius: "50%",
-          border: `calc(1px * ${squareInverseScale}) solid rgb(235 250 255 / 72%)`,
-          background: frameBezelGradient,
-          boxShadow: `inset 0 0 0 calc(2px * ${squareInverseScale}) rgb(1 4 14 / 92%), inset 0 0 0 calc(3px * ${squareInverseScale}) rgb(145 159 255 / 42%)`,
-        }}
-      />
-      <span
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          inset: `calc(7px * ${squareInverseScale})`,
-          boxSizing: "border-box",
-          borderRadius: "50%",
-          border: `calc(1px * ${squareInverseScale}) solid rgb(106 165 255 / 48%)`,
-          background: "linear-gradient(135deg, #0c1b38, #020612 58%, #25102f)",
-          boxShadow: "inset 0 0 9px rgb(0 0 0 / 94%)",
+          background: "linear-gradient(145deg, #0c1b38, #030816 68%)",
         }}
       />
       <svg
