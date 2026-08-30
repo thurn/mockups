@@ -3,6 +3,7 @@ import { PortraitViewport } from "./components/PortraitViewport";
 import { ScreenFrame } from "./components/ScreenFrame";
 import { ArcadeRouteTransition } from "./components/ArcadeRouteTransition";
 import { ArcadeScreenRouter } from "./components/ArcadeScreenRouter";
+import { BackgroundMusicProvider } from "./components/BackgroundMusic";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -87,13 +88,15 @@ export default function RootLayout({
           fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
         }}
       >
-        <PortraitViewport>
-          <ScreenFrame>
-            <ArcadeRouteTransition>
-              <ArcadeScreenRouter />
-            </ArcadeRouteTransition>
-          </ScreenFrame>
-        </PortraitViewport>
+        <BackgroundMusicProvider>
+          <PortraitViewport>
+            <ScreenFrame>
+              <ArcadeRouteTransition>
+                <ArcadeScreenRouter />
+              </ArcadeRouteTransition>
+            </ScreenFrame>
+          </PortraitViewport>
+        </BackgroundMusicProvider>
       </body>
     </html>
   );

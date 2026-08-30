@@ -11,11 +11,20 @@ import { SoundSettings } from "./SoundSettings";
 import { InputSettings } from "./InputSettings";
 import { ArcadeTabTransition } from "./ArcadeTabTransition";
 import { useArcadeNavigation } from "./ArcadeRouteTransition";
+import { useBackgroundMusic } from "./BackgroundMusic";
 
 const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsScreen() {
   const { navigate, reduceMotion, setReduceMotion } = useArcadeNavigation();
+  const {
+    masterVolume,
+    musicVolume,
+    muteInBackground,
+    setMasterVolume,
+    setMusicVolume,
+    setMuteInBackground,
+  } = useBackgroundMusic();
   const [activeTab, setActiveTab] = useState<SettingsTab>("Gameplay");
   const [tabDirection, setTabDirection] = useState(1);
   const [language, setLanguage] = useState("English");
@@ -27,10 +36,7 @@ export function SettingsScreen() {
   const [displayMode, setDisplayMode] = useState("Borderless");
   const [screenshake, setScreenshake] = useState(true);
   const [vsync, setVsync] = useState(true);
-  const [masterVolume, setMasterVolume] = useState(80);
-  const [musicVolume, setMusicVolume] = useState(65);
   const [effectsVolume, setEffectsVolume] = useState(75);
-  const [muteInBackground, setMuteInBackground] = useState(false);
 
   const handleTabSelect = (tab: SettingsTab) => {
     if (tab === activeTab) return;
