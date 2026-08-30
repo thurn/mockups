@@ -69,6 +69,11 @@ export default function RootLayout({
           @font-face { font-family: 'Bebas Neue'; src: url('/fonts/bebas-neue.ttf') format('truetype'); font-display: swap; }
           @font-face { font-family: 'Barlow Condensed'; src: url('/fonts/barlow-condensed-700.ttf') format('truetype'); font-style: normal; font-weight: 700; font-display: swap; }
           @font-face { font-family: 'Barlow Condensed'; src: url('/fonts/barlow-condensed-800-italic.ttf') format('truetype'); font-style: italic; font-weight: 800; font-display: swap; }
+          @keyframes control-shine-sweep {
+            0% { opacity: 0; transform: translateX(-130%); }
+            18% { opacity: .78; }
+            100% { opacity: 0; transform: translateX(330%); }
+          }
           * { -webkit-tap-highlight-color: transparent; }
           button, select { font: inherit; }
         `}</style>

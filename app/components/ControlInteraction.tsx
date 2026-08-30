@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { useArcadeNavigation } from "./ArcadeRouteTransition";
 
 export const keyboardFocusGradient =
@@ -23,11 +22,8 @@ export function ControlInteraction({
   if (!active) return null;
 
   return (
-    <motion.span
+    <span
       aria-hidden="true"
-      initial={{ opacity: 0, x: "-130%" }}
-      animate={{ opacity: [0, 0.78, 0], x: "330%" }}
-      transition={{ duration: reduceMotion ? 0.01 : 0.72, ease: "easeOut" }}
       style={{
         position: "absolute",
         zIndex: 4,
@@ -40,6 +36,9 @@ export function ControlInteraction({
           "linear-gradient(90deg, transparent, rgba(255,255,255,.82) 48%, rgba(174,245,255,.46) 62%, transparent)",
         filter: "blur(.3px)",
         mixBlendMode: "screen",
+        opacity: 0,
+        transform: "translateX(-130%)",
+        animation: reduceMotion ? "none" : "control-shine-sweep 720ms ease-out both",
         pointerEvents: "none",
       }}
     />
