@@ -16,6 +16,9 @@ import { useInteraction } from "./useInteraction";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
 
+const dropdownOpenEvent = "arcade-dropdown-open";
+let nextDropdownLayer = 20;
+
 export function SelectControl({
   label,
   options,
@@ -27,6 +30,8 @@ export function SelectControl({
 }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isSuperseded, setIsSuperseded] = useState(false);
+  const [menuLayer, setMenuLayer] = useState(20);
   const [activeIndex, setActiveIndex] = useState(() => Math.max(0, options.indexOf(value)));
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -48,10 +53,28 @@ export function SelectControl({
     return () => document.removeEventListener("pointerdown", dismiss);
   }, [isOpen]);
 
+  useEffect(() => {
+    const yieldToNewMenu = (event: Event) => {
+      const { detail } = event as CustomEvent<string>;
+      if (detail === listboxId || (!isOpen && !isClosing)) return;
+
+      setIsSuperseded(true);
+      setIsOpen(false);
+      setIsClosing(false);
+    };
+
+    document.addEventListener(dropdownOpenEvent, yieldToNewMenu);
+    return () => document.removeEventListener(dropdownOpenEvent, yieldToNewMenu);
+  }, [isClosing, isOpen, listboxId]);
+
   const openMenu = () => {
+    nextDropdownLayer += 1;
+    setMenuLayer(nextDropdownLayer);
+    setIsSuperseded(false);
     setActiveIndex(Math.max(0, options.indexOf(value)));
     setIsClosing(false);
     setIsOpen(true);
+    document.dispatchEvent(new CustomEvent<string>(dropdownOpenEvent, { detail: listboxId }));
   };
 
   const closeMenu = () => {
@@ -108,7 +131,7 @@ export function SelectControl({
         ref={rootRef}
         style={{
           position: "relative",
-          zIndex: isOpen || isClosing ? 20 : 1,
+          zIndex: isOpen || isClosing ? menuLayer : 1,
           width: 396,
           height: "100%",
           flex: "none",
@@ -178,85 +201,87 @@ export function SelectControl({
           </button>
           <ArcadeButtonEffect burstId={pressState.pressCount} compact />
         </span>
-        <AnimatePresence initial={false} onExitComplete={() => setIsClosing(false)}>
-          {isOpen && (
-            <motion.div
-              key={`${listboxId}-menu`}
-              id={listboxId}
-              role="listbox"
-              aria-label={`${String(label)} options`}
-              initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -12, scaleY: 0.76 }}
-              animate={{ opacity: 1, y: 0, scaleY: 1 }}
-              exit={
-                reduceMotion
-                  ? { opacity: 0, transition: { duration: 0.01 } }
-                  : {
-                      opacity: 0,
-                      y: -16,
-                      scaleY: 0.42,
-                      transition: { duration: 0.26, ease: [0.4, 0, 0.75, 0.3] },
-                    }
-              }
-              transition={{ duration: reduceMotion ? 0.01 : 0.2, ease: [0.2, 0.8, 0.25, 1] }}
-              style={{
-                position: "absolute",
-                left: 0,
-                top: "calc(50% + 59px)",
-                zIndex: 30,
-                boxSizing: "border-box",
-                width: 396,
-                padding: 3,
-                clipPath: controlOuterClip,
-                background: "linear-gradient(145deg, #5df5ff, #718cff 48%, #ff4bc9)",
-                filter:
-                  "drop-shadow(0 10px 14px rgba(0,0,0,.72)) drop-shadow(0 0 8px rgba(43,126,255,.65))",
-                transformOrigin: "top center",
-              }}
-            >
-              <div
+        {!isSuperseded && (
+          <AnimatePresence initial={false} onExitComplete={() => setIsClosing(false)}>
+            {isOpen && (
+              <motion.div
+                key={`${listboxId}-menu`}
+                id={listboxId}
+                role="listbox"
+                aria-label={`${String(label)} options`}
+                initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -12, scaleY: 0.76 }}
+                animate={{ opacity: 1, y: 0, scaleY: 1 }}
+                exit={
+                  reduceMotion
+                    ? { opacity: 0, transition: { duration: 0.01 } }
+                    : {
+                        opacity: 0,
+                        y: -16,
+                        scaleY: 0.42,
+                        transition: { duration: 0.26, ease: [0.4, 0, 0.75, 0.3] },
+                      }
+                }
+                transition={{ duration: reduceMotion ? 0.01 : 0.2, ease: [0.2, 0.8, 0.25, 1] }}
                 style={{
-                  position: "relative",
-                  overflow: "hidden",
-                  clipPath: controlInnerClip,
-                  padding: "8px 6px",
-                  background:
-                    "radial-gradient(circle at 20% 0%, rgba(30,95,195,.25), transparent 48%), linear-gradient(180deg, #07152e, #020611)",
-                  boxShadow: "inset 0 0 24px #000",
+                  position: "absolute",
+                  left: 0,
+                  top: "calc(50% + 59px)",
+                  zIndex: 30,
+                  boxSizing: "border-box",
+                  width: 396,
+                  padding: 3,
+                  clipPath: controlOuterClip,
+                  background: "linear-gradient(145deg, #5df5ff, #718cff 48%, #ff4bc9)",
+                  filter:
+                    "drop-shadow(0 10px 14px rgba(0,0,0,.72)) drop-shadow(0 0 8px rgba(43,126,255,.65))",
+                  transformOrigin: "top center",
                 }}
               >
-                {options.map((option, index) => (
-                  <motion.span
-                    key={option}
-                    initial={reduceMotion ? { opacity: 1 } : { opacity: 0, x: -17 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: 10 }}
-                    transition={{
-                      duration: reduceMotion ? 0.01 : 0.18,
-                      delay: reduceMotion ? 0 : index * 0.028,
-                      ease: "easeOut",
-                    }}
-                    style={{
-                      position: "relative",
-                      display: "block",
-                      width: "100%",
-                      minHeight: 76,
-                      overflow: "visible",
-                    }}
-                  >
-                    <DropdownOptionButton
-                      id={`${listboxId}-option-${index}`}
-                      option={option}
-                      selected={option === value}
-                      active={index === activeIndex}
-                      onPointerEnter={() => setActiveIndex(index)}
-                      onSelect={() => selectOption(option)}
-                    />
-                  </motion.span>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                <div
+                  style={{
+                    position: "relative",
+                    overflow: "hidden",
+                    clipPath: controlInnerClip,
+                    padding: "8px 6px",
+                    background:
+                      "radial-gradient(circle at 20% 0%, rgba(30,95,195,.25), transparent 48%), linear-gradient(180deg, #07152e, #020611)",
+                    boxShadow: "inset 0 0 24px #000",
+                  }}
+                >
+                  {options.map((option, index) => (
+                    <motion.span
+                      key={option}
+                      initial={reduceMotion ? { opacity: 1 } : { opacity: 0, x: -17 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: 10 }}
+                      transition={{
+                        duration: reduceMotion ? 0.01 : 0.18,
+                        delay: reduceMotion ? 0 : index * 0.028,
+                        ease: "easeOut",
+                      }}
+                      style={{
+                        position: "relative",
+                        display: "block",
+                        width: "100%",
+                        minHeight: 76,
+                        overflow: "visible",
+                      }}
+                    >
+                      <DropdownOptionButton
+                        id={`${listboxId}-option-${index}`}
+                        option={option}
+                        selected={option === value}
+                        active={index === activeIndex}
+                        onPointerEnter={() => setActiveIndex(index)}
+                        onSelect={() => selectOption(option)}
+                      />
+                    </motion.span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
       </div>
     </SettingRow>
   );
