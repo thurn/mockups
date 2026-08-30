@@ -225,12 +225,29 @@ export function SettingsScreen() {
       </ArcadeModal>
       <ArcadeModal
         open={activeModal === "crash-reports"}
-        title="Crash Reports"
+        ariaLabel="Crash report upload information"
         reduceMotion={reduceMotion}
         onClose={() => setActiveModal(null)}
         onConfirm={() => setActiveModal(null)}
       >
-        We upload crash reports to Unity Diagnostics.
+        <span style={{ display: "block" }}>We upload crash reports to Unity Diagnostics.</span>
+        <a
+          href="https://unity.com/legal/game-player-and-app-user-privacy-policy"
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: "inline-block",
+            marginTop: 34,
+            color: "#70efff",
+            fontSize: 42,
+            textDecoration: "underline",
+            textDecorationColor: "rgba(255,88,210,.8)",
+            textUnderlineOffset: 7,
+            textShadow: "0 0 12px rgba(55,210,255,.65)",
+          }}
+        >
+          Learn More
+        </a>
       </ArcadeModal>
     </section>
   );

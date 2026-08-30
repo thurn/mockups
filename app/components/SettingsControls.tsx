@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { InfoIcon } from "@phosphor-icons/react/dist/csr/Info";
 import { ArcadeButtonEffect } from "./ArcadeButtonEffect";
 import {
   actionInnerClip,
@@ -508,7 +509,11 @@ export function ToggleControl({
   const checkboxSize = 77 * controlScale;
 
   return (
-    <label
+    <div
+      onClick={(event) => {
+        if ((event.target as HTMLElement).closest("button, input")) return;
+        onChange(!checked);
+      }}
       style={{
         display: "block",
         height: rowHeight,
@@ -602,7 +607,7 @@ export function ToggleControl({
           We upload crash reports to Unity Diagnostics.
         </ScreenReaderOnly>
       )}
-    </label>
+    </div>
   );
 }
 
@@ -724,26 +729,24 @@ function InfoBadge({ onClick }: { onClick?: () => void }) {
         left: 205 * fontScale,
         bottom: 37,
         boxSizing: "border-box",
-        width: 38 * controlScale,
-        height: 38 * controlScale,
+        minWidth: 44 * controlScale,
+        width: 44 * controlScale,
+        height: 44 * controlScale,
         display: "grid",
         placeItems: "center",
-        border: "2px solid #55b8ff",
+        border: "3px solid #55b8ff",
         borderRadius: "50%",
         color: "#bcf4ff",
-        fontFamily: "Georgia, serif",
-        fontSize: 27 * controlScale,
-        fontStyle: "normal",
-        fontWeight: 700,
-        lineHeight: 1,
-        textTransform: "lowercase",
+        background: "rgba(3,13,34,.94)",
         boxShadow: "0 0 8px #155eff, inset 0 0 7px rgba(13,76,180,.8)",
         transform: "translateY(1px) scaleX(.957)",
         padding: 0,
+        appearance: "none",
+        WebkitAppearance: "none",
         cursor: "pointer",
       }}
     >
-      i
+      <InfoIcon aria-hidden="true" size={31 * controlScale} weight="bold" />
     </button>
   );
 }

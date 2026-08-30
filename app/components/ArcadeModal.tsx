@@ -10,6 +10,7 @@ const modalClip = "polygon(5% 0, 95% 0, 100% 8%, 100% 92%, 95% 100%, 5% 100%, 0 
 export function ArcadeModal({
   open,
   title,
+  ariaLabel,
   children,
   confirmLabel = "OK",
   cancelLabel,
@@ -19,7 +20,8 @@ export function ArcadeModal({
   onClose,
 }: {
   open: boolean;
-  title: string;
+  title?: string;
+  ariaLabel?: string;
   children: ReactNode;
   confirmLabel?: string;
   cancelLabel?: string;
@@ -48,7 +50,7 @@ export function ArcadeModal({
 
       if (event.key !== "Tab") return;
       const focusable = Array.from(
-        modalRef.current?.querySelectorAll<HTMLButtonElement>("button:not([disabled])") ?? [],
+        modalRef.current?.querySelectorAll<HTMLElement>("button:not([disabled]), a[href]") ?? [],
       );
       if (!focusable.length) return;
       const first = focusable[0];
@@ -101,7 +103,8 @@ export function ArcadeModal({
             ref={modalRef}
             role="dialog"
             aria-modal="true"
-            aria-labelledby={titleId}
+            aria-label={title ? undefined : ariaLabel}
+            aria-labelledby={title ? titleId : undefined}
             aria-describedby={descriptionId}
             data-testid="arcade-modal"
             initial={
@@ -188,32 +191,34 @@ export function ArcadeModal({
                 pointerEvents: "none",
               }}
             />
-            <div
-              id={titleId}
-              style={{
-                position: "relative",
-                zIndex: 1,
-                color: danger ? "#ff496b" : "#6eeeff",
-                fontFamily: displayFont,
-                fontSize: 86,
-                lineHeight: 0.9,
-                letterSpacing: 3,
-                textAlign: "center",
-                textTransform: "uppercase",
-                textShadow: danger
-                  ? "3px 5px 0 #3a0719, 0 0 18px rgba(255,37,93,.76)"
-                  : "3px 5px 0 #102c5b, 0 0 18px rgba(57,221,255,.72)",
-              }}
-            >
-              {title}
-            </div>
+            {title && (
+              <div
+                id={titleId}
+                style={{
+                  position: "relative",
+                  zIndex: 1,
+                  color: danger ? "#ff496b" : "#6eeeff",
+                  fontFamily: displayFont,
+                  fontSize: 86,
+                  lineHeight: 0.9,
+                  letterSpacing: 3,
+                  textAlign: "center",
+                  textTransform: "uppercase",
+                  textShadow: danger
+                    ? "3px 5px 0 #3a0719, 0 0 18px rgba(255,37,93,.76)"
+                    : "3px 5px 0 #102c5b, 0 0 18px rgba(57,221,255,.72)",
+                }}
+              >
+                {title}
+              </div>
+            )}
             <div
               id={descriptionId}
               style={{
                 position: "relative",
                 zIndex: 1,
                 maxWidth: 620,
-                marginTop: 42,
+                marginTop: title ? 42 : 0,
                 color: "#f5f7ff",
                 fontFamily: "'Barlow Condensed', Impact, sans-serif",
                 fontSize: 47,
