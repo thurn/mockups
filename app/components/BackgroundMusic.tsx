@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { detectAppleTouchWebKit } from "./useAppleTouchWebKit";
 
 type BackgroundMusicContextValue = {
   masterVolume: number;
@@ -122,6 +123,7 @@ export function BackgroundMusicProvider({ children }: { children: ReactNode }) {
     if (!audio) return;
 
     let animationFrame = 0;
+    const disableControlPulse = detectAppleTouchWebKit();
 
     const updatePulse = () => {
       if (audio.paused || audio.ended || audio.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
@@ -139,6 +141,10 @@ export function BackgroundMusicProvider({ children }: { children: ReactNode }) {
 
     const startPulse = () => {
       window.cancelAnimationFrame(animationFrame);
+      if (disableControlPulse) {
+        setControlPulse(0);
+        return;
+      }
       animationFrame = window.requestAnimationFrame(updatePulse);
     };
 

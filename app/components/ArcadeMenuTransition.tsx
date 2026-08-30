@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useIsPresent } from "framer-motion";
 import type { ReactNode } from "react";
 import { frameClip, frameInteriorBounds } from "./styles";
+import { useAppleTouchWebKit } from "./useAppleTouchWebKit";
 
 const transitionDuration = 0.5;
 
@@ -31,6 +32,12 @@ const screenVariants = {
   },
 };
 
+const webKitSafeScreenVariants = {
+  initial: { opacity: 0, scale: 0.985 },
+  animate: { opacity: 1, scale: 1 },
+  exit: { opacity: 0, scale: 1.012 },
+};
+
 export function ArcadeMenuTransition({
   children,
   playTransition,
@@ -38,11 +45,19 @@ export function ArcadeMenuTransition({
   screenKey,
 }: ArcadeMenuTransitionProps) {
   const direction = screenKey === "settings" ? 1 : -1;
+  const useWebKitSafeTransition = useAppleTouchWebKit();
 
   return (
-    <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
-      <AnimatePresence initial={false} mode="sync">
-        <ArcadeScreen key={screenKey} reduceMotion={reduceMotion}>
+    <div
+      data-webkit-safe-transition={useWebKitSafeTransition || undefined}
+      style={{ position: "absolute", inset: 0, overflow: "hidden" }}
+    >
+      <AnimatePresence initial={false} mode={useWebKitSafeTransition ? "wait" : "sync"}>
+        <ArcadeScreen
+          key={screenKey}
+          reduceMotion={reduceMotion}
+          useWebKitSafeTransition={useWebKitSafeTransition}
+        >
           {children}
         </ArcadeScreen>
       </AnimatePresence>
@@ -52,25 +67,34 @@ export function ArcadeMenuTransition({
         playTransition={playTransition}
         reduceMotion={reduceMotion}
         screenKey={screenKey}
+        useWebKitSafeTransition={useWebKitSafeTransition}
       />
     </div>
   );
 }
 
-function ArcadeScreen({ children, reduceMotion }: { children: ReactNode; reduceMotion: boolean }) {
+function ArcadeScreen({
+  children,
+  reduceMotion,
+  useWebKitSafeTransition,
+}: {
+  children: ReactNode;
+  reduceMotion: boolean;
+  useWebKitSafeTransition: boolean;
+}) {
   const isPresent = useIsPresent();
 
   return (
     <motion.div
       aria-hidden={!isPresent}
       inert={!isPresent}
-      variants={screenVariants}
+      variants={useWebKitSafeTransition ? webKitSafeScreenVariants : screenVariants}
       initial={reduceMotion ? false : "initial"}
       animate="animate"
       exit={reduceMotion ? undefined : "exit"}
       transition={{
-        duration: reduceMotion ? 0 : 0.3,
-        delay: reduceMotion ? 0 : 0.17,
+        duration: reduceMotion ? 0 : useWebKitSafeTransition ? 0.16 : 0.3,
+        delay: reduceMotion || useWebKitSafeTransition ? 0 : 0.17,
         ease: [0.16, 1, 0.3, 1],
       }}
       style={{
@@ -78,7 +102,7 @@ function ArcadeScreen({ children, reduceMotion }: { children: ReactNode; reduceM
         inset: 0,
         overflow: "hidden",
         pointerEvents: isPresent ? "auto" : "none",
-        willChange: "clip-path, filter, opacity",
+        willChange: useWebKitSafeTransition ? "transform, opacity" : "clip-path, filter, opacity",
       }}
     >
       {children}
@@ -91,12 +115,52 @@ function ContainedCrtEffect({
   playTransition,
   reduceMotion,
   screenKey,
+  useWebKitSafeTransition,
 }: {
   direction: number;
   playTransition: boolean;
   reduceMotion: boolean;
   screenKey: string;
+  useWebKitSafeTransition: boolean;
 }) {
+  if (useWebKitSafeTransition) {
+    return (
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          zIndex: 20,
+          ...frameInteriorBounds,
+          overflow: "hidden",
+          pointerEvents: "none",
+        }}
+      >
+        <motion.div
+          key={`${screenKey}-webkit-beam`}
+          initial={reduceMotion || !playTransition ? false : { opacity: 0, scaleX: 0.15 }}
+          animate={
+            reduceMotion || !playTransition
+              ? { opacity: 0 }
+              : { opacity: [0, 0.72, 0], scaleX: [0.15, 1, 0.72] }
+          }
+          transition={{ duration: reduceMotion ? 0 : 0.3, times: [0, 0.48, 1] }}
+          style={{
+            position: "absolute",
+            top: "50%",
+            right: 0,
+            left: 0,
+            height: 3,
+            background: "#d7f8ff",
+            boxShadow:
+              "0 0 6px rgba(255,255,255,.88), 0 0 15px rgba(72,191,255,.68), 0 0 26px rgba(172,82,255,.42)",
+            transformOrigin: direction > 0 ? "left center" : "right center",
+            willChange: "opacity, transform",
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       aria-hidden="true"
