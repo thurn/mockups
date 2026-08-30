@@ -1,4 +1,4 @@
-Immediately commit all changes, following Conventional Commits format.
+Immediately commit & push all changes, following Conventional Commits format.
 
 Prefer inline styles, do not use CSS.
 
