@@ -273,63 +273,71 @@ export function ToggleControl({
   withInfo?: boolean;
 }) {
   return (
-    <SettingRow
-      label={
-        <>
-          {label}
-          {withInfo && <InfoBadge />}
-        </>
-      }
-      rowHeight={rowHeight}
+    <label
+      style={{
+        display: "block",
+        height: rowHeight,
+        cursor: "pointer",
+      }}
     >
-      <label
-        style={{
-          position: "relative",
-          display: "flex",
-          alignItems: "center",
-          width: 77,
-          height: 77,
-          marginLeft: 8,
-          cursor: "pointer",
-          transform: `translateY(${offsetY}px)`,
-        }}
+      <SettingRow
+        label={
+          <>
+            {label}
+            {withInfo && <InfoBadge />}
+          </>
+        }
+        rowHeight={rowHeight}
       >
-        <ArcadeCheckboxEffect checked={checked} />
-        <input
-          suppressHydrationWarning
-          aria-label={ariaLabel ?? String(label)}
-          checked={checked}
-          onChange={(event) => onChange(event.target.checked)}
-          type="checkbox"
-          style={{
-            position: "absolute",
-            inset: 0,
-            zIndex: 2,
-            width: 77,
-            height: 77,
-            margin: 0,
-            opacity: 0,
-            cursor: "pointer",
-          }}
-        />
         <span
-          aria-hidden="true"
           style={{
             position: "relative",
-            zIndex: 1,
-            boxSizing: "border-box",
+            display: "flex",
+            alignItems: "center",
             width: 77,
             height: 77,
-            border: "4px solid #4ba3ff",
-            borderRadius: 11,
-            background: "linear-gradient(180deg, #06142b, #02091a)",
-            boxShadow: "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff",
+            marginLeft: 8,
+            cursor: "pointer",
+            transform: `translateY(${offsetY}px)`,
           }}
         >
-          {checked && <CheckMark />}
+          <ArcadeCheckboxEffect checked={checked} />
+          <input
+            suppressHydrationWarning
+            aria-label={ariaLabel ?? String(label)}
+            checked={checked}
+            onChange={(event) => onChange(event.target.checked)}
+            type="checkbox"
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: 3,
+              width: 77,
+              height: 77,
+              margin: 0,
+              opacity: 0,
+              cursor: "pointer",
+            }}
+          />
+          <span
+            aria-hidden="true"
+            style={{
+              position: "relative",
+              zIndex: 1,
+              boxSizing: "border-box",
+              width: 77,
+              height: 77,
+              border: "4px solid #4ba3ff",
+              borderRadius: 11,
+              background: "linear-gradient(180deg, #06142b, #02091a)",
+              boxShadow: "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff",
+            }}
+          >
+            {checked && <CheckMark />}
+          </span>
         </span>
-      </label>
-    </SettingRow>
+      </SettingRow>
+    </label>
   );
 }
 
