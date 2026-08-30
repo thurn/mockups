@@ -197,7 +197,6 @@ export function SelectControl({
                       justifyContent: "space-between",
                       gap: 14,
                       border: 0,
-                      borderTop: index === 0 ? 0 : "2px solid rgba(70,112,179,.28)",
                       padding: "6px 20px 6px 25px",
                       color: selected ? "#efffff" : "#d9e1f2",
                       background: active
