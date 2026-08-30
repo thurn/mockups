@@ -62,15 +62,15 @@ export function MusicPlaybackIndicator() {
       {!soundEnabled && (
         <SpeakerSlashIcon
           aria-hidden="true"
-          size={72}
+          size={54}
           weight="fill"
           style={{
             position: "absolute",
-            left: 120,
-            top: "50%",
+            left: "50%",
+            top: "calc(100% + 18px)",
             color: "#969ba9",
             filter: "drop-shadow(0 0 8px #000)",
-            transform: "translateY(-50%)",
+            transform: "translateX(-50%)",
           }}
         />
       )}
