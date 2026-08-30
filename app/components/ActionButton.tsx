@@ -10,6 +10,8 @@ import {
   keyboardFocusFilter,
   keyboardFocusGradient,
 } from "./ControlInteraction";
+import { ActionRasterFrame } from "./RasterFrame";
+import { useUiRenderMode } from "./UiRenderMode";
 
 export function ActionButton({
   children,
@@ -23,6 +25,8 @@ export function ActionButton({
   const { state, handlers } = useInteraction();
   const reduceMotion = useReducedMotion();
   const highlighted = state.hovered || state.focused;
+  const { mode } = useUiRenderMode();
+  const usingPng = mode === "png";
 
   return (
     <span
@@ -51,11 +55,13 @@ export function ActionButton({
           clipPath: actionOuterClip,
           color: "transparent",
           outline: 0,
-          background: state.focused
-            ? keyboardFocusGradient
-            : highlighted
-              ? "linear-gradient(110deg, #fff, #70d7ff 22%, #c0b6ff 56%, #ff73da 90%)"
-              : "linear-gradient(110deg, #b9fbff, #3bb9ff 22%, #a49cff 56%, #ff4bd1 90%)",
+          background: usingPng
+            ? "transparent"
+            : state.focused
+              ? keyboardFocusGradient
+              : highlighted
+                ? "linear-gradient(110deg, #fff, #70d7ff 22%, #c0b6ff 56%, #ff73da 90%)"
+                : "linear-gradient(110deg, #b9fbff, #3bb9ff 22%, #a49cff 56%, #ff4bd1 90%)",
           filter: `${
             state.focused
               ? keyboardFocusFilter
@@ -72,12 +78,16 @@ export function ActionButton({
           font: "inherit",
         }}
       >
-        <ClippedInset
-          inset={6}
-          clipPath={actionInnerClip}
-          background="linear-gradient(180deg, #071027, #020613)"
-          boxShadow="inset 0 0 0 4px #071127, inset 0 0 27px #000"
-        />
+        {usingPng ? (
+          <ActionRasterFrame />
+        ) : (
+          <ClippedInset
+            inset={6}
+            clipPath={actionInnerClip}
+            background="linear-gradient(180deg, #071027, #020613)"
+            boxShadow="inset 0 0 0 4px #071127, inset 0 0 27px #000"
+          />
+        )}
         <span
           style={{
             position: "relative",

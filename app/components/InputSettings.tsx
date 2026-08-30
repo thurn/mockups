@@ -1,3 +1,5 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { ArrowDownIcon } from "@phosphor-icons/react/dist/csr/ArrowDown";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/csr/ArrowLeft";
@@ -7,6 +9,8 @@ import { controlInnerClip, controlOuterClip, ClippedInset } from "./ClippedInset
 import { ControllerButton, DPadIcon } from "./InputBindingIcons";
 import { settingsRowHeight } from "./SettingRow";
 import { displayFont } from "./styles";
+import { SmallControlRasterFrame } from "./RasterFrame";
+import { useUiRenderMode } from "./UiRenderMode";
 
 const bindings: Array<{
   action: string;
@@ -145,6 +149,9 @@ function KeyCap({
   value: string;
   direction?: "left" | "right" | "up" | "down";
 }) {
+  const { mode } = useUiRenderMode();
+  const usingPng = mode === "png";
+
   return (
     <div
       aria-label={`${value} key`}
@@ -159,7 +166,9 @@ function KeyCap({
         clipPath: controlOuterClip,
         padding: 3,
         color: "#f6f6fa",
-        background: "linear-gradient(110deg, #55f1ff, #7ba3ff 54%, #ff48c6)",
+        background: usingPng
+          ? "transparent"
+          : "linear-gradient(110deg, #55f1ff, #7ba3ff 54%, #ff48c6)",
         filter: "drop-shadow(0 0 7px rgba(42,103,255,.46))",
         fontFamily: displayFont,
         fontSize: value.length > 2 ? 49 : 60,
@@ -168,12 +177,16 @@ function KeyCap({
         textShadow: "2px 4px 0 #19284a, 0 4px 7px #000",
       }}
     >
-      <ClippedInset
-        inset={3}
-        clipPath={controlInnerClip}
-        background="linear-gradient(180deg, #050b1c, #020611)"
-        boxShadow="inset 0 0 22px #000"
-      />
+      {usingPng ? (
+        <SmallControlRasterFrame />
+      ) : (
+        <ClippedInset
+          inset={3}
+          clipPath={controlInnerClip}
+          background="linear-gradient(180deg, #050b1c, #020611)"
+          boxShadow="inset 0 0 22px #000"
+        />
+      )}
       <span style={{ position: "relative", zIndex: 1 }}>
         {direction ? <KeyboardArrow direction={direction} /> : value}
       </span>

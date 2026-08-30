@@ -15,6 +15,8 @@ import { SettingRow } from "./SettingRow";
 import { useInteraction } from "./useInteraction";
 import { keyboardFocusFilter, keyboardFocusGradient } from "./ControlInteraction";
 import { ScreenReaderOnly } from "./ScreenReaderOnly";
+import { SmallControlRasterFrame } from "./RasterFrame";
+import { useUiRenderMode } from "./UiRenderMode";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
 
@@ -30,6 +32,8 @@ export function SelectControl({
   offsetY = 0,
   rowHeight,
 }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
+  const { mode } = useUiRenderMode();
+  const usingPng = mode === "png";
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isSuperseded, setIsSuperseded] = useState(false);
@@ -209,11 +213,13 @@ export function SelectControl({
               border: 0,
               outline: 0,
               color: "#f5f6fb",
-              background: pressState.focused
-                ? keyboardFocusGradient
-                : highlighted
-                  ? "linear-gradient(106deg, #b5ffff, #d3ddff 48%, #ff75dc)"
-                  : "linear-gradient(106deg, #5df5ff, #a5cbff 48%, #ff4bc9)",
+              background: usingPng
+                ? "transparent"
+                : pressState.focused
+                  ? keyboardFocusGradient
+                  : highlighted
+                    ? "linear-gradient(106deg, #b5ffff, #d3ddff 48%, #ff75dc)"
+                    : "linear-gradient(106deg, #5df5ff, #a5cbff 48%, #ff4bc9)",
               filter: `${
                 pressState.focused
                   ? keyboardFocusFilter
@@ -232,12 +238,16 @@ export function SelectControl({
               transition: "transform 90ms cubic-bezier(.2,.8,.2,1), filter 140ms ease",
             }}
           >
-            <ClippedInset
-              inset={3}
-              clipPath={controlInnerClip}
-              background="linear-gradient(180deg, #050b1c, #020611)"
-              boxShadow="inset 0 0 24px #000"
-            />
+            {usingPng ? (
+              <SmallControlRasterFrame />
+            ) : (
+              <ClippedInset
+                inset={3}
+                clipPath={controlInnerClip}
+                background="linear-gradient(180deg, #050b1c, #020611)"
+                boxShadow="inset 0 0 24px #000"
+              />
+            )}
             <span id={valueId} style={{ position: "relative", zIndex: 1 }}>
               {value}
             </span>

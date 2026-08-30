@@ -1,5 +1,11 @@
+"use client";
+
+import { useUiRenderMode } from "./UiRenderMode";
+import Image from "next/image";
+
 export function ScreenHeader({ variant }: { variant: "game" | "settings" }) {
   const game = variant === "game";
+  const { mode } = useUiRenderMode();
 
   return (
     <header
@@ -16,8 +22,39 @@ export function ScreenHeader({ variant }: { variant: "game" | "settings" }) {
     >
       <StripeBar side="left" top={game ? 132 : 44} />
       <StripeBar side="right" top={game ? 132 : 44} />
-      {game ? <GameWordmark /> : <SettingsTitle />}
+      {game ? mode === "png" ? <GameWordmarkImage /> : <GameWordmark /> : <SettingsTitle />}
     </header>
+  );
+}
+
+function GameWordmarkImage() {
+  return (
+    <h1
+      aria-label="Chess Chess Revolution"
+      style={{
+        position: "absolute",
+        zIndex: 2,
+        inset: 0,
+        margin: 0,
+        pointerEvents: "none",
+      }}
+    >
+      <Image
+        alt=""
+        src="/generated-ui/game-logo.png"
+        width={1800}
+        height={720}
+        unoptimized
+        style={{
+          position: "absolute",
+          left: "calc(50% + 5px)",
+          top: "calc(50% + 11px)",
+          width: 900,
+          height: 360,
+          transform: "translate(-50%, -50%)",
+        }}
+      />
+    </h1>
   );
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ReturnButton } from "./ReturnButton";
 import { EraseControl, SelectControl, ToggleControl } from "./SettingsControls";
 import { SettingsTabs, type SettingsTab } from "./SettingsTabs";
@@ -12,10 +13,14 @@ import { InputSettings } from "./InputSettings";
 import { ArcadeTabTransition } from "./ArcadeTabTransition";
 import { useArcadeNavigation } from "./ArcadeRouteTransition";
 import { useBackgroundMusic } from "./BackgroundMusic";
+import { fixedRasterImageStyle } from "./RasterFrame";
+import { useUiRenderMode } from "./UiRenderMode";
 
 const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsScreen() {
+  const { mode } = useUiRenderMode();
+  const usingPng = mode === "png";
   const { navigate, reduceMotion, setReduceMotion } = useArcadeNavigation();
   const {
     masterVolume,
@@ -77,16 +82,29 @@ export function SettingsScreen() {
             height: 1021,
             overflow: "hidden",
             clipPath: "polygon(0 0, 100% 0, 100% 98.5%, 98.4% 100%, 1.5% 100%, 0 98.5%)",
-            background: "linear-gradient(110deg, #446690, #2c456f 54%, #875984)",
-            filter: "drop-shadow(0 0 5px rgba(28,89,180,.28))",
+            background: usingPng
+              ? "transparent"
+              : "linear-gradient(110deg, #446690, #2c456f 54%, #875984)",
+            filter: usingPng ? undefined : "drop-shadow(0 0 5px rgba(28,89,180,.28))",
           }}
         >
-          <ClippedInset
-            inset={2}
-            clipPath="polygon(0 0, 100% 0, 100% 98.45%, 98.25% 100%, 1.35% 100%, 0 98.4%)"
-            background="radial-gradient(ellipse at 7% 46%, rgba(5,83,184,.15), transparent 36%), linear-gradient(90deg, rgba(0,83,190,.07), transparent 25% 75%, rgba(126,0,145,.055)), linear-gradient(180deg, #041126 0%, #020b1b 100%)"
-            boxShadow="inset 0 0 45px #000710"
-          />
+          {usingPng ? (
+            <Image
+              alt=""
+              src="/generated-ui/settings-panel-frame.png"
+              width={1774}
+              height={2042}
+              unoptimized
+              style={fixedRasterImageStyle}
+            />
+          ) : (
+            <ClippedInset
+              inset={2}
+              clipPath="polygon(0 0, 100% 0, 100% 98.45%, 98.25% 100%, 1.35% 100%, 0 98.4%)"
+              background="radial-gradient(ellipse at 7% 46%, rgba(5,83,184,.15), transparent 36%), linear-gradient(90deg, rgba(0,83,190,.07), transparent 25% 75%, rgba(126,0,145,.055)), linear-gradient(180deg, #041126 0%, #020b1b 100%)"
+              boxShadow="inset 0 0 45px #000710"
+            />
+          )}
           <div
             style={{
               position: "relative",

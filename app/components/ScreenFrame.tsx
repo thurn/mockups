@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { arcadeExitDuration, arcadeMenuExitEvent, type ArcadeMenuExitDetail } from "./arcadeExit";
@@ -8,8 +9,11 @@ import { ArcadeFramePulse } from "./ArcadeFramePulse";
 import { ConceptFrame } from "./ConceptFrame";
 import { PORTRAIT_DESIGN_HEIGHT, PORTRAIT_DESIGN_WIDTH } from "./PortraitViewport";
 import { frameClip, frameInteriorBounds } from "./styles";
+import { DebugRenderModeToggle, useUiRenderMode } from "./UiRenderMode";
 
 export function ScreenFrame({ children }: { children: ReactNode }) {
+  const { mode } = useUiRenderMode();
+  const usingPng = mode === "png";
   const [exitFrame, setExitFrame] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
 
@@ -27,6 +31,7 @@ export function ScreenFrame({ children }: { children: ReactNode }) {
   return (
     <div
       data-testid="screen-frame"
+      data-render-mode={mode}
       style={{
         position: "relative",
         width: PORTRAIT_DESIGN_WIDTH,
@@ -81,10 +86,22 @@ export function ScreenFrame({ children }: { children: ReactNode }) {
               "radial-gradient(circle at 50% 43%, #06152c 0, #020817 42%, #01030b 70%, #000107 100%)",
           }}
         />
-        <ConceptFrame />
+        {usingPng ? (
+          <Image
+            alt=""
+            src="/generated-ui/arcade-screen-frame.png"
+            width={2048}
+            height={3072}
+            unoptimized
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
+          />
+        ) : (
+          <ConceptFrame />
+        )}
         <ArcadeFramePulse />
       </motion.div>
       {children}
+      <DebugRenderModeToggle />
     </div>
   );
 }
