@@ -10,7 +10,7 @@ import {
   keyboardFocusFilter,
   keyboardFocusGradient,
 } from "./ControlInteraction";
-import { ActionRasterFrame } from "./RasterFrame";
+import { ActionLabelRaster, ActionRasterFrame } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
 
 export function ActionButton({
@@ -27,6 +27,7 @@ export function ActionButton({
   const highlighted = state.hovered || state.focused;
   const { mode } = useUiRenderMode();
   const usingPng = mode === "png";
+  const rasterLabel = typeof children === "string" ? children.toLowerCase() : undefined;
 
   return (
     <span
@@ -88,6 +89,7 @@ export function ActionButton({
             boxShadow="inset 0 0 0 4px #071127, inset 0 0 27px #000"
           />
         )}
+        {usingPng && rasterLabel && <ActionLabelRaster label={rasterLabel} />}
         <span
           style={{
             position: "relative",
@@ -109,6 +111,7 @@ export function ActionButton({
             letterSpacing: "-2px",
             transform: "translateY(-1px) skewX(-5deg)",
             filter: "drop-shadow(3px 5px 0 #122964) drop-shadow(0 7px 5px #000)",
+            opacity: usingPng && rasterLabel ? 0 : 1,
           }}
         >
           {children}

@@ -159,6 +159,84 @@ SMALL_CONTROL_CSS = FrameStyle(
     slice_insets=(15, 15, 15, 15),
 )
 
+SETTINGS_TAB_CSS = {
+    "sprite-size": (288, 154),
+    "frame-box": (12, 12, 264, 130),
+    "border-width": 4,
+    "corner-cut": 18,
+    "background": LinearGradient(112, (
+        (0, "#72f5ff"), (44, "#53afff"), (68, "#9a83ff"), (100, "#ff4ed3"),
+    )),
+    "active-background": LinearGradient(112, (
+        (0, "#d9ffff"), (40, "#68ddff"), (68, "#baa8ff"), (100, "#ff75dc"),
+    )),
+    "interior": LinearGradient(180, ((0, "#071328"), (100, "#020817"))),
+    "active-interior": LinearGradient(180, ((0, "#071831"), (100, "#030b1d"))),
+    "inner-edge": "#123b78a8",
+    "active-bottom-edge": "#f14dd7",
+    "glow": DropShadow(0, 0, 10, "#2385ffdb"),
+    # Source pixels at 2x are printed below. Only the center band stretches.
+    "slice-insets": (30, 42, 18, 42),
+}
+
+CHECKBOX_CSS = {
+    "sprite-size": (101, 101),
+    "frame-box": (12, 12, 77, 77),
+    "border-width": 4,
+    "border-radius": 11,
+    "border-color": "#4ba3ff",
+    "interior": LinearGradient(180, ((0, "#06142b"), (100, "#02091a"))),
+    "glow": (DropShadow(0, 0, 10, "#166cff"), DropShadow(0, 0, 5, "#6af6ff")),
+    "check-size": (50, 44),
+    "check-color": "#61f1ff",
+    "check-glow": DropShadow(0, 0, 7, "#128dff"),
+}
+
+VOLUME_SLIDER_CSS = {
+    "sprite-size": (308, 88),
+    "track-box": (12, 31, 284, 26),
+    "track-border-width": 3,
+    "track-radius": 8,
+    "track-border": LinearGradient(90, (
+        (0, "#13e7ff"), (47, "#735cff"), (76, "#ff43c7"), (100, "#ff326e"),
+    )),
+    "track-interior": "#061125",
+    "fill": LinearGradient(90, (
+        (0, "#17e9ff"), (35, "#286fff"), (62, "#8f5dff"),
+        (86, "#ff3abe"), (100, "#ff326d"),
+    )),
+    "handle-box": (132.5, 12, 43, 64),
+    "handle-border": LinearGradient(135, ((0, "#c8ffff"), (55, "#599cff"), (100, "#875fff"))),
+    "handle-interior": LinearGradient(180, ((0, "#07142b"), (100, "#02091b"))),
+    "tick-color": "#465ccb",
+    "slice-insets": (18, 18),
+}
+
+ACTION_LABEL_CSS = {
+    "canvas": (480, 120),
+    "font-family": FONT_FILE,
+    "font-size": 91,
+    "letter-spacing": -2,
+    "skew-x": -5,
+    "background": LinearGradient(174, (
+        (5, "#ffffff"), (31, "#dff8ff"), (49, "#52baff"),
+        (57, "#f8faff"), (77, "#806eff"), (100, "#ff6dda"),
+    )),
+    "stroke": (1, "#f7ffff"),
+    "shadows": (DropShadow(3, 5, 0, "#122964"), DropShadow(0, 7, 5, "#000000")),
+    "labels": ("PLAY", "SETTINGS", "ABOUT", "QUIT", "RETURN"),
+}
+
+MAIN_MENU_BACKGROUND_CSS = {
+    "canvas": (1024, 1536),
+    "interior-insets": (29, 29, 119, 29),  # top, right, bottom, left
+    "radial-center": (50, 68),
+    "star-count": 48,
+    "grid-color": "#5ed4ff",
+    "grid-accent": "#d274ff",
+    "vignette": 0.70,
+}
+
 
 # ---------------------------------------------------------------------------
 # Raster helpers
@@ -420,6 +498,243 @@ def render_logo(scale: int) -> Image.Image:
     return result
 
 
+def rounded_rectangle_mask(
+    canvas_size: tuple[int, int], box: tuple[float, float, float, float], radius: float,
+    scale: int, antialias_scale: int,
+) -> Image.Image:
+    render_scale = scale * antialias_scale
+    mask = Image.new("L", (canvas_size[0] * render_scale, canvas_size[1] * render_scale), 0)
+    x, y, width, height = box
+    ImageDraw.Draw(mask).rounded_rectangle(
+        (round(x * render_scale), round(y * render_scale),
+         round((x + width) * render_scale), round((y + height) * render_scale)),
+        radius=round(radius * render_scale), fill=255,
+    )
+    if antialias_scale > 1:
+        mask = mask.resize((canvas_size[0] * scale, canvas_size[1] * scale), Image.Resampling.LANCZOS)
+    return mask
+
+
+def render_settings_tab(active: bool, scale: int, antialias_scale: int) -> Image.Image:
+    css = SETTINGS_TAB_CSS
+    width, height = css["sprite-size"]
+    x, y, frame_width, frame_height = css["frame-box"]
+    cut = css["corner-cut"]
+    outer_points = (
+        (x, y + cut), (x + cut, y), (x + frame_width - cut, y),
+        (x + frame_width, y + cut), (x + frame_width, y + frame_height),
+        (x, y + frame_height),
+    )
+    inset = css["border-width"]
+    inner_points = (
+        (x + inset, y + cut + 1), (x + cut + 1, y + inset),
+        (x + frame_width - cut - 1, y + inset),
+        (x + frame_width - inset, y + cut + 1),
+        (x + frame_width - inset, y + frame_height), (x + inset, y + frame_height),
+    )
+    size = (width * scale, height * scale)
+    outer = polygon_mask((width, height), outer_points, scale, antialias_scale)
+    inner = polygon_mask((width, height), inner_points, scale, antialias_scale)
+    result = Image.new("RGBA", size)
+    if active:
+        result.alpha_composite(colored_shadow(outer, css["glow"], scale))
+    result.alpha_composite(apply_mask(linear_gradient(size, css["active-background"] if active else css["background"]), outer))
+    result.alpha_composite(apply_mask(linear_gradient(size, css["active-interior"] if active else css["interior"]), inner))
+    add_inner_shadow(result, inner, 24 if not active else 34, scale)
+
+    edge = inner.filter(ImageFilter.MaxFilter(max(3, 3 * scale | 1)))
+    edge = ImageChops.subtract(edge, inner)
+    edge_layer = Image.new("RGBA", size, rgba(css["inner-edge"]))
+    edge_layer.putalpha(ImageChops.multiply(edge_layer.getchannel("A"), edge))
+    result.alpha_composite(edge_layer)
+    if active:
+        draw = ImageDraw.Draw(result)
+        draw.line(
+            ((x + inset) * scale, (y + frame_height - 2) * scale,
+             (x + frame_width - inset) * scale, (y + frame_height - 2) * scale),
+            fill=rgba(css["active-bottom-edge"]), width=3 * scale,
+        )
+    return result
+
+
+def render_checkbox_parts(scale: int, antialias_scale: int) -> tuple[Image.Image, list[Image.Image]]:
+    css = CHECKBOX_CSS
+    width, height = css["sprite-size"]
+    x, y, frame_width, frame_height = css["frame-box"]
+    outer = rounded_rectangle_mask((width, height), css["frame-box"], css["border-radius"], scale, antialias_scale)
+    border = css["border-width"]
+    inner_box = (x + border, y + border, frame_width - border * 2, frame_height - border * 2)
+    inner = rounded_rectangle_mask((width, height), inner_box, css["border-radius"] - border, scale, antialias_scale)
+
+    frame = Image.new("RGBA", (width * scale, height * scale))
+    for shadow in css["glow"]:
+        frame.alpha_composite(colored_shadow(outer, shadow, scale))
+    frame.alpha_composite(apply_mask(Image.new("RGBA", frame.size, rgba(css["border-color"])), outer))
+    frame.alpha_composite(apply_mask(linear_gradient(frame.size, css["interior"]), inner))
+    add_inner_shadow(frame, inner, 14, scale)
+
+    check = Image.new("RGBA", frame.size)
+    check_width, check_height = css["check-size"]
+    check_x = x + (frame_width - check_width) / 2
+    check_y = y + (frame_height - check_height) / 2
+    check_points = ((0, 47), (14, 32), (35, 58), (85, 0), (100, 14), (35, 100))
+    check_mask = percent_polygon_mask(
+        (width, height), check_points, (check_x, check_y, check_width, check_height),
+        scale, antialias_scale,
+    )
+    check.alpha_composite(colored_shadow(check_mask, css["check-glow"], scale))
+    check.alpha_composite(apply_mask(Image.new("RGBA", check.size, rgba(css["check-color"])), check_mask))
+    # The checked frame remains a frame-only state. The mark is intentionally a
+    # third independent sprite so toggling never replaces the whole control.
+    checked = frame.copy()
+    sheet = Image.new("RGBA", (width * scale * 3, height * scale))
+    for index, image in enumerate((frame, checked, check)):
+        sheet.alpha_composite(image, (index * width * scale, 0))
+    return sheet, [frame, checked, check]
+
+
+def render_volume_slider_parts(scale: int, antialias_scale: int) -> tuple[Image.Image, list[Image.Image]]:
+    css = VOLUME_SLIDER_CSS
+    width, height = css["sprite-size"]
+    size = (width * scale, height * scale)
+    track_box = css["track-box"]
+    track_outer = rounded_rectangle_mask((width, height), track_box, css["track-radius"], scale, antialias_scale)
+    bx, by, bw, bh = track_box
+    border = css["track-border-width"]
+    track_inner = rounded_rectangle_mask(
+        (width, height), (bx + border, by + border, bw - border * 2, bh - border * 2),
+        css["track-radius"] - border, scale, antialias_scale,
+    )
+    track = Image.new("RGBA", size)
+    track.alpha_composite(colored_shadow(track_outer, DropShadow(0, 0, 9, "#1868ffb8"), scale))
+    track.alpha_composite(apply_mask(linear_gradient(size, css["track-border"]), track_outer))
+    track.alpha_composite(apply_mask(Image.new("RGBA", size, rgba(css["track-interior"])), track_inner))
+    add_inner_shadow(track, track_inner, 8, scale)
+
+    fill = Image.new("RGBA", size)
+    fill_mask = rounded_rectangle_mask((width, height), track_box, 4, scale, antialias_scale)
+    fill.alpha_composite(colored_shadow(fill_mask, DropShadow(0, 0, 8, "#2d84ffcc"), scale))
+    fill.alpha_composite(apply_mask(linear_gradient(size, css["fill"]), fill_mask))
+
+    handle = Image.new("RGBA", size)
+    hx, hy, hw, hh = css["handle-box"]
+    handle_points = ((23, 0), (77, 0), (100, 17), (100, 83), (77, 100), (23, 100), (0, 83), (0, 17))
+    handle_outer = percent_polygon_mask((width, height), handle_points, (hx, hy, hw, hh), scale, antialias_scale)
+    handle_inner = percent_polygon_mask((width, height), handle_points, (hx + 4, hy + 4, hw - 8, hh - 8), scale, antialias_scale)
+    handle.alpha_composite(colored_shadow(handle_outer, DropShadow(0, 0, 7, "#1479ff"), scale))
+    handle.alpha_composite(apply_mask(linear_gradient(size, css["handle-border"]), handle_outer))
+    handle.alpha_composite(apply_mask(linear_gradient(size, css["handle-interior"]), handle_inner))
+    add_inner_shadow(handle, handle_inner, 12, scale)
+
+    ticks = Image.new("RGBA", size)
+    draw = ImageDraw.Draw(ticks)
+    tick_y = 60 * scale
+    for tick_x in (74, 138, 202, 266):
+        draw.rectangle((tick_x * scale, tick_y, (tick_x + 2) * scale, (tick_y + 10) * scale), fill=rgba(css["tick-color"]))
+
+    parts = [track, fill, handle, ticks]
+    sheet = Image.new("RGBA", (width * scale * len(parts), height * scale))
+    for index, image in enumerate(parts):
+        sheet.alpha_composite(image, (index * width * scale, 0))
+    return sheet, parts
+
+
+def render_action_label(text: str, scale: int, antialias_scale: int) -> Image.Image:
+    css = ACTION_LABEL_CSS
+    render_scale = scale * antialias_scale
+    canvas = tuple(value * render_scale for value in css["canvas"])
+    font = ImageFont.truetype(str(css["font-family"]), css["font-size"] * render_scale)
+    raw = letterspaced_mask(text, font, css["letter-spacing"] * render_scale)
+    padding = 16 * render_scale
+    local = Image.new("L", (raw.width + padding * 2, raw.height + padding * 2), 0)
+    local.paste(raw, (padding, padding), raw)
+    stroke_width = max(1, round(css["stroke"][0] * render_scale))
+    stroke_mask = local.filter(ImageFilter.MaxFilter(stroke_width * 2 + 1))
+    painted = Image.new("RGBA", local.size)
+    stroke_layer = Image.new("RGBA", local.size, rgba(css["stroke"][1]))
+    stroke_layer.putalpha(stroke_mask)
+    painted.alpha_composite(stroke_layer)
+    painted.alpha_composite(apply_mask(linear_gradient(local.size, css["background"]), local))
+    transformed = affine_logo(painted, 1, 1, css["skew-x"])
+    result = Image.new("RGBA", canvas)
+    x = (canvas[0] - transformed.width) // 2
+    # Fixed cap-height and baseline: every source uses the same font metrics and vertical origin.
+    y = round(2 * render_scale)
+    placed = Image.new("L", canvas, 0)
+    placed.paste(transformed.getchannel("A"), (x, y))
+    for shadow in reversed(css["shadows"]):
+        result.alpha_composite(colored_shadow(placed, shadow, render_scale))
+    result.alpha_composite(transformed, (x, y))
+    return downsample(result, antialias_scale)
+
+
+def render_main_menu_background(scale: int) -> Image.Image:
+    css = MAIN_MENU_BACKGROUND_CSS
+    width, height = css["canvas"]
+    result = Image.new("RGBA", (width * scale, height * scale), (0, 0, 0, 255))
+    top, right, bottom, left = css["interior-insets"]
+    ix, iy = left * scale, top * scale
+    iw, ih = (width - left - right) * scale, (height - top - bottom) * scale
+    interior = Image.new("RGBA", (iw, ih), (1, 5, 18, 255))
+    draw = ImageDraw.Draw(interior, "RGBA")
+
+    center_x, center_y = iw * 0.5, ih * 0.68
+    for step in range(90, 0, -1):
+        ratio = step / 90
+        alpha = round(46 * (1 - ratio) ** 1.7)
+        radius_x, radius_y = iw * 0.49 * ratio, ih * 0.49 * ratio
+        draw.ellipse((center_x - radius_x, center_y - radius_y, center_x + radius_x, center_y + radius_y), fill=(18, 76, 144, alpha))
+
+    # Deterministic LCG mirrors ArcadeAttractMode.tsx.
+    seed = 0xA77AC7
+    def random_value() -> float:
+        nonlocal seed
+        seed = (seed * 1664525 + 1013904223) & 0xFFFFFFFF
+        return seed / 0x100000000
+
+    colors = ("#bff8ff", "#59cfff", "#ffffff", "#cf9cff", "#ff69d7")
+    for index in range(css["star-count"]):
+        random_value(); random_value(); random_value(); random_value()
+        size = (3 + random_value() * 4.5) * scale
+        x = (0.03 + random_value() * 0.94) * iw
+        y = (0.12 + random_value() * 0.86) * ih
+        color = rgba(colors[index % len(colors)])
+        glow = Image.new("RGBA", interior.size)
+        glow_draw = ImageDraw.Draw(glow)
+        radius = size * (3 if index % 9 == 0 else 1.8)
+        glow_draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=color[:3] + (105,))
+        glow = glow.filter(ImageFilter.GaussianBlur(max(1, size)))
+        interior.alpha_composite(glow)
+        draw.ellipse((x - size / 2, y - size / 2, x + size / 2, y + size / 2), fill=color[:3] + (158,))
+
+    grid = Image.new("RGBA", interior.size)
+    grid_draw = ImageDraw.Draw(grid, "RGBA")
+    gx0, gy0 = iw * 0.04, ih * 0.20
+    gw, gh = iw * 0.92, ih * 0.75
+    vanishing = (gx0 + gw / 2, gy0 + gh * 0.21)
+    ray_end_y = gy0 + gh * 0.97
+    for angle in (-22, -16.5, -11, -5.5, 0, 5.5, 11, 16.5, 22):
+        end_x = vanishing[0] + math.tan(math.radians(angle)) * (ray_end_y - vanishing[1])
+        grid_draw.line((vanishing[0], vanishing[1], end_x, ray_end_y), fill=(94, 212, 255, 82), width=2 * scale)
+    for line_top, line_width in ((23, 10), (28, 18), (34, 29), (42, 42), (52, 57), (65, 75), (82, 96)):
+        y = gy0 + gh * line_top / 100
+        half = gw * line_width / 200
+        grid_draw.line((vanishing[0] - half, y, vanishing[0] + half, y), fill=(140, 172, 255, 80), width=2 * scale)
+    grid = grid.filter(ImageFilter.GaussianBlur(0.35 * scale))
+    interior.alpha_composite(grid)
+
+    vignette = Image.new("RGBA", interior.size)
+    vignette_draw = ImageDraw.Draw(vignette, "RGBA")
+    for step in range(55):
+        ratio = step / 54
+        alpha = round(178 * ratio ** 2.2)
+        inset_x, inset_y = iw * 0.22 * (1 - ratio), ih * 0.18 * (1 - ratio)
+        vignette_draw.rectangle((inset_x, inset_y, iw - inset_x, ih - inset_y), outline=(1, 4, 16, alpha), width=max(1, 2 * scale))
+    interior.alpha_composite(vignette)
+    result.alpha_composite(interior, (ix, iy))
+    return result
+
+
 def save_png(image: Image.Image, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     image.save(path, "PNG", optimize=True, compress_level=9, dpi=(144, 144))
@@ -437,6 +752,18 @@ def generate(output_dir: Path, scale: int, antialias_scale: int) -> list[Path]:
     # Large panels only need supersampled masks; their gradients remain perfectly
     # smooth at output resolution. The smaller transformed wordmark is rendered
     # completely supersampled so its stroke, skew, and extrusion share one filter.
+    checkbox_sheet, checkbox_parts = render_checkbox_parts(scale, antialias_scale)
+    slider_sheet, slider_parts = render_volume_slider_parts(scale, antialias_scale)
+    tab_inactive = render_settings_tab(False, scale, antialias_scale)
+    tab_active = render_settings_tab(True, scale, antialias_scale)
+    tab_sheet = Image.new("RGBA", (tab_active.width * 2, tab_active.height))
+    tab_sheet.alpha_composite(tab_inactive, (0, 0))
+    tab_sheet.alpha_composite(tab_active, (tab_active.width, 0))
+
+    slider_scale = scale
+    slider_fill_crop = slider_parts[1].crop((12 * slider_scale, 31 * slider_scale, 296 * slider_scale, 57 * slider_scale))
+    slider_handle_crop = slider_parts[2].crop((120 * slider_scale, 0, 188 * slider_scale, 88 * slider_scale))
+    slider_ticks_crop = slider_parts[3].crop((12 * slider_scale, 60 * slider_scale, 296 * slider_scale, 70 * slider_scale))
     assets = {
         "arcade-screen-frame.png": render_arcade_frame(scale, antialias_scale),
         "game-logo.png": downsample(
@@ -451,7 +778,24 @@ def generate(output_dir: Path, scale: int, antialias_scale: int) -> list[Path]:
         "small-control-frame.png": render_frame(
             SMALL_CONTROL_CSS, scale, antialias_scale
         ),
+        "settings-tab-frames.png": tab_sheet,
+        "settings-tab-inactive.png": tab_inactive,
+        "settings-tab-active.png": tab_active,
+        "checkbox-parts.png": checkbox_sheet,
+        "checkbox-unchecked.png": checkbox_parts[0],
+        "checkbox-checked.png": checkbox_parts[1],
+        "checkbox-check.png": checkbox_parts[2],
+        "volume-slider-parts.png": slider_sheet,
+        "volume-slider-track.png": slider_parts[0],
+        "volume-slider-fill.png": slider_fill_crop,
+        "volume-slider-handle.png": slider_handle_crop,
+        "volume-slider-ticks.png": slider_ticks_crop,
+        "main-menu-background.png": render_main_menu_background(scale),
     }
+    for label in ACTION_LABEL_CSS["labels"]:
+        assets[f"action-label-{label.lower()}.png"] = render_action_label(
+            label, scale, antialias_scale
+        )
     paths: list[Path] = []
     for filename, image in assets.items():
         path = output_dir / filename
@@ -482,6 +826,8 @@ def main() -> None:
             print(f"{path.relative_to(ROOT)}  {image.width}x{image.height}  RGBA")
     print(f"action-button-frame.png 9-slice: {ACTION_BUTTON_CSS.slice_insets} CSS px")
     print(f"small-control-frame.png 9-slice: {SMALL_CONTROL_CSS.slice_insets} CSS px")
+    print(f"settings tabs horizontal 9-slice: {SETTINGS_TAB_CSS['slice-insets']} CSS px")
+    print(f"volume track horizontal 9-slice: {VOLUME_SLIDER_CSS['slice-insets']} CSS px")
 
 
 if __name__ == "__main__":

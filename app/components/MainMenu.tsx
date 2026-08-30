@@ -10,6 +10,8 @@ import { useArcadeNavigation } from "./ArcadeRouteTransition";
 import { ScreenHeader } from "./ScreenHeader";
 import { frameClip, frameInteriorBounds } from "./styles";
 import { MusicPlaybackIndicator } from "./MusicPlaybackIndicator";
+import { useUiRenderMode } from "./UiRenderMode";
+import Image from "next/image";
 
 const menuItems = ["Play", "Settings", "About", "Quit"];
 const menuButtonHeight = 140;
@@ -20,6 +22,8 @@ export function MainMenu() {
   const { navigate, reduceMotion } = useArcadeNavigation();
   const [exitState, setExitState] = useState<"idle" | "exiting" | "dismissed">("idle");
   const isExiting = exitState === "exiting";
+  const { mode } = useUiRenderMode();
+  const usingPng = mode === "png";
 
   const dismissMenu = useCallback(() => {
     setExitState((current) => {
@@ -133,7 +137,27 @@ export function MainMenu() {
             willChange: "clip-path, filter, opacity, transform",
           }}
         >
-          <ArcadeAttractMode />
+          {usingPng ? (
+            <Image
+              aria-hidden="true"
+              alt=""
+              src="/generated-ui/main-menu-background.png"
+              width={2048}
+              height={3072}
+              unoptimized
+              style={{
+                position: "absolute",
+                zIndex: 1,
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "fill",
+                pointerEvents: "none",
+              }}
+            />
+          ) : (
+            <ArcadeAttractMode />
+          )}
           <div style={{ position: "absolute", inset: 0 }}>
             <ScreenHeader variant="game" />
           </div>

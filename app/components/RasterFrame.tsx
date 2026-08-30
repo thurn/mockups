@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import Image from "next/image";
 
 const generatedAssetRoot = "/generated-ui";
 
@@ -48,6 +49,132 @@ export function SmallControlRasterFrame() {
       source="small-control-frame.png"
       slice={[30, 30, 30, 30]}
       width={[15, 15, 15, 15]}
+    />
+  );
+}
+
+export function SettingsTabRasterFrame({ active }: { active: boolean }) {
+  return (
+    <span style={{ position: "absolute", zIndex: 0, inset: -12, pointerEvents: "none" }}>
+      <NineSliceFrame
+        source={active ? "settings-tab-active.png" : "settings-tab-inactive.png"}
+        slice={[60, 84, 36, 84]}
+        width={[30, 42, 18, 42]}
+      />
+    </span>
+  );
+}
+
+const rasterPartStyle: CSSProperties = {
+  position: "absolute",
+  zIndex: 0,
+  pointerEvents: "none",
+};
+
+export function CheckboxRasterParts({ checked }: { checked: boolean }) {
+  return (
+    <span aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 1 }}>
+      <Image
+        alt=""
+        src={`${generatedAssetRoot}/checkbox-unchecked.png`}
+        width={202}
+        height={202}
+        unoptimized
+        style={{ ...rasterPartStyle, left: -12, top: -12, width: 101, height: 101 }}
+      />
+      {checked && (
+        <Image
+          alt=""
+          src={`${generatedAssetRoot}/checkbox-check.png`}
+          width={202}
+          height={202}
+          unoptimized
+          style={{ ...rasterPartStyle, left: -12, top: -12, width: 101, height: 101 }}
+        />
+      )}
+    </span>
+  );
+}
+
+export function VolumeSliderRasterParts({ value }: { value: number }) {
+  return (
+    <span aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+      <Image
+        alt=""
+        src={`${generatedAssetRoot}/volume-slider-track.png`}
+        width={616}
+        height={176}
+        unoptimized
+        style={{ ...rasterPartStyle, left: -12, top: -12, width: 308, height: 88 }}
+      />
+      <span
+        style={{
+          position: "absolute",
+          zIndex: 1,
+          left: 0,
+          top: 19,
+          width: `${value}%`,
+          height: 26,
+          overflow: "hidden",
+          borderRadius: 4,
+        }}
+      >
+        <Image
+          alt=""
+          src={`${generatedAssetRoot}/volume-slider-fill.png`}
+          width={568}
+          height={52}
+          unoptimized
+          style={{ ...rasterPartStyle, inset: 0, width: "100%", height: 26 }}
+        />
+      </span>
+      <Image
+        alt=""
+        src={`${generatedAssetRoot}/volume-slider-ticks.png`}
+        width={568}
+        height={20}
+        unoptimized
+        style={{ ...rasterPartStyle, left: 0, top: 48, width: 284, height: 10 }}
+      />
+      <Image
+        alt=""
+        src={`${generatedAssetRoot}/volume-slider-handle.png`}
+        width={136}
+        height={176}
+        unoptimized
+        style={{
+          ...rasterPartStyle,
+          zIndex: 2,
+          left: `calc(${value}% - 33px)`,
+          top: -12,
+          width: 68,
+          height: 88,
+        }}
+      />
+    </span>
+  );
+}
+
+export function ActionLabelRaster({ label }: { label: string }) {
+  const filename = label.toLowerCase();
+  return (
+    <Image
+      aria-hidden="true"
+      alt=""
+      src={`${generatedAssetRoot}/action-label-${filename}.png`}
+      width={960}
+      height={240}
+      unoptimized
+      style={{
+        position: "absolute",
+        zIndex: 1,
+        left: "50%",
+        top: "50%",
+        width: 480,
+        height: 120,
+        pointerEvents: "none",
+        transform: "translate(-50%, -50%)",
+      }}
     />
   );
 }

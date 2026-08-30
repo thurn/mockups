@@ -15,7 +15,7 @@ import { SettingRow } from "./SettingRow";
 import { useInteraction } from "./useInteraction";
 import { keyboardFocusFilter, keyboardFocusGradient } from "./ControlInteraction";
 import { ScreenReaderOnly } from "./ScreenReaderOnly";
-import { SmallControlRasterFrame } from "./RasterFrame";
+import { CheckboxRasterParts, SmallControlRasterFrame } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
@@ -487,6 +487,8 @@ export function ToggleControl({
   const reduceMotion = useReducedMotion();
   const labelId = useId();
   const descriptionId = useId();
+  const { mode } = useUiRenderMode();
+  const usingPng = mode === "png";
 
   return (
     <label
@@ -548,25 +550,29 @@ export function ToggleControl({
               boxSizing: "border-box",
               width: 77,
               height: 77,
-              border: state.focused
-                ? "4px solid #fff400"
-                : state.hovered
-                  ? "4px solid #91faff"
-                  : "4px solid #4ba3ff",
+              border: usingPng
+                ? 0
+                : state.focused
+                  ? "4px solid #fff400"
+                  : state.hovered
+                    ? "4px solid #91faff"
+                    : "4px solid #4ba3ff",
               borderRadius: 11,
-              background: "linear-gradient(180deg, #06142b, #02091a)",
-              boxShadow: state.focused
-                ? "inset 0 0 14px #000, 0 0 4px #fff, 0 0 16px #ffd900"
-                : state.hovered
-                  ? "inset 0 0 12px #000, 0 0 15px #2acfff, 0 0 8px #b8ffff"
-                  : "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff",
+              background: usingPng ? "transparent" : "linear-gradient(180deg, #06142b, #02091a)",
+              boxShadow: usingPng
+                ? undefined
+                : state.focused
+                  ? "inset 0 0 14px #000, 0 0 4px #fff, 0 0 16px #ffd900"
+                  : state.hovered
+                    ? "inset 0 0 12px #000, 0 0 15px #2acfff, 0 0 8px #b8ffff"
+                    : "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff",
               filter: `${state.pressed ? "brightness(.76)" : ""} var(--music-control-pulse-filter, brightness(1))`,
               transform: `scale(${state.pressed && !reduceMotion ? 0.88 : state.hovered ? 1.045 : 1}) var(--music-control-pulse-transform, scale(1))`,
               transition:
                 "transform 90ms cubic-bezier(.2,.8,.2,1), filter 90ms ease, border 140ms ease, box-shadow 140ms ease",
             }}
           >
-            {checked && <CheckMark />}
+            {usingPng ? <CheckboxRasterParts checked={checked} /> : checked && <CheckMark />}
           </span>
         </span>
       </SettingRow>

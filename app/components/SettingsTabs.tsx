@@ -6,6 +6,8 @@ import { ArcadeButtonEffect } from "./ArcadeButtonEffect";
 import { ClippedInset, tabInnerClip, tabOuterClip } from "./ClippedInset";
 import { useInteraction } from "./useInteraction";
 import { keyboardFocusFilter, keyboardFocusGradient } from "./ControlInteraction";
+import { SettingsTabRasterFrame } from "./RasterFrame";
+import { useUiRenderMode } from "./UiRenderMode";
 
 const tabs = ["Gameplay", "Graphics", "Sound", "Input"];
 
@@ -47,6 +49,8 @@ function SettingsTabButton({
   onSelect: (tab: SettingsTab) => void;
 }) {
   const { state, handlers } = useInteraction();
+  const { mode } = useUiRenderMode();
+  const usingPng = mode === "png";
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     const currentIndex = tabs.indexOf(tab);
@@ -104,14 +108,16 @@ function SettingsTabButton({
           marginTop: 0,
           border: 0,
           padding: 0,
-          clipPath: tabOuterClip,
+          clipPath: usingPng ? undefined : tabOuterClip,
           color: "#f7f7fb",
           outline: 0,
-          background: state.focused
-            ? keyboardFocusGradient
-            : state.hovered
-              ? "linear-gradient(112deg, #efffff 0%, #6be6ff 40%, #c3adff 68%, #ff8de4 100%)"
-              : "linear-gradient(112deg, #72f5ff 0%, #53afff 44%, #9a83ff 68%, #ff4ed3 100%)",
+          background: usingPng
+            ? "transparent"
+            : state.focused
+              ? keyboardFocusGradient
+              : state.hovered
+                ? "linear-gradient(112deg, #efffff 0%, #6be6ff 40%, #c3adff 68%, #ff8de4 100%)"
+                : "linear-gradient(112deg, #72f5ff 0%, #53afff 44%, #9a83ff 68%, #ff4ed3 100%)",
           filter: `${
             state.focused
               ? keyboardFocusFilter
@@ -130,20 +136,24 @@ function SettingsTabButton({
           cursor: "pointer",
         }}
       >
-        <ClippedInset
-          inset={4}
-          clipPath={tabInnerClip}
-          background={
-            active
-              ? "linear-gradient(180deg, #071831, #030b1d)"
-              : "linear-gradient(180deg, #071328, #020817)"
-          }
-          boxShadow={
-            active
-              ? "inset 0 0 34px rgba(20,98,226,.52), inset 0 -3px 0 #f14dd7"
-              : "inset 0 0 24px rgba(0,0,0,.5)"
-          }
-        />
+        {usingPng ? (
+          <SettingsTabRasterFrame active={active} />
+        ) : (
+          <ClippedInset
+            inset={4}
+            clipPath={tabInnerClip}
+            background={
+              active
+                ? "linear-gradient(180deg, #071831, #030b1d)"
+                : "linear-gradient(180deg, #071328, #020817)"
+            }
+            boxShadow={
+              active
+                ? "inset 0 0 34px rgba(20,98,226,.52), inset 0 -3px 0 #f14dd7"
+                : "inset 0 0 24px rgba(0,0,0,.5)"
+            }
+          />
+        )}
         <span style={{ position: "relative", zIndex: 1 }}>{tab}</span>
       </motion.button>
       <ArcadeButtonEffect burstId={state.releaseCount} compact />
