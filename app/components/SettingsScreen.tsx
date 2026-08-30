@@ -16,6 +16,7 @@ import { useBackgroundMusic } from "./BackgroundMusic";
 import { fixedRasterImageStyle } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
 import { fontScaleFromLabel, fontScaleOptions, fontScaleToLabel, useFontScale } from "./FontScale";
+import { ArcadeModal } from "./ArcadeModal";
 
 const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
@@ -43,6 +44,7 @@ export function SettingsScreen() {
   const [screenshake, setScreenshake] = useState(true);
   const [vsync, setVsync] = useState(true);
   const [effectsVolume, setEffectsVolume] = useState(75);
+  const [activeModal, setActiveModal] = useState<"erase" | "crash-reports" | null>(null);
 
   const handleTabSelect = (tab: SettingsTab) => {
     if (tab === activeTab) return;
@@ -190,8 +192,9 @@ export function SettingsScreen() {
                     ariaLabel="Upload Crash Reports"
                     onChange={setUploadCrashReports}
                     withInfo
+                    onInfoClick={() => setActiveModal("crash-reports")}
                   />
-                  <EraseControl />
+                  <EraseControl onClick={() => setActiveModal("erase")} />
                 </>
               )}
             </ArcadeTabTransition>
@@ -208,6 +211,27 @@ export function SettingsScreen() {
       >
         <ReturnButton onClick={() => navigate("/")} />
       </div>
+      <ArcadeModal
+        open={activeModal === "erase"}
+        title="Erase Saved Data?"
+        confirmLabel="Erase"
+        cancelLabel="Cancel"
+        danger
+        reduceMotion={reduceMotion}
+        onClose={() => setActiveModal(null)}
+        onConfirm={() => setActiveModal(null)}
+      >
+        All saved data will be permanently erased. This cannot be undone.
+      </ArcadeModal>
+      <ArcadeModal
+        open={activeModal === "crash-reports"}
+        title="Crash Reports"
+        reduceMotion={reduceMotion}
+        onClose={() => setActiveModal(null)}
+        onConfirm={() => setActiveModal(null)}
+      >
+        We upload crash reports to Unity Diagnostics.
+      </ArcadeModal>
     </section>
   );
 }

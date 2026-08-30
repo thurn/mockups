@@ -487,6 +487,7 @@ export function ToggleControl({
   ariaLabel,
   onChange,
   withInfo = false,
+  onInfoClick,
   rowHeight,
   offsetY = 0,
 }: BaseProps & {
@@ -494,6 +495,7 @@ export function ToggleControl({
   ariaLabel?: string;
   onChange: (checked: boolean) => void;
   withInfo?: boolean;
+  onInfoClick?: () => void;
 }) {
   const { state, handlers } = useInteraction();
   const reduceMotion = useReducedMotion();
@@ -518,7 +520,7 @@ export function ToggleControl({
         label={
           <>
             {label}
-            {withInfo && <InfoBadge />}
+            {withInfo && <InfoBadge onClick={onInfoClick} />}
           </>
         }
         rowHeight={rowHeight}
@@ -596,13 +598,15 @@ export function ToggleControl({
         </span>
       </SettingRow>
       {withInfo && (
-        <ScreenReaderOnly id={descriptionId}>Crash reports help diagnose errors.</ScreenReaderOnly>
+        <ScreenReaderOnly id={descriptionId}>
+          We upload crash reports to Unity Diagnostics.
+        </ScreenReaderOnly>
       )}
     </label>
   );
 }
 
-export function EraseControl() {
+export function EraseControl({ onClick }: { onClick?: () => void }) {
   const { state, handlers } = useInteraction();
   const reduceMotion = useReducedMotion();
   const labelId = useId();
@@ -626,6 +630,7 @@ export function EraseControl() {
           {...handlers}
           type="button"
           aria-labelledby={labelId}
+          onClick={onClick}
           style={{
             position: "relative",
             boxSizing: "border-box",
@@ -700,14 +705,20 @@ function CheckMark({ scale = 1 }: { scale?: number }) {
   );
 }
 
-function InfoBadge() {
+function InfoBadge({ onClick }: { onClick?: () => void }) {
   const { fontScale } = useFontScale();
   const controlScale = dynamicTypeScale(fontScale, "control");
 
   return (
-    <span
-      aria-hidden="true"
-      title="Crash reports help diagnose errors"
+    <button
+      type="button"
+      aria-label="About crash report uploads"
+      title="About crash report uploads"
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        onClick?.();
+      }}
       style={{
         position: "absolute",
         left: 205 * fontScale,
@@ -728,9 +739,11 @@ function InfoBadge() {
         textTransform: "lowercase",
         boxShadow: "0 0 8px #155eff, inset 0 0 7px rgba(13,76,180,.8)",
         transform: "translateY(1px) scaleX(.957)",
+        padding: 0,
+        cursor: "pointer",
       }}
     >
       i
-    </span>
+    </button>
   );
 }
