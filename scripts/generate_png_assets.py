@@ -3,9 +3,10 @@
 
 The values in the CONFIG section intentionally read like CSS declarations.  All
 measurements are expressed in the 1024 x 1536 reference coordinate system and
-are rasterized at SCALE (2x by default).  The generated PNGs are ordinary RGBA
-images; the two reusable frames are designed to be consumed as 9-slices using
-the insets printed by this script.
+are rasterized at OUTPUT_SCALE (2x by default). Polygon masks and transformed
+lettering are supersampled at ANTIALIAS_SCALE and downsampled once with Lanczos.
+The generated PNGs are ordinary RGBA images; the two reusable frames are
+designed to be consumed as 9-slices using the insets printed by this script.
 
 Requires Pillow:  python3 -m pip install Pillow
 """
@@ -33,7 +34,8 @@ FONT_FILE = ROOT / "public" / "fonts" / "barlow-condensed-800-italic.ttf"
 # CONFIG — edit these declarations, then rerun this file.
 # ---------------------------------------------------------------------------
 
-SCALE = 2
+OUTPUT_SCALE = 2
+ANTIALIAS_SCALE = 2
 
 
 @dataclass(frozen=True)
@@ -222,9 +224,32 @@ def percent_polygon(points: Iterable[tuple[float, float]], box: tuple[float, flo
             for px, py in points]
 
 
-def polygon_mask(size: tuple[int, int], points: Iterable[tuple[float, float]], scale: int) -> Image.Image:
-    mask = Image.new("L", (size[0] * scale, size[1] * scale), 0)
-    ImageDraw.Draw(mask).polygon(scaled_points(points, scale), fill=255)
+def polygon_mask(
+    size: tuple[int, int],
+    points: Iterable[tuple[float, float]],
+    scale: int,
+    antialias_scale: int = 1,
+) -> Image.Image:
+    render_scale = scale * antialias_scale
+    mask = Image.new("L", (size[0] * render_scale, size[1] * render_scale), 0)
+    ImageDraw.Draw(mask).polygon(scaled_points(points, render_scale), fill=255)
+    if antialias_scale > 1:
+        mask = mask.resize((size[0] * scale, size[1] * scale), Image.Resampling.LANCZOS)
+    return mask
+
+
+def percent_polygon_mask(
+    size: tuple[int, int],
+    points: Iterable[tuple[float, float]],
+    box: tuple[float, float, float, float],
+    scale: int,
+    antialias_scale: int,
+) -> Image.Image:
+    render_scale = scale * antialias_scale
+    mask = Image.new("L", (size[0] * render_scale, size[1] * render_scale), 0)
+    ImageDraw.Draw(mask).polygon(percent_polygon(points, box, render_scale), fill=255)
+    if antialias_scale > 1:
+        mask = mask.resize((size[0] * scale, size[1] * scale), Image.Resampling.LANCZOS)
     return mask
 
 
@@ -256,13 +281,17 @@ def add_inner_shadow(image: Image.Image, interior_mask: Image.Image, blur: float
     image.alpha_composite(black)
 
 
-def render_frame(style: FrameStyle, scale: int) -> Image.Image:
+def render_frame(style: FrameStyle, scale: int, antialias_scale: int) -> Image.Image:
     size = (style.width * scale, style.height * scale)
-    outer = polygon_mask((style.width, style.height), style.outer_clip, scale)
+    outer = polygon_mask(
+        (style.width, style.height), style.outer_clip, scale, antialias_scale
+    )
 
     inset = style.border_width
     inner_points = [(x + inset, y + inset) for x, y in style.inner_clip]
-    inner = polygon_mask((style.width, style.height), inner_points, scale)
+    inner = polygon_mask(
+        (style.width, style.height), inner_points, scale, antialias_scale
+    )
 
     result = Image.new("RGBA", size)
     for shadow in style.glow:
@@ -276,7 +305,7 @@ def render_frame(style: FrameStyle, scale: int) -> Image.Image:
     return result
 
 
-def render_arcade_frame(scale: int) -> Image.Image:
+def render_arcade_frame(scale: int, antialias_scale: int) -> Image.Image:
     css = ARCADE_SCREEN_CSS
     width, height = css["width"], css["height"]
     size = (width * scale, height * scale)
@@ -287,10 +316,12 @@ def render_arcade_frame(scale: int) -> Image.Image:
     inner_box = (inset + border_width, inset + border_width,
                  box[2] - border_width * 2, box[3] - border_width * 2)
 
-    outer = Image.new("L", size, 0)
-    inner = Image.new("L", size, 0)
-    ImageDraw.Draw(outer).polygon(percent_polygon(css["clip-path"], box, scale), fill=255)
-    ImageDraw.Draw(inner).polygon(percent_polygon(css["clip-path"], inner_box, scale), fill=255)
+    outer = percent_polygon_mask(
+        (width, height), css["clip-path"], box, scale, antialias_scale
+    )
+    inner = percent_polygon_mask(
+        (width, height), css["clip-path"], inner_box, scale, antialias_scale
+    )
     rail = ImageChops.subtract(outer, inner)
 
     result = Image.new("RGBA", size)
@@ -378,13 +409,32 @@ def save_png(image: Image.Image, path: Path) -> None:
     image.save(path, "PNG", optimize=True, compress_level=9, dpi=(144, 144))
 
 
-def generate(output_dir: Path, scale: int) -> list[Path]:
+def downsample(image: Image.Image, factor: int) -> Image.Image:
+    if factor == 1:
+        return image
+    return image.resize(
+        (image.width // factor, image.height // factor), Image.Resampling.LANCZOS
+    )
+
+
+def generate(output_dir: Path, scale: int, antialias_scale: int) -> list[Path]:
+    # Large panels only need supersampled masks; their gradients remain perfectly
+    # smooth at output resolution. The smaller transformed wordmark is rendered
+    # completely supersampled so its stroke, skew, and extrusion share one filter.
     assets = {
-        "arcade-screen-frame.png": render_arcade_frame(scale),
-        "game-logo.png": render_logo(scale),
-        "action-button-frame.png": render_frame(ACTION_BUTTON_CSS, scale),
-        "settings-panel-frame.png": render_frame(SETTINGS_PANEL_CSS, scale),
-        "small-control-frame.png": render_frame(SMALL_CONTROL_CSS, scale),
+        "arcade-screen-frame.png": render_arcade_frame(scale, antialias_scale),
+        "game-logo.png": downsample(
+            render_logo(scale * antialias_scale), antialias_scale
+        ),
+        "action-button-frame.png": render_frame(
+            ACTION_BUTTON_CSS, scale, antialias_scale
+        ),
+        "settings-panel-frame.png": render_frame(
+            SETTINGS_PANEL_CSS, scale, antialias_scale
+        ),
+        "small-control-frame.png": render_frame(
+            SMALL_CONTROL_CSS, scale, antialias_scale
+        ),
     }
     paths: list[Path] = []
     for filename, image in assets.items():
@@ -397,12 +447,20 @@ def generate(output_dir: Path, scale: int) -> list[Path]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
-    parser.add_argument("--scale", type=int, default=SCALE)
+    parser.add_argument("--scale", type=int, default=OUTPUT_SCALE)
+    parser.add_argument(
+        "--antialias-scale",
+        type=int,
+        default=ANTIALIAS_SCALE,
+        help="geometry/text supersampling multiplier (default: %(default)s)",
+    )
     args = parser.parse_args()
     if args.scale < 1:
         parser.error("--scale must be at least 1")
+    if args.antialias_scale < 1:
+        parser.error("--antialias-scale must be at least 1")
 
-    paths = generate(args.output_dir.resolve(), args.scale)
+    paths = generate(args.output_dir.resolve(), args.scale, args.antialias_scale)
     for path in paths:
         with Image.open(path) as image:
             print(f"{path.relative_to(ROOT)}  {image.width}x{image.height}  RGBA")
