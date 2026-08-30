@@ -88,6 +88,13 @@ function ArcadeTabPanel({
       style={{
         position: "absolute",
         inset: 0,
+        overflowX: "hidden",
+        overflowY: "auto",
+        overscrollBehavior: "contain",
+        scrollbarColor: "#4b86d2 #061126",
+        scrollbarWidth: "thin",
+        touchAction: "pan-y",
+        WebkitOverflowScrolling: "touch",
         transformOrigin: direction > 0 ? "right center" : "left center",
         willChange: "transform, opacity",
         backfaceVisibility: "hidden",

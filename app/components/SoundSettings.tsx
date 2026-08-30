@@ -15,6 +15,7 @@ import { SettingRow } from "./SettingRow";
 import { useInteraction } from "./useInteraction";
 import { VolumeSliderRasterParts } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
+import { useFontScale } from "./FontScale";
 
 const sliderTrackWidth = 284;
 const sliderHorizontalTouchPadding = 42;
@@ -96,7 +97,9 @@ function VolumeControl({
   const { state, handlers } = useInteraction({ pressKeys: sliderPressKeys });
   const reduceMotion = useReducedMotion();
   const { mode } = useUiRenderMode();
+  const { fontScale } = useFontScale();
   const usingPng = mode === "png";
+  const elementScale = 1 + (fontScale - 1) * 0.35;
 
   const updateFromPointer = (event: ReactPointerEvent<HTMLInputElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -142,6 +145,8 @@ function VolumeControl({
           display: "flex",
           alignItems: "center",
           gap: 18,
+          transform: `scale(${elementScale})`,
+          transformOrigin: "left center",
         }}
       >
         <div style={{ position: "relative", width: sliderTrackWidth, height: 64 }}>
@@ -334,7 +339,7 @@ function VolumeControl({
             width: 96,
             color: "#f5f5f8",
             fontFamily: "'Bebas Neue', Impact, sans-serif",
-            fontSize: 55,
+            fontSize: 55 * (fontScale / elementScale),
             lineHeight: 1,
             letterSpacing: "1px",
             textShadow: "2px 4px 0 #182b4d, 0 5px 7px #000",

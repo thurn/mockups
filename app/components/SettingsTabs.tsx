@@ -8,6 +8,7 @@ import { useInteraction } from "./useInteraction";
 import { keyboardFocusFilter, keyboardFocusGradient } from "./ControlInteraction";
 import { SettingsTabRasterFrame } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
+import { useFontScale } from "./FontScale";
 
 const tabs = ["Gameplay", "Graphics", "Sound", "Input"];
 
@@ -50,7 +51,10 @@ function SettingsTabButton({
 }) {
   const { state, handlers } = useInteraction();
   const { mode } = useUiRenderMode();
+  const { fontScale } = useFontScale();
   const usingPng = mode === "png";
+  const tabTextScale = 1 + (fontScale - 1) * 0.25;
+  const longLabelScale = fontScale === 1 || (tab !== "Gameplay" && tab !== "Graphics") ? 1 : 0.92;
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     const currentIndex = tabs.indexOf(tab);
@@ -131,7 +135,7 @@ function SettingsTabButton({
           } var(--music-control-pulse-filter, brightness(1))`,
           fontFamily: "'Barlow Condensed', Impact, sans-serif",
           fontWeight: 700,
-          fontSize: active ? 55 : 51,
+          fontSize: (active ? 55 : 51) * tabTextScale * longLabelScale,
           lineHeight: 1,
           letterSpacing: "1px",
           textShadow: "2px 4px 0 #182b50, 0 5px 7px #000",

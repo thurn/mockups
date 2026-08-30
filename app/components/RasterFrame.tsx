@@ -71,7 +71,9 @@ const rasterPartStyle: CSSProperties = {
   pointerEvents: "none",
 };
 
-export function CheckboxRasterParts({ checked }: { checked: boolean }) {
+export function CheckboxRasterParts({ checked, size = 77 }: { checked: boolean; size?: number }) {
+  const rasterSize = size + 24;
+
   return (
     <span aria-hidden="true" style={{ position: "absolute", inset: 0, zIndex: 1 }}>
       <Image
@@ -80,7 +82,13 @@ export function CheckboxRasterParts({ checked }: { checked: boolean }) {
         width={202}
         height={202}
         unoptimized
-        style={{ ...rasterPartStyle, left: -12, top: -12, width: 101, height: 101 }}
+        style={{
+          ...rasterPartStyle,
+          left: -12,
+          top: -12,
+          width: rasterSize,
+          height: rasterSize,
+        }}
       />
       {checked && (
         <Image
@@ -89,7 +97,13 @@ export function CheckboxRasterParts({ checked }: { checked: boolean }) {
           width={202}
           height={202}
           unoptimized
-          style={{ ...rasterPartStyle, left: -12, top: -12, width: 101, height: 101 }}
+          style={{
+            ...rasterPartStyle,
+            left: -12,
+            top: -12,
+            width: rasterSize,
+            height: rasterSize,
+          }}
         />
       )}
     </span>
@@ -155,7 +169,7 @@ export function VolumeSliderRasterParts({ value }: { value: number }) {
   );
 }
 
-export function ActionLabelRaster({ label }: { label: string }) {
+export function ActionLabelRaster({ label, scale = 1 }: { label: string; scale?: number }) {
   const filename = label.toLowerCase();
   return (
     <Image
@@ -173,7 +187,7 @@ export function ActionLabelRaster({ label }: { label: string }) {
         width: 480,
         height: 146,
         pointerEvents: "none",
-        transform: "translate(-50%, -50%)",
+        transform: `translate(-50%, -50%) scale(${scale})`,
       }}
     />
   );

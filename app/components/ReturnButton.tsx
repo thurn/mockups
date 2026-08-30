@@ -36,7 +36,9 @@ export function ReturnButton({
       <span
         style={{ position: "relative", zIndex: 1, display: "block", width: "100%", height: "100%" }}
       >
-        <ActionButton onClick={disabled ? undefined : onClick}>RETURN</ActionButton>
+        <ActionButton maxTextScale={1.35} onClick={disabled ? undefined : onClick}>
+          RETURN
+        </ActionButton>
       </span>
     </div>
   );

@@ -1,4 +1,5 @@
 import { displayFont } from "./styles";
+import { dynamicTypeScale, useFontScale } from "./FontScale";
 
 export type DPadDirection = "left" | "right" | "up" | "down";
 
@@ -11,11 +12,21 @@ const dPadCells: Array<{ direction: DPadDirection | "center"; left: number; top:
 ];
 
 export function DPadIcon({ direction }: { direction: DPadDirection }) {
+  const { fontScale } = useFontScale();
+  const controlScale = dynamicTypeScale(fontScale, "control");
+
   return (
     <div
       aria-label={`D-pad ${direction}`}
       role="img"
-      style={{ position: "relative", width: 87, height: 87, filter: "drop-shadow(0 5px 4px #000)" }}
+      style={{
+        position: "relative",
+        width: 87,
+        height: 87,
+        filter: "drop-shadow(0 5px 4px #000)",
+        transform: `scale(${controlScale})`,
+        transformOrigin: "center",
+      }}
     >
       {dPadCells.map((cell) => {
         const active = cell.direction === direction;
@@ -52,6 +63,8 @@ export function ControllerButton({
   label: "A" | "Y" | "menu";
   color: "green" | "yellow" | "gray";
 }) {
+  const { fontScale } = useFontScale();
+  const controlScale = dynamicTypeScale(fontScale, "control");
   const palette = {
     green: {
       border: "#a7ff35",
@@ -76,8 +89,8 @@ export function ControllerButton({
       role="img"
       style={{
         boxSizing: "border-box",
-        width: 78,
-        height: 78,
+        width: 78 * controlScale,
+        height: 78 * controlScale,
         display: "grid",
         placeItems: "center",
         border: `3px solid ${palette.border}`,
@@ -86,7 +99,7 @@ export function ControllerButton({
         background: palette.background,
         boxShadow: `inset 0 0 0 5px rgba(0,0,0,.28), 0 0 13px ${palette.shadow}, 0 5px 6px #000`,
         fontFamily: displayFont,
-        fontSize: label === "menu" ? 54 : 57,
+        fontSize: (label === "menu" ? 54 : 57) * controlScale,
         lineHeight: 1,
         textShadow: "1px 3px 0 #20242a",
       }}

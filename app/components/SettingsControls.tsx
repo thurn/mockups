@@ -17,6 +17,7 @@ import { keyboardFocusFilter, keyboardFocusGradient } from "./ControlInteraction
 import { ScreenReaderOnly } from "./ScreenReaderOnly";
 import { CheckboxRasterParts, SmallControlRasterFrame } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
+import { dynamicTypeScale, useFontScale } from "./FontScale";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
 
@@ -33,7 +34,11 @@ export function SelectControl({
   rowHeight,
 }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
   const { mode } = useUiRenderMode();
+  const { fontScale } = useFontScale();
   const usingPng = mode === "png";
+  const controlScale = dynamicTypeScale(fontScale, "control");
+  const controlWidth = Math.round(396 + (fontScale - 1) * 300);
+  const controlHeight = Math.round(106 * (1 + (fontScale - 1) * 0.35));
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [isSuperseded, setIsSuperseded] = useState(false);
@@ -171,8 +176,8 @@ export function SelectControl({
         style={{
           position: "relative",
           zIndex: isOpen || isClosing ? menuLayer : 1,
-          width: 396,
-          height: "100%",
+          width: controlWidth,
+          height: controlHeight,
           flex: "none",
           display: "flex",
           alignItems: "center",
@@ -182,8 +187,8 @@ export function SelectControl({
         <span
           style={{
             position: "relative",
-            width: 396,
-            height: 106,
+            width: controlWidth,
+            height: controlHeight,
             display: "block",
             overflow: "visible",
           }}
@@ -209,7 +214,7 @@ export function SelectControl({
               display: "flex",
               alignItems: "center",
               clipPath: controlOuterClip,
-              padding: "0 74px 0 39px",
+              padding: `0 ${74 * controlScale}px 0 ${39 * controlScale}px`,
               border: 0,
               outline: 0,
               color: "#f5f6fb",
@@ -231,7 +236,7 @@ export function SelectControl({
               } var(--music-control-pulse-filter, brightness(1))`,
               fontFamily: "'Barlow Condensed', Impact, sans-serif",
               fontWeight: 700,
-              fontSize: 60,
+              fontSize: 60 * controlScale,
               textAlign: "left",
               lineHeight: 1,
               textShadow: "2px 4px 0 #19284a, 0 4px 7px #000",
@@ -285,10 +290,10 @@ export function SelectControl({
                 style={{
                   position: "absolute",
                   left: 0,
-                  top: "calc(50% + 59px)",
+                  top: controlHeight + 6,
                   zIndex: 30,
                   boxSizing: "border-box",
-                  width: 396,
+                  width: controlWidth,
                   padding: 3,
                   clipPath: controlOuterClip,
                   background: "linear-gradient(145deg, #5df5ff, #718cff 48%, #ff4bc9)",
@@ -323,7 +328,7 @@ export function SelectControl({
                         position: "relative",
                         display: "block",
                         width: "100%",
-                        minHeight: 76,
+                        minHeight: 76 * controlScale,
                         overflow: "visible",
                       }}
                     >
@@ -363,6 +368,8 @@ function DropdownOptionButton({
   onSelect: () => void;
 }) {
   const reduceMotion = useReducedMotion();
+  const { fontScale } = useFontScale();
+  const controlScale = dynamicTypeScale(fontScale, "control");
   const { state, handlers } = useInteraction();
 
   return (
@@ -379,14 +386,14 @@ function DropdownOptionButton({
           zIndex: 1,
           boxSizing: "border-box",
           width: "100%",
-          minHeight: 76,
+          minHeight: 76 * controlScale,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           gap: 14,
           border: 0,
           outline: 0,
-          padding: "6px 20px 6px 25px",
+          padding: `${6 * controlScale}px ${20 * controlScale}px ${6 * controlScale}px ${25 * controlScale}px`,
           color: selected ? "#efffff" : "#d9e1f2",
           background: state.focused
             ? "linear-gradient(90deg, rgba(255,238,0,.32), rgba(255,167,0,.14))"
@@ -400,7 +407,7 @@ function DropdownOptionButton({
               : undefined,
           fontFamily: "'Barlow Condensed', Impact, sans-serif",
           fontWeight: 700,
-          fontSize: 47,
+          fontSize: 47 * fontScale,
           lineHeight: 1,
           textAlign: "left",
           textShadow: "2px 3px 0 #172747, 0 3px 5px #000",
@@ -449,6 +456,9 @@ function DropdownOptionButton({
 }
 
 function Caret({ isOpen }: { isOpen: boolean }) {
+  const { fontScale } = useFontScale();
+  const controlScale = dynamicTypeScale(fontScale, "control");
+
   return (
     <span
       aria-hidden="true"
@@ -456,12 +466,12 @@ function Caret({ isOpen }: { isOpen: boolean }) {
         position: "absolute",
         zIndex: 2,
         top: "50%",
-        right: 45,
+        right: 45 * controlScale,
         width: 0,
         height: 0,
-        borderLeft: "15px solid transparent",
-        borderRight: "15px solid transparent",
-        borderTop: "18px solid #f4f5fa",
+        borderLeft: `${15 * controlScale}px solid transparent`,
+        borderRight: `${15 * controlScale}px solid transparent`,
+        borderTop: `${18 * controlScale}px solid #f4f5fa`,
         filter: "drop-shadow(0 3px 2px #000)",
         pointerEvents: "none",
         transform: `translateY(-50%) rotate(${isOpen ? 180 : 0}deg)`,
@@ -490,7 +500,10 @@ export function ToggleControl({
   const labelId = useId();
   const descriptionId = useId();
   const { mode } = useUiRenderMode();
+  const { fontScale } = useFontScale();
   const usingPng = mode === "png";
+  const controlScale = dynamicTypeScale(fontScale, "control");
+  const checkboxSize = 77 * controlScale;
 
   return (
     <label
@@ -515,8 +528,8 @@ export function ToggleControl({
             position: "relative",
             display: "flex",
             alignItems: "center",
-            width: 77,
-            height: 77,
+            width: checkboxSize,
+            height: checkboxSize,
             marginLeft: 8,
             cursor: "pointer",
             transform: `translateY(${offsetY}px)`,
@@ -536,8 +549,8 @@ export function ToggleControl({
               position: "absolute",
               inset: 0,
               zIndex: 3,
-              width: 77,
-              height: 77,
+              width: checkboxSize,
+              height: checkboxSize,
               margin: 0,
               opacity: 0,
               cursor: "pointer",
@@ -550,8 +563,8 @@ export function ToggleControl({
               position: "relative",
               zIndex: 1,
               boxSizing: "border-box",
-              width: 77,
-              height: 77,
+              width: checkboxSize,
+              height: checkboxSize,
               border: usingPng
                 ? 0
                 : state.focused
@@ -574,7 +587,11 @@ export function ToggleControl({
                 "transform 90ms cubic-bezier(.2,.8,.2,1), filter 90ms ease, border 140ms ease, box-shadow 140ms ease",
             }}
           >
-            {usingPng ? <CheckboxRasterParts checked={checked} /> : checked && <CheckMark />}
+            {usingPng ? (
+              <CheckboxRasterParts checked={checked} size={checkboxSize} />
+            ) : (
+              checked && <CheckMark />
+            )}
           </span>
         </span>
       </SettingRow>
@@ -589,14 +606,16 @@ export function EraseControl() {
   const { state, handlers } = useInteraction();
   const reduceMotion = useReducedMotion();
   const labelId = useId();
+  const { fontScale } = useFontScale();
+  const controlScale = dynamicTypeScale(fontScale, "control");
 
   return (
     <SettingRow label="Erase Saved Data" labelId={labelId}>
       <span
         style={{
           position: "relative",
-          width: 362,
-          height: 114,
+          width: 362 * (1 + (fontScale - 1) * 0.25),
+          height: 114 * (1 + (fontScale - 1) * 0.35),
           marginLeft: 21,
           display: "block",
           overflow: "visible",
@@ -633,7 +652,7 @@ export function EraseControl() {
             } var(--music-control-pulse-filter, brightness(1))`,
             fontFamily: "'Barlow Condensed', Impact, sans-serif",
             fontWeight: 700,
-            fontSize: 67,
+            fontSize: 67 * controlScale,
             textShadow: "0 0 11px rgba(255,25,76,.55)",
             cursor: "pointer",
             transform: `scale(${state.pressed && !reduceMotion ? 0.96 : 1}) var(--music-control-pulse-transform, scale(1))`,
@@ -682,24 +701,27 @@ function CheckMark({ scale = 1 }: { scale?: number }) {
 }
 
 function InfoBadge() {
+  const { fontScale } = useFontScale();
+  const controlScale = dynamicTypeScale(fontScale, "control");
+
   return (
     <span
       aria-hidden="true"
       title="Crash reports help diagnose errors"
       style={{
         position: "absolute",
-        left: 205,
+        left: 205 * fontScale,
         bottom: 37,
         boxSizing: "border-box",
-        width: 38,
-        height: 38,
+        width: 38 * controlScale,
+        height: 38 * controlScale,
         display: "grid",
         placeItems: "center",
         border: "2px solid #55b8ff",
         borderRadius: "50%",
         color: "#bcf4ff",
         fontFamily: "Georgia, serif",
-        fontSize: 27,
+        fontSize: 27 * controlScale,
         fontStyle: "normal",
         fontWeight: 700,
         lineHeight: 1,

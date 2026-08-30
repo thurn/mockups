@@ -12,22 +12,30 @@ import {
 } from "./ControlInteraction";
 import { ActionLabelRaster, ActionRasterFrame } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
+import { dynamicTypeScale, useFontScale } from "./FontScale";
 
 export function ActionButton({
   children,
   disabled = false,
+  maxTextScale,
   onClick,
 }: {
   children: ReactNode;
   disabled?: boolean;
+  maxTextScale?: number;
   onClick?: () => void;
 }) {
   const { state, handlers } = useInteraction();
   const reduceMotion = useReducedMotion();
   const highlighted = state.hovered || state.focused;
   const { mode } = useUiRenderMode();
+  const { fontScale } = useFontScale();
   const usingPng = mode === "png";
   const rasterLabel = typeof children === "string" ? children.toLowerCase() : undefined;
+  const textScale = Math.min(
+    dynamicTypeScale(fontScale, "navigation"),
+    maxTextScale ?? Number.POSITIVE_INFINITY,
+  );
 
   return (
     <span
@@ -91,7 +99,7 @@ export function ActionButton({
             boxShadow="inset 0 0 0 4px #071127, inset 0 0 27px #000"
           />
         )}
-        {usingPng && rasterLabel && <ActionLabelRaster label={rasterLabel} />}
+        {usingPng && rasterLabel && <ActionLabelRaster label={rasterLabel} scale={textScale} />}
         <span
           style={{
             position: "relative",
@@ -106,7 +114,7 @@ export function ActionButton({
             WebkitTextFillColor: "transparent",
             WebkitTextStroke: "1px #f7ffff",
             fontFamily: "'Barlow Condensed', Impact, sans-serif",
-            fontSize: 91,
+            fontSize: 91 * textScale,
             fontStyle: "italic",
             fontWeight: 800,
             lineHeight: 0.9,

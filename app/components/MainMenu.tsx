@@ -12,6 +12,7 @@ import { frameClip, frameInteriorBounds } from "./styles";
 import { MusicPlaybackIndicator } from "./MusicPlaybackIndicator";
 import { useUiRenderMode } from "./UiRenderMode";
 import Image from "next/image";
+import { useFontScale } from "./FontScale";
 
 const menuItems = ["Play", "Settings", "About", "Quit"];
 const menuButtonHeight = 140;
@@ -24,6 +25,8 @@ export function MainMenu() {
   const isExiting = exitState === "exiting";
   const { mode } = useUiRenderMode();
   const usingPng = mode === "png";
+  const { fontScale } = useFontScale();
+  const menuElementScale = 1 + (fontScale - 1) * 0.35;
 
   const dismissMenu = useCallback(() => {
     setExitState((current) => {
@@ -166,15 +169,23 @@ export function MainMenu() {
             style={{
               position: "absolute",
               zIndex: 4,
-              top: menuTop,
+              top: menuTop + (fontScale - 1) * 100,
               left: 132,
               width: 760,
               display: "grid",
-              gap: menuGap,
+              gridAutoRows: menuButtonHeight * menuElementScale,
+              height: fontScale === 1 ? undefined : 700 - (fontScale - 1) * 290,
+              gap: menuGap * menuElementScale,
+              overflowX: "hidden",
+              overflowY: fontScale === 1 ? "visible" : "auto",
+              overscrollBehavior: "contain",
+              scrollbarColor: "#4b86d2 #061126",
+              scrollbarWidth: "thin",
+              touchAction: fontScale === 1 ? undefined : "pan-y",
             }}
           >
             {menuItems.map((item) => (
-              <div key={item} style={{ height: menuButtonHeight }}>
+              <div key={item} style={{ height: menuButtonHeight * menuElementScale }}>
                 <ActionButton
                   disabled={isExiting}
                   onClick={

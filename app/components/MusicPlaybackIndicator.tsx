@@ -2,8 +2,11 @@
 
 import { SpeakerSlashIcon } from "@phosphor-icons/react/dist/csr/SpeakerSlash";
 import { useBackgroundMusic } from "./BackgroundMusic";
+import { dynamicTypeScale, useFontScale } from "./FontScale";
 
 export function MusicPlaybackIndicator() {
+  const { fontScale } = useFontScale();
+  const navigationScale = dynamicTypeScale(fontScale, "navigation");
   const {
     isPlaying,
     masterVolume,
@@ -41,7 +44,7 @@ export function MusicPlaybackIndicator() {
         position: "absolute",
         zIndex: 4,
         right: 80,
-        bottom: 218,
+        bottom: 218 - (fontScale - 1) * 98,
         left: 80,
         display: "flex",
         flexDirection: "column",
@@ -52,7 +55,7 @@ export function MusicPlaybackIndicator() {
         color: "#fff",
         background: "transparent",
         fontFamily: "'Barlow Condensed', Impact, sans-serif",
-        fontSize: 56,
+        fontSize: 56 * navigationScale,
         fontWeight: 700,
         lineHeight: 1.02,
         letterSpacing: ".3px",
@@ -67,7 +70,7 @@ export function MusicPlaybackIndicator() {
       {!soundEnabled && (
         <SpeakerSlashIcon
           aria-hidden="true"
-          size={54}
+          size={54 * dynamicTypeScale(fontScale, "control")}
           weight="fill"
           style={{
             position: "absolute",

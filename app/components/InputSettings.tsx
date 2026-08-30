@@ -11,6 +11,7 @@ import { settingsRowHeight } from "./SettingRow";
 import { displayFont } from "./styles";
 import { SmallControlRasterFrame } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
+import { dynamicTypeScale, useFontScale } from "./FontScale";
 
 const bindings: Array<{
   action: string;
@@ -60,6 +61,10 @@ const bindings: Array<{
 ];
 
 export function InputSettings() {
+  const { fontScale } = useFontScale();
+  const inputWidth = 839;
+  const columns = fontScale === 1 ? "310px 310px 1fr" : "260px 340px 1fr";
+
   return (
     <div
       aria-label="Input bindings"
@@ -82,9 +87,10 @@ export function InputSettings() {
           position: "sticky",
           zIndex: 4,
           top: 0,
-          height: 100,
+          width: inputWidth,
+          height: 100 * dynamicTypeScale(fontScale, "control"),
           display: "grid",
-          gridTemplateColumns: "310px 310px 1fr",
+          gridTemplateColumns: columns,
           alignItems: "center",
           borderBottom: "2px solid rgba(43,74,123,.3)",
           background: "linear-gradient(180deg, #041126 82%, rgba(4,17,38,.96))",
@@ -101,16 +107,15 @@ export function InputSettings() {
           role="row"
           style={{
             boxSizing: "border-box",
-            height: settingsRowHeight,
+            width: inputWidth,
+            height: settingsRowHeight * fontScale,
             display: "grid",
-            gridTemplateColumns: "310px 310px 1fr",
+            gridTemplateColumns: columns,
             alignItems: "center",
             borderBottom: "2px solid rgba(43,74,123,.25)",
           }}
         >
-          <div role="rowheader" style={labelStyle}>
-            {binding.action}
-          </div>
+          <InputLabel>{binding.action}</InputLabel>
           <div role="cell" style={{ display: "grid", placeItems: "center" }}>
             <KeyCap value={binding.keyboard} direction={binding.keyboardDirection} />
           </div>
@@ -124,13 +129,15 @@ export function InputSettings() {
 }
 
 function ColumnHeading({ children }: { children: ReactNode }) {
+  const { fontScale } = useFontScale();
+
   return (
     <div
       role="columnheader"
       style={{
         color: "#f4f5fa",
         fontFamily: displayFont,
-        fontSize: 47,
+        fontSize: 47 * (1 + (fontScale - 1) * 0.2),
         lineHeight: 1,
         letterSpacing: "1.2px",
         textAlign: "center",
@@ -150,7 +157,9 @@ function KeyCap({
   direction?: "left" | "right" | "up" | "down";
 }) {
   const { mode } = useUiRenderMode();
+  const { fontScale } = useFontScale();
   const usingPng = mode === "png";
+  const controlScale = dynamicTypeScale(fontScale, "control");
 
   return (
     <div
@@ -159,8 +168,8 @@ function KeyCap({
       style={{
         position: "relative",
         boxSizing: "border-box",
-        width: 205,
-        height: 75,
+        width: 205 * controlScale,
+        height: 75 * controlScale,
         display: "grid",
         placeItems: "center",
         clipPath: controlOuterClip,
@@ -171,7 +180,7 @@ function KeyCap({
           : "linear-gradient(110deg, #55f1ff, #7ba3ff 54%, #ff48c6)",
         filter: "drop-shadow(0 0 7px rgba(42,103,255,.46))",
         fontFamily: displayFont,
-        fontSize: value.length > 2 ? 49 : 60,
+        fontSize: (value.length > 2 ? 49 : 60) * fontScale,
         lineHeight: 1,
         letterSpacing: value.length > 2 ? "1px" : 0,
         textShadow: "2px 4px 0 #19284a, 0 4px 7px #000",
@@ -195,10 +204,11 @@ function KeyCap({
 }
 
 function KeyboardArrow({ direction }: { direction: "left" | "right" | "up" | "down" }) {
+  const { fontScale } = useFontScale();
   const props = {
     "aria-hidden": true,
     color: "currentColor",
-    size: 65,
+    size: 65 * dynamicTypeScale(fontScale, "control"),
     weight: "bold" as const,
     style: {
       display: "block",
@@ -212,14 +222,25 @@ function KeyboardArrow({ direction }: { direction: "left" | "right" | "up" | "do
   return <ArrowDownIcon {...props} />;
 }
 
-const labelStyle = {
-  minWidth: 0,
-  paddingLeft: 18,
-  color: "#f5f5f8",
-  fontFamily: displayFont,
-  fontSize: 54,
-  lineHeight: 0.92,
-  letterSpacing: "1.3px",
-  textTransform: "uppercase" as const,
-  textShadow: "2px 4px 0 #182b4d, 0 5px 7px #000",
-};
+function InputLabel({ children }: { children: ReactNode }) {
+  const { fontScale } = useFontScale();
+
+  return (
+    <div
+      role="rowheader"
+      style={{
+        minWidth: 0,
+        paddingLeft: 18,
+        color: "#f5f5f8",
+        fontFamily: displayFont,
+        fontSize: 54 * fontScale,
+        lineHeight: 0.92,
+        letterSpacing: "1.3px",
+        textTransform: "uppercase",
+        textShadow: "2px 4px 0 #182b4d, 0 5px 7px #000",
+      }}
+    >
+      {children}
+    </div>
+  );
+}

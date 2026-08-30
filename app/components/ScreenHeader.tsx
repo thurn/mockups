@@ -2,6 +2,7 @@
 
 import { useUiRenderMode } from "./UiRenderMode";
 import Image from "next/image";
+import { dynamicTypeScale, useFontScale } from "./FontScale";
 
 export function ScreenHeader({ variant }: { variant: "game" | "settings" }) {
   const game = variant === "game";
@@ -28,6 +29,9 @@ export function ScreenHeader({ variant }: { variant: "game" | "settings" }) {
 }
 
 function GameWordmarkImage() {
+  const { fontScale } = useFontScale();
+  const headingScale = dynamicTypeScale(fontScale, "heading");
+
   return (
     <h1
       aria-label="Chess Chess Revolution"
@@ -49,8 +53,8 @@ function GameWordmarkImage() {
           position: "absolute",
           left: "calc(50% + 14px)",
           top: "calc(50% + 5px)",
-          width: 900,
-          height: 360,
+          width: 900 * headingScale,
+          height: 360 * headingScale,
           transform: "translate(-50%, -50%)",
         }}
       />
@@ -59,6 +63,8 @@ function GameWordmarkImage() {
 }
 
 function GameWordmark() {
+  const { fontScale } = useFontScale();
+
   return (
     <h1
       style={{
@@ -77,7 +83,7 @@ function GameWordmark() {
         WebkitTextFillColor: "transparent",
         WebkitTextStroke: "1.4px #f9ffff",
         fontFamily: "'Barlow Condensed', Impact, sans-serif",
-        fontSize: 160,
+        fontSize: 160 * dynamicTypeScale(fontScale, "heading"),
         fontStyle: "italic",
         fontWeight: 800,
         lineHeight: 0.74,
@@ -95,6 +101,8 @@ function GameWordmark() {
 }
 
 function SettingsTitle() {
+  const { fontScale } = useFontScale();
+
   return (
     <h1
       style={{
@@ -110,7 +118,7 @@ function SettingsTitle() {
         WebkitTextFillColor: "transparent",
         WebkitTextStroke: "1.4px #f9ffff",
         fontFamily: "'Barlow Condensed', Impact, sans-serif",
-        fontSize: 165,
+        fontSize: 165 * dynamicTypeScale(fontScale, "heading"),
         fontStyle: "italic",
         fontWeight: 800,
         lineHeight: 0.82,

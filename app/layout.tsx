@@ -5,6 +5,7 @@ import { ArcadeRouteTransition } from "./components/ArcadeRouteTransition";
 import { ArcadeScreenRouter } from "./components/ArcadeScreenRouter";
 import { BackgroundMusicProvider } from "./components/BackgroundMusic";
 import { UiRenderModeProvider } from "./components/UiRenderMode";
+import { FontScaleProvider } from "./components/FontScale";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -91,13 +92,15 @@ export default function RootLayout({
       >
         <BackgroundMusicProvider>
           <UiRenderModeProvider>
-            <PortraitViewport>
-              <ScreenFrame>
-                <ArcadeRouteTransition>
-                  <ArcadeScreenRouter />
-                </ArcadeRouteTransition>
-              </ScreenFrame>
-            </PortraitViewport>
+            <FontScaleProvider>
+              <PortraitViewport>
+                <ScreenFrame>
+                  <ArcadeRouteTransition>
+                    <ArcadeScreenRouter />
+                  </ArcadeRouteTransition>
+                </ScreenFrame>
+              </PortraitViewport>
+            </FontScaleProvider>
           </UiRenderModeProvider>
         </BackgroundMusicProvider>
       </body>

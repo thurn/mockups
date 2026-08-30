@@ -15,12 +15,14 @@ import { useArcadeNavigation } from "./ArcadeRouteTransition";
 import { useBackgroundMusic } from "./BackgroundMusic";
 import { fixedRasterImageStyle } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
+import { fontScaleFromLabel, fontScaleOptions, fontScaleToLabel, useFontScale } from "./FontScale";
 
 const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsScreen() {
   const { mode } = useUiRenderMode();
   const usingPng = mode === "png";
+  const { fontScaleLabel, setFontScale } = useFontScale();
   const { navigate, reduceMotion, setReduceMotion } = useArcadeNavigation();
   const {
     masterVolume,
@@ -33,7 +35,6 @@ export function SettingsScreen() {
   const [activeTab, setActiveTab] = useState<SettingsTab>("Gameplay");
   const [tabDirection, setTabDirection] = useState(1);
   const [language, setLanguage] = useState("English");
-  const [textSize, setTextSize] = useState("Medium");
   const [increaseMoveDuration, setIncreaseMoveDuration] = useState(true);
   const [uploadCrashReports, setUploadCrashReports] = useState(true);
   const [resolution, setResolution] = useState("1920 × 1080");
@@ -156,9 +157,9 @@ export function SettingsScreen() {
                   />
                   <SelectControl
                     label="Text Size"
-                    value={textSize}
-                    options={["Small", "Medium", "Large"]}
-                    onChange={setTextSize}
+                    value={fontScaleLabel}
+                    options={fontScaleOptions.map(fontScaleToLabel)}
+                    onChange={(value) => setFontScale(fontScaleFromLabel(value))}
                   />
                   <ToggleControl
                     checked={reduceMotion}
