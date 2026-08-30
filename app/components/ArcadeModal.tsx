@@ -15,6 +15,7 @@ export function ArcadeModal({
   confirmLabel = "OK",
   cancelLabel,
   danger = false,
+  closeOnEscape = true,
   reduceMotion,
   onConfirm,
   onClose,
@@ -26,6 +27,7 @@ export function ArcadeModal({
   confirmLabel?: string;
   cancelLabel?: string;
   danger?: boolean;
+  closeOnEscape?: boolean;
   reduceMotion: boolean;
   onConfirm: () => void;
   onClose: () => void;
@@ -42,7 +44,7 @@ export function ArcadeModal({
     previousFocusRef.current = document.activeElement as HTMLElement | null;
     const focusTimer = window.setTimeout(() => initialFocusRef.current?.focus(), 80);
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && closeOnEscape) {
         event.preventDefault();
         onClose();
         return;
@@ -70,7 +72,7 @@ export function ArcadeModal({
       document.removeEventListener("keydown", handleKeyDown);
       previousFocusRef.current?.focus();
     };
-  }, [onClose, open]);
+  }, [closeOnEscape, onClose, open]);
 
   const duration = reduceMotion ? 0.01 : 0.42;
 

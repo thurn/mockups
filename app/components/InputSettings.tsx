@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { ArrowDownIcon } from "@phosphor-icons/react/dist/csr/ArrowDown";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/csr/ArrowLeft";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/csr/ArrowRight";
@@ -12,13 +12,19 @@ import { displayFont } from "./styles";
 import { SmallControlRasterFrame } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
 import { dynamicTypeScale, useFontScale } from "./FontScale";
+import { useArcadeNavigation } from "./ArcadeRouteTransition";
+import { ArcadeModal } from "./ArcadeModal";
+import { useInteraction } from "./useInteraction";
+import { keyboardFocusFilter, keyboardFocusGradient } from "./ControlInteraction";
 
-const bindings: Array<{
+type Binding = {
   action: string;
   keyboard: string;
   keyboardDirection?: "left" | "right" | "up" | "down";
   controller: ReactNode;
-}> = [
+};
+
+const defaultBindings: Binding[] = [
   {
     action: "Left",
     keyboard: "Left arrow",
@@ -62,69 +68,170 @@ const bindings: Array<{
 
 export function InputSettings() {
   const { fontScale } = useFontScale();
+  const { reduceMotion } = useArcadeNavigation();
+  const [bindings, setBindings] = useState(defaultBindings);
+  const [editingAction, setEditingAction] = useState<string | null>(null);
+  const [conflictAction, setConflictAction] = useState<string | null>(null);
   const inputWidth = 839;
   const columns = fontScale === 1 ? "310px 310px 1fr" : "260px 340px 1fr";
+  const editingBinding = bindings.find((binding) => binding.action === editingAction);
+
+  const closeShortcutDialog = useCallback(() => {
+    setEditingAction(null);
+    setConflictAction(null);
+  }, []);
+
+  useEffect(() => {
+    if (!editingAction) return;
+
+    const captureShortcut = (event: KeyboardEvent) => {
+      if (["Shift", "Control", "Alt", "Meta"].includes(event.key)) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+
+      const nextShortcut = formatShortcut(event.key);
+      const conflict = bindings.find(
+        (binding) => binding.action !== editingAction && binding.keyboard === nextShortcut,
+      );
+      if (conflict) {
+        setConflictAction(conflict.action);
+        return;
+      }
+
+      setBindings((current) =>
+        current.map((binding) =>
+          binding.action === editingAction
+            ? {
+                ...binding,
+                keyboard: nextShortcut,
+                keyboardDirection: shortcutDirection(nextShortcut),
+              }
+            : binding,
+        ),
+      );
+      closeShortcutDialog();
+    };
+
+    window.addEventListener("keydown", captureShortcut, true);
+    return () => window.removeEventListener("keydown", captureShortcut, true);
+  }, [bindings, closeShortcutDialog, editingAction]);
+
+  const resetEditingShortcut = () => {
+    const defaultBinding = defaultBindings.find((binding) => binding.action === editingAction);
+    if (!defaultBinding) return;
+    setBindings((current) =>
+      current.map((binding) =>
+        binding.action === editingAction
+          ? {
+              ...binding,
+              keyboard: defaultBinding.keyboard,
+              keyboardDirection: defaultBinding.keyboardDirection,
+            }
+          : binding,
+      ),
+    );
+    closeShortcutDialog();
+  };
 
   return (
-    <div
-      aria-label="Input bindings"
-      role="table"
-      style={{
-        position: "relative",
-        height: 971,
-        overflowX: "hidden",
-        overflowY: "auto",
-        overscrollBehavior: "contain",
-        scrollbarColor: "#4b86d2 #061126",
-        scrollbarWidth: "thin",
-        touchAction: "pan-y",
-        WebkitOverflowScrolling: "touch",
-      }}
-    >
+    <>
       <div
-        role="row"
+        aria-label="Input bindings"
+        role="table"
         style={{
-          position: "sticky",
-          zIndex: 4,
-          top: 0,
-          width: inputWidth,
-          height: 100 * dynamicTypeScale(fontScale, "control"),
-          display: "grid",
-          gridTemplateColumns: columns,
-          alignItems: "center",
-          borderBottom: "2px solid rgba(43,74,123,.3)",
-          background: "linear-gradient(180deg, #041126 82%, rgba(4,17,38,.96))",
-          boxShadow: "0 8px 14px rgba(0,4,15,.35)",
+          position: "relative",
+          height: 971,
+          overflowX: "hidden",
+          overflowY: "auto",
+          overscrollBehavior: "contain",
+          scrollbarColor: "#4b86d2 #061126",
+          scrollbarWidth: "thin",
+          touchAction: "pan-y",
+          WebkitOverflowScrolling: "touch",
         }}
       >
-        <ColumnHeading>Action</ColumnHeading>
-        <ColumnHeading>Keyboard</ColumnHeading>
-        <ColumnHeading>Controller</ColumnHeading>
-      </div>
-      {bindings.map((binding) => (
         <div
-          key={binding.action}
           role="row"
           style={{
-            boxSizing: "border-box",
+            position: "sticky",
+            zIndex: 4,
+            top: 0,
             width: inputWidth,
-            height: settingsRowHeight * fontScale,
+            height: 100 * dynamicTypeScale(fontScale, "control"),
             display: "grid",
             gridTemplateColumns: columns,
             alignItems: "center",
-            borderBottom: "2px solid rgba(43,74,123,.25)",
+            borderBottom: "2px solid rgba(43,74,123,.3)",
+            background: "linear-gradient(180deg, #041126 82%, rgba(4,17,38,.96))",
+            boxShadow: "0 8px 14px rgba(0,4,15,.35)",
           }}
         >
-          <InputLabel>{binding.action}</InputLabel>
-          <div role="cell" style={{ display: "grid", placeItems: "center" }}>
-            <KeyCap value={binding.keyboard} direction={binding.keyboardDirection} />
-          </div>
-          <div role="cell" style={{ display: "grid", placeItems: "center" }}>
-            {binding.controller}
-          </div>
+          <ColumnHeading>Action</ColumnHeading>
+          <ColumnHeading>Keyboard</ColumnHeading>
+          <ColumnHeading>Controller</ColumnHeading>
         </div>
-      ))}
-    </div>
+        {bindings.map((binding) => (
+          <div
+            key={binding.action}
+            role="row"
+            style={{
+              boxSizing: "border-box",
+              width: inputWidth,
+              height: settingsRowHeight * fontScale,
+              display: "grid",
+              gridTemplateColumns: columns,
+              alignItems: "center",
+              borderBottom: "2px solid rgba(43,74,123,.25)",
+            }}
+          >
+            <InputLabel>{binding.action}</InputLabel>
+            <div role="cell" style={{ display: "grid", placeItems: "center" }}>
+              <KeyCap
+                action={binding.action}
+                value={binding.keyboard}
+                direction={binding.keyboardDirection}
+                onClick={() => {
+                  setConflictAction(null);
+                  setEditingAction(binding.action);
+                }}
+              />
+            </div>
+            <div role="cell" style={{ display: "grid", placeItems: "center" }}>
+              {binding.controller}
+            </div>
+          </div>
+        ))}
+      </div>
+      <ArcadeModal
+        open={Boolean(editingBinding)}
+        title="Change Shortcut"
+        cancelLabel="Cancel"
+        confirmLabel="Reset"
+        closeOnEscape={false}
+        reduceMotion={reduceMotion}
+        onClose={closeShortcutDialog}
+        onConfirm={resetEditingShortcut}
+      >
+        <span style={{ display: "block", color: "#ffffff" }}>
+          Press a key for {editingBinding?.action}
+        </span>
+        <span
+          aria-live="polite"
+          style={{
+            display: "block",
+            marginTop: 30,
+            color: conflictAction ? "#ff5576" : "#67efff",
+            fontSize: 40,
+            letterSpacing: 1.5,
+            textShadow: conflictAction
+              ? "0 0 12px rgba(255,45,101,.72)"
+              : "0 0 12px rgba(45,221,255,.72)",
+          }}
+        >
+          {conflictAction ? `Already used by ${conflictAction}` : "Waiting for input..."}
+        </span>
+      </ArcadeModal>
+    </>
   );
 }
 
@@ -150,22 +257,30 @@ function ColumnHeading({ children }: { children: ReactNode }) {
 }
 
 function KeyCap({
+  action,
   value,
   direction,
+  onClick,
 }: {
+  action: string;
   value: string;
   direction?: "left" | "right" | "up" | "down";
+  onClick: () => void;
 }) {
   const { mode } = useUiRenderMode();
   const { fontScale } = useFontScale();
   const usingPng = mode === "png";
   const controlScale = dynamicTypeScale(fontScale, "control");
   const compact = value.length === 1 && !direction;
+  const { state, handlers } = useInteraction();
+  const highlighted = state.hovered || state.focused;
 
   return (
-    <div
-      aria-label={`${value} key`}
-      role="img"
+    <button
+      {...handlers}
+      type="button"
+      aria-label={`Change ${action} keyboard shortcut. Current key: ${value}`}
+      onClick={onClick}
       style={{
         position: "relative",
         boxSizing: "border-box",
@@ -175,16 +290,29 @@ function KeyCap({
         placeItems: "center",
         clipPath: controlOuterClip,
         padding: 3,
+        border: 0,
+        outline: 0,
         color: "#f6f6fa",
         background: usingPng
           ? "transparent"
-          : "linear-gradient(110deg, #55f1ff, #7ba3ff 54%, #ff48c6)",
-        filter: "drop-shadow(0 0 7px rgba(42,103,255,.46))",
+          : state.focused
+            ? keyboardFocusGradient
+            : highlighted
+              ? "linear-gradient(110deg, #c1ffff, #b7c9ff 54%, #ff79dd)"
+              : "linear-gradient(110deg, #55f1ff, #7ba3ff 54%, #ff48c6)",
+        filter: state.focused
+          ? keyboardFocusFilter
+          : highlighted
+            ? "brightness(1.12) drop-shadow(0 0 13px rgba(83,226,255,.78))"
+            : "drop-shadow(0 0 7px rgba(42,103,255,.46))",
         fontFamily: displayFont,
         fontSize: (value.length > 2 ? 49 : 60) * fontScale,
         lineHeight: 1,
         letterSpacing: value.length > 2 ? "1px" : 0,
         textShadow: "2px 4px 0 #19284a, 0 4px 7px #000",
+        cursor: "pointer",
+        transform: state.pressed ? "scale(.955)" : "scale(1)",
+        transition: "transform 90ms cubic-bezier(.2,.8,.2,1), filter 140ms ease",
       }}
     >
       {usingPng ? (
@@ -200,8 +328,33 @@ function KeyCap({
       <span style={{ position: "relative", zIndex: 1 }}>
         {direction ? <KeyboardArrow direction={direction} /> : value}
       </span>
-    </div>
+    </button>
   );
+}
+
+function shortcutDirection(value: string): Binding["keyboardDirection"] {
+  if (value === "Left arrow") return "left";
+  if (value === "Right arrow") return "right";
+  if (value === "Up arrow") return "up";
+  if (value === "Down arrow") return "down";
+  return undefined;
+}
+
+function formatShortcut(key: string) {
+  const labels: Record<string, string> = {
+    ArrowLeft: "Left arrow",
+    ArrowRight: "Right arrow",
+    ArrowUp: "Up arrow",
+    ArrowDown: "Down arrow",
+    " ": "Space",
+    Escape: "Esc",
+    Enter: "Enter",
+    Backspace: "Backspace",
+    Delete: "Delete",
+    Tab: "Tab",
+  };
+
+  return labels[key] ?? (key.length === 1 ? key.toLocaleUpperCase() : key);
 }
 
 function KeyboardArrow({ direction }: { direction: "left" | "right" | "up" | "down" }) {
