@@ -35,6 +35,8 @@ export function MusicPlaybackIndicator() {
       aria-live="polite"
       data-testid="music-playback-indicator"
       onClick={toggleSound}
+      onKeyDown={(event) => event.stopPropagation()}
+      onPointerDown={(event) => event.stopPropagation()}
       style={{
         position: "absolute",
         zIndex: 4,
