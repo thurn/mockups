@@ -78,11 +78,9 @@ function SettingsTabButton({
           outline: 0,
           background: state.focused
             ? keyboardFocusGradient
-            : active
-              ? "linear-gradient(112deg, #72f5ff 0%, #53afff 44%, #9a83ff 68%, #ff4ed3 100%)"
-              : state.hovered
-                ? "linear-gradient(110deg, #70d9ff, #5e80bd 52%, #ae69a4)"
-                : "linear-gradient(110deg, #45678e, #253f67 52%, #75517d)",
+            : state.hovered
+              ? "linear-gradient(112deg, #efffff 0%, #6be6ff 40%, #c3adff 68%, #ff8de4 100%)"
+              : "linear-gradient(112deg, #72f5ff 0%, #53afff 44%, #9a83ff 68%, #ff4ed3 100%)",
           filter: state.focused
             ? keyboardFocusFilter
             : state.hovered
