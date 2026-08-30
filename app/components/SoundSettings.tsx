@@ -106,10 +106,10 @@ function VolumeControl({
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     handlers.onKeyDown(event);
     const changes: Record<string, number> = {
-      ArrowDown: -1,
-      ArrowLeft: -1,
-      ArrowRight: 1,
-      ArrowUp: 1,
+      ArrowDown: -5,
+      ArrowLeft: -5,
+      ArrowRight: 5,
+      ArrowUp: 5,
       PageDown: -10,
       PageUp: 10,
     };
@@ -244,7 +244,7 @@ function VolumeControl({
             type="range"
             min={0}
             max={100}
-            step={1}
+            step={5}
             value={value}
             onKeyDown={handleKeyDown}
             onChange={(event) => {
