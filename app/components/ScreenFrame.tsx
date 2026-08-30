@@ -69,7 +69,7 @@ export function ScreenFrame({ children }: { children: ReactNode }) {
           inset: 0,
           pointerEvents: "none",
           transformOrigin: "50% 47.07%",
-          willChange: "filter, opacity, transform",
+          willChange: exitFrame ? "filter, opacity, transform" : undefined,
         }}
       >
         <div
