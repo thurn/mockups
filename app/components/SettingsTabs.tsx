@@ -61,7 +61,7 @@ function SettingsTabButton({
         type="button"
         onClick={() => onSelect(tab)}
         aria-current={active ? "page" : undefined}
-        animate={{ y: active ? 0 : 3, scale: active ? 1 : 0.985 }}
+        animate={{ y: active ? 0 : 3, scale: 1 }}
         whileHover={{ y: active ? 0 : -1, scale: 1 }}
         whileTap={{ scale: 0.955 }}
         transition={{ type: "spring", stiffness: 520, damping: 32, mass: 0.7 }}
@@ -98,7 +98,7 @@ function SettingsTabButton({
         }}
       >
         <ClippedInset
-          inset={active ? 4 : 2}
+          inset={4}
           clipPath={tabInnerClip}
           background={
             active
@@ -108,7 +108,7 @@ function SettingsTabButton({
           boxShadow={
             active
               ? "inset 0 0 34px rgba(20,98,226,.52), inset 0 -3px 0 #f14dd7"
-              : "inset 0 0 0 3px #020716"
+              : "inset 0 0 24px rgba(0,0,0,.5)"
           }
         />
         <span style={{ position: "relative", zIndex: 1 }}>{tab}</span>
