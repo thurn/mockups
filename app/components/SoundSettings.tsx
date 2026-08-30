@@ -1,4 +1,7 @@
-import type { PointerEvent as ReactPointerEvent } from "react";
+"use client";
+
+import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { ArcadeSliderEffect } from "./ArcadeSliderEffect";
 import { ToggleControl } from "./SettingsControls";
 import { SettingRow } from "./SettingRow";
 
@@ -66,6 +69,9 @@ function VolumeControl({
   onChange: (value: number) => void;
   first?: boolean;
 }) {
+  const [burstId, setBurstId] = useState(0);
+  const pointerActive = useRef(false);
+
   const updateFromPointer = (event: ReactPointerEvent<HTMLInputElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
     const trackLeft =
@@ -136,23 +142,32 @@ function VolumeControl({
               boxSizing: "border-box",
               width: 43,
               height: 64,
-              clipPath:
-                "polygon(23% 0, 77% 0, 100% 17%, 100% 83%, 77% 100%, 23% 100%, 0 83%, 0 17%)",
-              padding: 4,
-              background: "linear-gradient(135deg, #c8ffff, #599cff 55%, #875fff)",
-              filter: "drop-shadow(0 0 7px #1479ff)",
               pointerEvents: "none",
             }}
           >
             <div
               style={{
+                boxSizing: "border-box",
                 width: "100%",
                 height: "100%",
-                clipPath: "inherit",
-                background: "linear-gradient(180deg, #07142b, #02091b)",
-                boxShadow: "inset 0 0 12px #000",
+                clipPath:
+                  "polygon(23% 0, 77% 0, 100% 17%, 100% 83%, 77% 100%, 23% 100%, 0 83%, 0 17%)",
+                padding: 4,
+                background: "linear-gradient(135deg, #c8ffff, #599cff 55%, #875fff)",
+                filter: "drop-shadow(0 0 7px #1479ff)",
               }}
-            />
+            >
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  clipPath: "inherit",
+                  background: "linear-gradient(180deg, #07142b, #02091b)",
+                  boxShadow: "inset 0 0 12px #000",
+                }}
+              />
+            </div>
+            <ArcadeSliderEffect burstId={burstId} />
           </div>
           <input
             aria-label={label}
@@ -161,8 +176,15 @@ function VolumeControl({
             max={100}
             step={1}
             value={value}
-            onChange={(event) => onChange(Number(event.target.value))}
+            onChange={(event) => {
+              const nextValue = Number(event.target.value);
+              onChange(nextValue);
+              if (!pointerActive.current && nextValue !== value) {
+                setBurstId((current) => current + 1);
+              }
+            }}
             onPointerDown={(event) => {
+              pointerActive.current = true;
               event.currentTarget.focus();
               event.currentTarget.setPointerCapture(event.pointerId);
               event.preventDefault();
@@ -176,11 +198,14 @@ function VolumeControl({
             }}
             onPointerUp={(event) => {
               updateFromPointer(event);
+              pointerActive.current = false;
+              setBurstId((current) => current + 1);
               if (event.currentTarget.hasPointerCapture(event.pointerId)) {
                 event.currentTarget.releasePointerCapture(event.pointerId);
               }
             }}
             onPointerCancel={(event) => {
+              pointerActive.current = false;
               if (event.currentTarget.hasPointerCapture(event.pointerId)) {
                 event.currentTarget.releasePointerCapture(event.pointerId);
               }
