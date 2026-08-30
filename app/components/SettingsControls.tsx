@@ -8,6 +8,7 @@ import {
   controlInnerClip,
   controlOuterClip,
 } from "./ClippedInset";
+import { ArcadeCheckboxEffect } from "./ArcadeCheckboxEffect";
 import { SettingRow } from "./SettingRow";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
@@ -293,6 +294,7 @@ export function ToggleControl({
           transform: `translateY(${offsetY}px)`,
         }}
       >
+        <ArcadeCheckboxEffect checked={checked} />
         <input
           suppressHydrationWarning
           aria-label={ariaLabel ?? String(label)}
@@ -314,6 +316,7 @@ export function ToggleControl({
           aria-hidden="true"
           style={{
             position: "relative",
+            zIndex: 1,
             boxSizing: "border-box",
             width: 77,
             height: 77,
