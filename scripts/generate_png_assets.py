@@ -87,8 +87,8 @@ ARCADE_SCREEN_CSS = {
         (100, "#ff5ec2"),
     )),
     "filter": (
-        DropShadow(0, 0, 10, "#368dffb3"),
-        DropShadow(0, 0, 9, "#ff2ac061"),
+        DropShadow(0, 0, 10, "#368dff24"),
+        DropShadow(0, 0, 9, "#ff2ac018"),
     ),
 }
 
@@ -168,13 +168,13 @@ SETTINGS_TAB_CSS = {
         (0, "#72f5ff"), (44, "#53afff"), (68, "#9a83ff"), (100, "#ff4ed3"),
     )),
     "active-background": LinearGradient(112, (
-        (0, "#d9ffff"), (40, "#68ddff"), (68, "#baa8ff"), (100, "#ff75dc"),
+        (0, "#72f5ff"), (44, "#53afff"), (68, "#9a83ff"), (100, "#ff4ed3"),
     )),
     "interior": LinearGradient(180, ((0, "#071328"), (100, "#020817"))),
     "active-interior": LinearGradient(180, ((0, "#071831"), (100, "#030b1d"))),
     "inner-edge": "#123b78a8",
     "active-bottom-edge": "#f14dd7",
-    "glow": DropShadow(0, 0, 10, "#2385ffdb"),
+    "glow": DropShadow(0, 0, 10, "#2385ff44"),
     # Source pixels at 2x are printed below. Only the center band stretches.
     "slice-insets": (30, 42, 18, 42),
 }
@@ -186,10 +186,10 @@ CHECKBOX_CSS = {
     "border-radius": 11,
     "border-color": "#4ba3ff",
     "interior": LinearGradient(180, ((0, "#06142b"), (100, "#02091a"))),
-    "glow": (DropShadow(0, 0, 10, "#166cff"), DropShadow(0, 0, 5, "#6af6ff")),
+    "glow": (DropShadow(0, 0, 10, "#166cff80"), DropShadow(0, 0, 5, "#6af6ff70")),
     "check-size": (50, 44),
     "check-color": "#61f1ff",
-    "check-glow": DropShadow(0, 0, 7, "#128dff"),
+    "check-glow": DropShadow(0, 0, 7, "#128dffb0"),
 }
 
 VOLUME_SLIDER_CSS = {
@@ -213,7 +213,8 @@ VOLUME_SLIDER_CSS = {
 }
 
 ACTION_LABEL_CSS = {
-    "canvas": (480, 120),
+    "canvas": (480, 146),
+    "content-offset": (-3, 28),
     "font-family": FONT_FILE,
     "font-size": 91,
     "letter-spacing": -2,
@@ -383,6 +384,56 @@ def render_frame(style: FrameStyle, scale: int, antialias_scale: int) -> Image.I
     return result
 
 
+def render_settings_panel(scale: int, antialias_scale: int) -> Image.Image:
+    """Render the panel's three CSS background layers in their original order."""
+    style = SETTINGS_PANEL_CSS
+    size = (style.width * scale, style.height * scale)
+    outer = polygon_mask((style.width, style.height), style.outer_clip, scale, antialias_scale)
+    inset = style.border_width
+    inner_points = [(x + inset, y + inset) for x, y in style.inner_clip]
+    inner = polygon_mask((style.width, style.height), inner_points, scale, antialias_scale)
+    result = Image.new("RGBA", size)
+    for shadow in style.glow:
+        result.alpha_composite(colored_shadow(outer, shadow, scale))
+    result.alpha_composite(apply_mask(linear_gradient(size, style.border), outer))
+    result.alpha_composite(apply_mask(linear_gradient(size, style.interior), inner))
+
+    edge_tint = Image.new("RGBA", size)
+    edge_draw = ImageDraw.Draw(edge_tint)
+    for x in range(size[0]):
+        amount = x / max(1, size[0] - 1)
+        if amount < 0.25:
+            alpha = round(18 * (1 - amount / 0.25))
+            color = (0, 83, 190, alpha)
+        elif amount > 0.75:
+            alpha = round(14 * ((amount - 0.75) / 0.25))
+            color = (126, 0, 145, alpha)
+        else:
+            color = (0, 0, 0, 0)
+        edge_draw.line((x, 0, x, size[1]), fill=color)
+    result.alpha_composite(apply_mask(edge_tint, inner))
+
+    radial = Image.new("RGBA", size)
+    radial_draw = ImageDraw.Draw(radial)
+    center_x, center_y = size[0] * 0.07, size[1] * 0.46
+    radius_x, radius_y = size[0] * 0.36, size[1] * 0.36
+    for step in range(60, -1, -1):
+        ratio = step / 60
+        alpha = round(38 * (1 - ratio))
+        radial_draw.ellipse(
+            (
+                center_x - radius_x * ratio,
+                center_y - radius_y * ratio,
+                center_x + radius_x * ratio,
+                center_y + radius_y * ratio,
+            ),
+            fill=(5, 83, 184, alpha),
+        )
+    result.alpha_composite(apply_mask(radial, inner))
+    add_inner_shadow(result, inner, style.inner_shadow, scale)
+    return result
+
+
 def render_arcade_frame(scale: int, antialias_scale: int) -> Image.Image:
     css = ARCADE_SCREEN_CSS
     width, height = css["width"], css["height"]
@@ -407,11 +458,6 @@ def render_arcade_frame(scale: int, antialias_scale: int) -> Image.Image:
         result.alpha_composite(colored_shadow(rail, shadow, scale))
     result.alpha_composite(apply_mask(linear_gradient(size, css["background"]), rail))
 
-    # Fine white specular edge on the top/left and dark bevel on the inner edge.
-    highlight = ImageChops.subtract(rail, rail.filter(ImageFilter.GaussianBlur(0.75 * scale)))
-    highlight_layer = Image.new("RGBA", size, (235, 255, 255, 0))
-    highlight_layer.putalpha(highlight.point(lambda value: round(value * 0.50)))
-    result.alpha_composite(highlight_layer)
     return result
 
 
@@ -612,7 +658,8 @@ def render_volume_slider_parts(scale: int, antialias_scale: int) -> tuple[Image.
     add_inner_shadow(track, track_inner, 8, scale)
 
     fill = Image.new("RGBA", size)
-    fill_mask = rounded_rectangle_mask((width, height), track_box, 4, scale, antialias_scale)
+    fill_box = (bx + border, by + border, bw - border * 2, bh - border * 2)
+    fill_mask = rounded_rectangle_mask((width, height), fill_box, 4, scale, antialias_scale)
     fill.alpha_composite(colored_shadow(fill_mask, DropShadow(0, 0, 8, "#2d84ffcc"), scale))
     fill.alpha_composite(apply_mask(linear_gradient(size, css["fill"]), fill_mask))
 
@@ -657,9 +704,9 @@ def render_action_label(text: str, scale: int, antialias_scale: int) -> Image.Im
     painted.alpha_composite(apply_mask(linear_gradient(local.size, css["background"]), local))
     transformed = affine_logo(painted, 1, 1, css["skew-x"])
     result = Image.new("RGBA", canvas)
-    x = (canvas[0] - transformed.width) // 2
+    x = (canvas[0] - transformed.width) // 2 + css["content-offset"][0] * render_scale
     # Fixed cap-height and baseline: every source uses the same font metrics and vertical origin.
-    y = round(2 * render_scale)
+    y = round(css["content-offset"][1] * render_scale)
     placed = Image.new("L", canvas, 0)
     placed.paste(transformed.getchannel("A"), (x, y))
     for shadow in reversed(css["shadows"]):
@@ -675,15 +722,44 @@ def render_main_menu_background(scale: int) -> Image.Image:
     top, right, bottom, left = css["interior-insets"]
     ix, iy = left * scale, top * scale
     iw, ih = (width - left - right) * scale, (height - top - bottom) * scale
-    interior = Image.new("RGBA", (iw, ih), (1, 5, 18, 255))
-    draw = ImageDraw.Draw(interior, "RGBA")
+    interior = Image.new("RGBA", (iw, ih), (0, 0, 0, 255))
 
-    center_x, center_y = iw * 0.5, ih * 0.68
-    for step in range(90, 0, -1):
-        ratio = step / 90
-        alpha = round(46 * (1 - ratio) ** 1.7)
-        radius_x, radius_y = iw * 0.49 * ratio, ih * 0.49 * ratio
-        draw.ellipse((center_x - radius_x, center_y - radius_y, center_x + radius_x, center_y + radius_y), fill=(18, 76, 144, alpha))
+    # Render CSS-like radial gradients at quarter resolution and upscale. Keeping
+    # the overlay alpha separate avoids punching a translucent ellipse through
+    # the otherwise opaque background.
+    def radial_layer(
+        center: tuple[float, float], color: RGBA, inner_stop: float, outer_stop: float
+    ) -> Image.Image:
+        sample_width = max(2, iw // 4)
+        sample_height = max(2, ih // 4)
+        cx, cy = center[0] * sample_width, center[1] * sample_height
+        pixels: list[RGBA] = []
+        for sample_y in range(sample_height):
+            for sample_x in range(sample_width):
+                distance = math.hypot(
+                    (sample_x - cx) / (sample_width * 0.5),
+                    (sample_y - cy) / (sample_height * 0.5),
+                )
+                if distance <= inner_stop:
+                    alpha = color[3]
+                elif distance >= outer_stop:
+                    alpha = 0
+                else:
+                    alpha = round(color[3] * (outer_stop - distance) / (outer_stop - inner_stop))
+                pixels.append(color[:3] + (alpha,))
+        layer = Image.new("RGBA", (sample_width, sample_height))
+        layer.putdata(pixels)
+        return layer.resize((iw, ih), Image.Resampling.BICUBIC)
+
+    # First ArcadeAttractMode background layer.
+    interior.alpha_composite(radial_layer((0.50, 0.68), (18, 76, 144, 46), 0, 0.49))
+    vertical = Image.new("RGBA", (iw, ih))
+    vertical_draw = ImageDraw.Draw(vertical)
+    for y in range(ih):
+        amount = y / max(1, ih - 1)
+        color = mix((3, 9, 26, 5), (1, 5, 18, 61), amount)
+        vertical_draw.line((0, y, iw, y), fill=color)
+    interior.alpha_composite(vertical)
 
     # Deterministic LCG mirrors ArcadeAttractMode.tsx.
     seed = 0xA77AC7
@@ -693,44 +769,98 @@ def render_main_menu_background(scale: int) -> Image.Image:
         return seed / 0x100000000
 
     colors = ("#bff8ff", "#59cfff", "#ffffff", "#cf9cff", "#ff69d7")
-    for index in range(css["star-count"]):
-        random_value(); random_value(); random_value(); random_value()
-        size = (3 + random_value() * 4.5) * scale
-        x = (0.03 + random_value() * 0.94) * iw
-        y = (0.12 + random_value() * 0.86) * ih
-        color = rgba(colors[index % len(colors)])
-        glow = Image.new("RGBA", interior.size)
-        glow_draw = ImageDraw.Draw(glow)
-        radius = size * (3 if index % 9 == 0 else 1.8)
-        glow_draw.ellipse((x - radius, y - radius, x + radius, y + radius), fill=color[:3] + (105,))
-        glow = glow.filter(ImageFilter.GaussianBlur(max(1, size)))
-        interior.alpha_composite(glow)
-        draw.ellipse((x - size / 2, y - size / 2, x + size / 2, y + size / 2), fill=color[:3] + (158,))
-
     grid = Image.new("RGBA", interior.size)
     grid_draw = ImageDraw.Draw(grid, "RGBA")
     gx0, gy0 = iw * 0.04, ih * 0.20
     gw, gh = iw * 0.92, ih * 0.75
     vanishing = (gx0 + gw / 2, gy0 + gh * 0.21)
-    ray_end_y = gy0 + gh * 0.97
+    ray_length = gh * 0.76
     for angle in (-22, -16.5, -11, -5.5, 0, 5.5, 11, 16.5, 22):
-        end_x = vanishing[0] + math.tan(math.radians(angle)) * (ray_end_y - vanishing[1])
-        grid_draw.line((vanishing[0], vanishing[1], end_x, ray_end_y), fill=(94, 212, 255, 82), width=2 * scale)
+        radians = math.radians(angle)
+        end = (
+            vanishing[0] - math.sin(radians) * ray_length,
+            vanishing[1] + math.cos(radians) * ray_length,
+        )
+        segments = 80
+        for segment in range(segments):
+            start_amount = segment / segments
+            end_amount = (segment + 1) / segments
+            alpha = round((20 + (199 - 20) * start_amount) * 0.26)
+            grid_draw.line(
+                (
+                    vanishing[0] + (end[0] - vanishing[0]) * start_amount,
+                    vanishing[1] + (end[1] - vanishing[1]) * start_amount,
+                    vanishing[0] + (end[0] - vanishing[0]) * end_amount,
+                    vanishing[1] + (end[1] - vanishing[1]) * end_amount,
+                ),
+                fill=(94, 212, 255, alpha),
+                width=2 * scale,
+            )
     for line_top, line_width in ((23, 10), (28, 18), (34, 29), (42, 42), (52, 57), (65, 75), (82, 96)):
         y = gy0 + gh * line_top / 100
         half = gw * line_width / 200
-        grid_draw.line((vanishing[0] - half, y, vanishing[0] + half, y), fill=(140, 172, 255, 80), width=2 * scale)
-    grid = grid.filter(ImageFilter.GaussianBlur(0.35 * scale))
+        start_x = vanishing[0] - half
+        line_pixels = max(2, round(half * 2))
+        for pixel in range(line_pixels):
+            amount = pixel / max(1, line_pixels - 1)
+            edge = min(1, amount / 0.12, (1 - amount) / 0.12)
+            color = mix((94, 212, 255, 45), (210, 116, 255, 41), amount)
+            grid_draw.rectangle(
+                (start_x + pixel, y, start_x + pixel + 1, y + 2 * scale),
+                fill=color[:3] + (round(color[3] * edge),),
+            )
+    grid_mask = Image.new("L", interior.size, 0)
+    grid_mask_pixels = grid_mask.load()
+    for y in range(max(0, round(gy0)), min(ih, round(gy0 + gh))):
+        amount = (y - gy0) / gh
+        opacity = min(1, amount / 0.17, (1 - amount) / 0.14)
+        ImageDraw.Draw(grid_mask).line((round(gx0), y, round(gx0 + gw), y), fill=round(255 * opacity))
+    grid.putalpha(ImageChops.multiply(grid.getchannel("A"), grid_mask))
     interior.alpha_composite(grid)
 
-    vignette = Image.new("RGBA", interior.size)
-    vignette_draw = ImageDraw.Draw(vignette, "RGBA")
-    for step in range(55):
-        ratio = step / 54
-        alpha = round(178 * ratio ** 2.2)
-        inset_x, inset_y = iw * 0.22 * (1 - ratio), ih * 0.18 * (1 - ratio)
-        vignette_draw.rectangle((inset_x, inset_y, iw - inset_x, ih - inset_y), outline=(1, 4, 16, alpha), width=max(1, 2 * scale))
-    interior.alpha_composite(vignette)
+    # The z-index 3 vignette sits over the grid but below particles.
+    interior.alpha_composite(radial_layer((0.50, 0.44), (1, 4, 16, 179), 0.26, 0.60))
+    edge_layer = Image.new("RGBA", interior.size)
+    edge_draw = ImageDraw.Draw(edge_layer)
+    for x in range(iw):
+        amount = x / max(1, iw - 1)
+        edge_alpha = 0
+        if amount < 0.17:
+            edge_alpha = round(56 * (1 - amount / 0.17))
+        elif amount > 0.83:
+            edge_alpha = round(56 * ((amount - 0.83) / 0.17))
+        edge_draw.line((x, 0, x, ih), fill=(1, 3, 12, edge_alpha))
+    interior.alpha_composite(edge_layer)
+
+    # Deterministic reduced-motion starfield, above the vignette exactly as in CSS.
+    star_layer = Image.new("RGBA", interior.size)
+    for index in range(css["star-count"]):
+        random_value(); random_value(); random_value(); random_value()
+        original_size = (3 + random_value() * 4.5) * scale
+        x = (0.03 + random_value() * 0.94) * iw + original_size * 0.075
+        y = (0.12 + random_value() * 0.86) * ih + original_size * 0.075
+        size = original_size * 0.85
+        color = rgba(colors[index % len(colors)])
+        largest_blur = original_size * (6 if index % 9 == 0 else 3.5) * 0.24
+        pad = max(4, math.ceil(largest_blur * 3))
+        patch_size = max(2, math.ceil(size + pad * 2))
+        source = Image.new("L", (patch_size, patch_size), 0)
+        source_draw = ImageDraw.Draw(source)
+        source_draw.ellipse((pad, pad, pad + size, pad + size), fill=158)
+        star_patch = Image.new("RGBA", source.size)
+        white_blur = source.filter(ImageFilter.GaussianBlur((3 if index % 9 == 0 else 2) * scale * 0.5))
+        white = Image.new("RGBA", source.size, (255, 255, 255, 0))
+        white.putalpha(white_blur)
+        star_patch.alpha_composite(white)
+        blur_sizes = (original_size * 3, original_size * 6) if index % 9 == 0 else (original_size * 3.5,)
+        for blur_size in blur_sizes:
+            glow_mask = source.filter(ImageFilter.GaussianBlur(max(1, blur_size * 0.24)))
+            glow = Image.new("RGBA", source.size, color[:3] + (0,))
+            glow.putalpha(glow_mask.point(lambda value: round(value * 0.62)))
+            star_patch.alpha_composite(glow)
+        ImageDraw.Draw(star_patch).ellipse((pad, pad, pad + size, pad + size), fill=color[:3] + (158,))
+        star_layer.alpha_composite(star_patch, (round(x - pad), round(y - pad)))
+    interior.alpha_composite(star_layer)
     result.alpha_composite(interior, (ix, iy))
     return result
 
@@ -761,7 +891,7 @@ def generate(output_dir: Path, scale: int, antialias_scale: int) -> list[Path]:
     tab_sheet.alpha_composite(tab_active, (tab_active.width, 0))
 
     slider_scale = scale
-    slider_fill_crop = slider_parts[1].crop((12 * slider_scale, 31 * slider_scale, 296 * slider_scale, 57 * slider_scale))
+    slider_fill_crop = slider_parts[1].crop((15 * slider_scale, 34 * slider_scale, 293 * slider_scale, 54 * slider_scale))
     slider_handle_crop = slider_parts[2].crop((120 * slider_scale, 0, 188 * slider_scale, 88 * slider_scale))
     slider_ticks_crop = slider_parts[3].crop((12 * slider_scale, 60 * slider_scale, 296 * slider_scale, 70 * slider_scale))
     assets = {
@@ -772,9 +902,7 @@ def generate(output_dir: Path, scale: int, antialias_scale: int) -> list[Path]:
         "action-button-frame.png": render_frame(
             ACTION_BUTTON_CSS, scale, antialias_scale
         ),
-        "settings-panel-frame.png": render_frame(
-            SETTINGS_PANEL_CSS, scale, antialias_scale
-        ),
+        "settings-panel-frame.png": render_settings_panel(scale, antialias_scale),
         "small-control-frame.png": render_frame(
             SMALL_CONTROL_CSS, scale, antialias_scale
         ),

@@ -111,21 +111,21 @@ export function VolumeSliderRasterParts({ value }: { value: number }) {
         style={{
           position: "absolute",
           zIndex: 1,
-          left: 0,
-          top: 19,
-          width: `${value}%`,
-          height: 26,
-          overflow: "hidden",
+          left: 3,
+          top: 22,
+          width: (278 * value) / 100,
+          height: 20,
           borderRadius: 4,
+          boxShadow: "0 0 8px rgba(45,132,255,.8)",
         }}
       >
         <Image
           alt=""
           src={`${generatedAssetRoot}/volume-slider-fill.png`}
-          width={568}
-          height={52}
+          width={556}
+          height={40}
           unoptimized
-          style={{ ...rasterPartStyle, inset: 0, width: "100%", height: 26 }}
+          style={{ ...rasterPartStyle, inset: 0, width: "100%", height: 20 }}
         />
       </span>
       <Image
@@ -134,7 +134,7 @@ export function VolumeSliderRasterParts({ value }: { value: number }) {
         width={568}
         height={20}
         unoptimized
-        style={{ ...rasterPartStyle, left: 0, top: 48, width: 284, height: 10 }}
+        style={{ ...rasterPartStyle, left: 0, top: 49, width: 284, height: 10 }}
       />
       <Image
         alt=""
@@ -163,7 +163,7 @@ export function ActionLabelRaster({ label }: { label: string }) {
       alt=""
       src={`${generatedAssetRoot}/action-label-${filename}.png`}
       width={960}
-      height={240}
+      height={292}
       unoptimized
       style={{
         position: "absolute",
@@ -171,7 +171,7 @@ export function ActionLabelRaster({ label }: { label: string }) {
         left: "50%",
         top: "50%",
         width: 480,
-        height: 120,
+        height: 146,
         pointerEvents: "none",
         transform: "translate(-50%, -50%)",
       }}

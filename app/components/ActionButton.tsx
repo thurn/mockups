@@ -70,7 +70,9 @@ export function ActionButton({
                 ? "brightness(.82) drop-shadow(0 0 8px rgba(58,154,255,.65))"
                 : highlighted
                   ? "brightness(1.12) drop-shadow(0 0 16px rgba(118,182,255,.88))"
-                  : "drop-shadow(0 0 10px rgba(58,154,255,.65))"
+                  : usingPng
+                    ? ""
+                    : "drop-shadow(0 0 10px rgba(58,154,255,.65))"
           } var(--music-control-pulse-filter, brightness(1))`,
           cursor: disabled ? "default" : "pointer",
           transform: `scale(${state.pressed && !reduceMotion ? 0.955 : 1}) var(--music-control-pulse-transform, scale(1))`,

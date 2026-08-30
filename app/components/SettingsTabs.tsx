@@ -124,7 +124,9 @@ function SettingsTabButton({
               : state.hovered
                 ? "brightness(1.16) drop-shadow(0 0 11px rgba(83,177,255,.78))"
                 : active
-                  ? "drop-shadow(0 0 10px rgba(35,133,255,.86))"
+                  ? usingPng
+                    ? ""
+                    : "drop-shadow(0 0 10px rgba(35,133,255,.86))"
                   : ""
           } var(--music-control-pulse-filter, brightness(1))`,
           fontFamily: "'Barlow Condensed', Impact, sans-serif",

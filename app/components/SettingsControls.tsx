@@ -225,7 +225,9 @@ export function SelectControl({
                   ? keyboardFocusFilter
                   : highlighted || isOpen
                     ? "brightness(1.12) drop-shadow(0 0 13px rgba(83,226,255,.78))"
-                    : "drop-shadow(0 0 6px rgba(42,103,255,.38))"
+                    : usingPng
+                      ? ""
+                      : "drop-shadow(0 0 6px rgba(42,103,255,.38))"
               } var(--music-control-pulse-filter, brightness(1))`,
               fontFamily: "'Barlow Condensed', Impact, sans-serif",
               fontWeight: 700,
