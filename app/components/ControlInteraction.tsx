@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useArcadeNavigation } from "./ArcadeRouteTransition";
 
 export const keyboardFocusGradient =
@@ -20,31 +20,28 @@ export function ControlInteraction({
 }) {
   const { reduceMotion } = useArcadeNavigation();
 
+  if (!active) return null;
+
   return (
-    <AnimatePresence>
-      {active && (
-        <motion.span
-          aria-hidden="true"
-          initial={{ opacity: 0, x: "-130%" }}
-          animate={{ opacity: [0, 0.78, 0], x: "330%" }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: reduceMotion ? 0.01 : 0.72, ease: "easeOut" }}
-          style={{
-            position: "absolute",
-            zIndex: 4,
-            top: inset,
-            bottom: inset,
-            left: inset,
-            width: "32%",
-            clipPath,
-            background:
-              "linear-gradient(90deg, transparent, rgba(255,255,255,.82) 48%, rgba(174,245,255,.46) 62%, transparent)",
-            filter: "blur(.3px)",
-            mixBlendMode: "screen",
-            pointerEvents: "none",
-          }}
-        />
-      )}
-    </AnimatePresence>
+    <motion.span
+      aria-hidden="true"
+      initial={{ opacity: 0, x: "-130%" }}
+      animate={{ opacity: [0, 0.78, 0], x: "330%" }}
+      transition={{ duration: reduceMotion ? 0.01 : 0.72, ease: "easeOut" }}
+      style={{
+        position: "absolute",
+        zIndex: 4,
+        top: inset,
+        bottom: inset,
+        left: inset,
+        width: "32%",
+        clipPath,
+        background:
+          "linear-gradient(90deg, transparent, rgba(255,255,255,.82) 48%, rgba(174,245,255,.46) 62%, transparent)",
+        filter: "blur(.3px)",
+        mixBlendMode: "screen",
+        pointerEvents: "none",
+      }}
+    />
   );
 }
