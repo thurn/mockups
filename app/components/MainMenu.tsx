@@ -8,10 +8,8 @@ import { ScreenHeader } from "./ScreenHeader";
 const menuItems = ["Play", "Settings", "About", "Quit"];
 const menuButtonHeight = 140;
 const menuGap = 24;
-const gameWordmarkBottom = 335;
-const soundRecommendationTop = 1258;
-const menuHeight = menuItems.length * menuButtonHeight + (menuItems.length - 1) * menuGap;
-const menuTop = gameWordmarkBottom + (soundRecommendationTop - gameWordmarkBottom - menuHeight) / 2;
+const menuTop = 476;
+const soundRecommendationBottom = 218;
 
 export function MainMenu() {
   const { navigate } = useArcadeNavigation();
@@ -56,7 +54,7 @@ export function MainMenu() {
           position: "absolute",
           zIndex: 4,
           right: 80,
-          bottom: 164,
+          bottom: soundRecommendationBottom,
           left: 80,
           margin: 0,
           display: "flex",

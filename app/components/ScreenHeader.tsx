@@ -6,7 +6,7 @@ export function ScreenHeader({ variant }: { variant: "game" | "settings" }) {
       style={{
         position: "absolute",
         zIndex: 5,
-        top: game ? 42 : 74,
+        top: game ? 103 : 74,
         left: 84,
         width: 854,
         height: game ? 330 : 122,
