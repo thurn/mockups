@@ -8,6 +8,7 @@ import {
   controlInnerClip,
   controlOuterClip,
 } from "./ClippedInset";
+import { AnimatedCheckboxVisual } from "./AnimatedCheckboxVisual";
 import { SettingRow } from "./SettingRow";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
@@ -310,21 +311,7 @@ export function ToggleControl({
             cursor: "pointer",
           }}
         />
-        <span
-          aria-hidden="true"
-          style={{
-            position: "relative",
-            boxSizing: "border-box",
-            width: 77,
-            height: 77,
-            border: "4px solid #4ba3ff",
-            borderRadius: 11,
-            background: "linear-gradient(180deg, #06142b, #02091a)",
-            boxShadow: "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff",
-          }}
-        >
-          {checked && <CheckMark />}
-        </span>
+        <AnimatedCheckboxVisual checked={checked} />
       </label>
     </SettingRow>
   );
