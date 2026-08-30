@@ -3,11 +3,11 @@
 import { useReducedMotion } from "framer-motion";
 import type { CSSProperties } from "react";
 import {
-  frameBorderThickness,
   frameClip,
   frameInteriorBounds,
   frameOuterBottom,
   frameOuterInset,
+  framePulseClip,
 } from "./styles";
 
 type Particle = {
@@ -177,16 +177,10 @@ function BorderPulse({ reduceMotion }: { reduceMotion: boolean }) {
           right: frameOuterInset,
           bottom: frameOuterBottom,
           left: frameOuterInset,
-          boxSizing: "border-box",
-          padding: frameBorderThickness + 5,
           overflow: "hidden",
-          clipPath: frameClip,
+          clipPath: framePulseClip,
           opacity: reduceMotion ? 0.28 : 1,
           mixBlendMode: "screen",
-          mask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-          maskComposite: "exclude",
-          WebkitMask: "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
-          WebkitMaskComposite: "xor",
         } as CSSProperties
       }
     >

@@ -1,13 +1,48 @@
 import type { CSSProperties } from "react";
+import { PORTRAIT_DESIGN_HEIGHT, PORTRAIT_DESIGN_WIDTH } from "./PortraitViewport";
 
 export const displayFont =
   "'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
 export const impactFont = displayFont;
-export const frameClip =
-  "polygon(4.5% 0, 14.7% 0, 17% 1.9%, 83% 1.9%, 85.3% 0, 95.5% 0, 100% 3.2%, 100% 18.7%, 98.1% 20%, 98.1% 98.6%, 96.5% 100%, 3.5% 100%, 1.9% 98.6%, 1.9% 20%, 0 18.7%, 0 3.2%)";
 export const frameOuterInset = 21;
 export const frameBorderThickness = 8;
 export const frameOuterBottom = 111;
+const frameClipPoints = [
+  [4.5, 0],
+  [14.7, 0],
+  [17, 1.9],
+  [83, 1.9],
+  [85.3, 0],
+  [95.5, 0],
+  [100, 3.2],
+  [100, 18.7],
+  [98.1, 20],
+  [98.1, 98.6],
+  [96.5, 100],
+  [3.5, 100],
+  [1.9, 98.6],
+  [1.9, 20],
+  [0, 18.7],
+  [0, 3.2],
+] as const;
+
+export const frameClip = `polygon(${frameClipPoints.map(([x, y]) => `${x}% ${y}%`).join(", ")})`;
+
+function pathForFrame(width: number, height: number, inset = 0) {
+  const innerWidth = width - inset * 2;
+  const innerHeight = height - inset * 2;
+  const points = frameClipPoints.map(
+    ([x, y]) => `${inset + (x / 100) * innerWidth} ${inset + (y / 100) * innerHeight}`,
+  );
+
+  return `M ${points.join(" L ")} Z`;
+}
+
+const frameOuterWidth = PORTRAIT_DESIGN_WIDTH - frameOuterInset * 2;
+const frameOuterHeight = PORTRAIT_DESIGN_HEIGHT - frameOuterInset - frameOuterBottom;
+const framePulseThickness = frameBorderThickness + 7;
+
+export const framePulseClip = `path(evenodd, "${pathForFrame(frameOuterWidth, frameOuterHeight)} ${pathForFrame(frameOuterWidth, frameOuterHeight, framePulseThickness)}")`;
 export const frameInteriorBounds = {
   top: frameOuterInset + frameBorderThickness,
   right: frameOuterInset + frameBorderThickness,
