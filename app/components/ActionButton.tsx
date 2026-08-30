@@ -11,7 +11,15 @@ import {
   keyboardFocusGradient,
 } from "./ControlInteraction";
 
-export function ActionButton({ children, onClick }: { children: ReactNode; onClick?: () => void }) {
+export function ActionButton({
+  children,
+  disabled = false,
+  onClick,
+}: {
+  children: ReactNode;
+  disabled?: boolean;
+  onClick?: () => void;
+}) {
   const { state, handlers } = useInteraction();
   const reduceMotion = useReducedMotion();
   const highlighted = state.hovered || state.focused;
@@ -28,7 +36,8 @@ export function ActionButton({ children, onClick }: { children: ReactNode; onCli
     >
       <button
         {...handlers}
-        onClick={onClick}
+        disabled={disabled}
+        onClick={disabled ? undefined : onClick}
         type="button"
         style={{
           position: "relative",
@@ -54,7 +63,7 @@ export function ActionButton({ children, onClick }: { children: ReactNode; onCli
               : highlighted
                 ? "brightness(1.12) drop-shadow(0 0 16px rgba(118,182,255,.88))"
                 : "drop-shadow(0 0 10px rgba(58,154,255,.65))",
-          cursor: "pointer",
+          cursor: disabled ? "default" : "pointer",
           transform: `scale(${state.pressed && !reduceMotion ? 0.955 : 1})`,
           transition:
             "transform 90ms cubic-bezier(.2,.8,.2,1), filter 140ms ease, background 140ms ease",
