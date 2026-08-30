@@ -33,6 +33,8 @@ export default function RootLayout({
             const root = document.documentElement;
             const designWidth = 1024;
             const designHeight = 1536;
+            const desktopBreakpoint = 1024;
+            const desktopScaleFactor = 0.75;
 
             const updatePortraitScale = () => {
               const viewportWidth = Math.max(0, root.clientWidth || window.innerWidth);
@@ -40,7 +42,13 @@ export default function RootLayout({
                 0,
                 window.visualViewport ? window.visualViewport.height : window.innerHeight,
               );
-              const scale = Math.min(1, viewportWidth / designWidth, viewportHeight / designHeight);
+              const viewportScale = Math.min(
+                1,
+                viewportWidth / designWidth,
+                viewportHeight / designHeight,
+              );
+              const scale =
+                viewportScale * (viewportWidth >= desktopBreakpoint ? desktopScaleFactor : 1);
 
               root.style.setProperty('--portrait-width', designWidth * scale + 'px');
               root.style.setProperty('--portrait-height', designHeight * scale + 'px');
