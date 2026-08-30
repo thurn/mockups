@@ -80,7 +80,6 @@ function ArcadeTabPanel({
       aria-labelledby={labelledBy}
       aria-hidden={!isPresent}
       inert={!isPresent}
-      tabIndex={0}
       custom={direction}
       initial={animateOnMount ? "enter" : false}
       animate="center"

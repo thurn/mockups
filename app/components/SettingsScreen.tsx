@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { ReturnButton } from "./ReturnButton";
 import { EraseControl, SelectControl, ToggleControl } from "./SettingsControls";
 import { SettingsTabs, type SettingsTab } from "./SettingsTabs";
@@ -15,8 +15,7 @@ import { useArcadeNavigation } from "./ArcadeRouteTransition";
 const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsScreen() {
-  const { hasNavigated, navigate, reduceMotion, setReduceMotion } = useArcadeNavigation();
-  const headingRef = useRef<HTMLHeadingElement>(null);
+  const { navigate, reduceMotion, setReduceMotion } = useArcadeNavigation();
   const [activeTab, setActiveTab] = useState<SettingsTab>("Gameplay");
   const [tabDirection, setTabDirection] = useState(1);
   const [language, setLanguage] = useState("English");
@@ -39,10 +38,6 @@ export function SettingsScreen() {
     setActiveTab(tab);
   };
 
-  useEffect(() => {
-    if (hasNavigated) headingRef.current?.focus();
-  }, [hasNavigated]);
-
   return (
     <section
       aria-label={`${activeTab} settings`}
@@ -55,7 +50,7 @@ export function SettingsScreen() {
       }}
     >
       <div style={{ position: "absolute", inset: 0 }}>
-        <ScreenHeader variant="settings" headingRef={headingRef} />
+        <ScreenHeader variant="settings" />
       </div>
       <div
         style={{

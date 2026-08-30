@@ -86,7 +86,7 @@ function SettingsTabButton({
         role="tab"
         aria-selected={active}
         aria-controls={`settings-panel-${tab.toLowerCase()}`}
-        tabIndex={active ? 0 : -1}
+        tabIndex={0}
         onClick={() => onSelect(tab)}
         onKeyDown={(event) => {
           handlers.onKeyDown(event);
