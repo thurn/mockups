@@ -1,9 +1,19 @@
 import type { CSSProperties } from "react";
 
-export const displayFont = "'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
+export const displayFont =
+  "'Bebas Neue', Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
 export const impactFont = displayFont;
 export const frameClip =
   "polygon(4.5% 0, 14.7% 0, 17% 1.9%, 83% 1.9%, 85.3% 0, 95.5% 0, 100% 3.2%, 100% 18.7%, 98.1% 20%, 98.1% 98.6%, 96.5% 100%, 3.5% 100%, 1.9% 98.6%, 1.9% 20%, 0 18.7%, 0 3.2%)";
+export const frameOuterInset = 21;
+export const frameBorderThickness = 8;
+export const frameOuterBottom = 111;
+export const frameInteriorBounds = {
+  top: frameOuterInset + frameBorderThickness,
+  right: frameOuterInset + frameBorderThickness,
+  bottom: frameOuterBottom + frameBorderThickness,
+  left: frameOuterInset + frameBorderThickness,
+} as const;
 export const frameMetalGradient =
   "linear-gradient(110deg, #f4ffff 0%, #53dcff 4%, #0874ef 12%, #09234c 18%, #19ddff 32%, #e9fbff 50%, #806cff 64%, #ff39c9 83%, #ffd4f4 96%, #ff5ec2 100%)";
 export const frameBezelGradient =

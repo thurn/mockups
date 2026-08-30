@@ -2,7 +2,7 @@
 
 import type { CSSProperties } from "react";
 import { useReducedMotion } from "framer-motion";
-import { frameClip } from "./styles";
+import { frameClip, frameInteriorBounds } from "./styles";
 
 type Star = {
   color: string;
@@ -48,10 +48,7 @@ export function ArcadeStarfield() {
       style={{
         position: "absolute",
         zIndex: 1,
-        top: 33,
-        right: 33,
-        bottom: 144,
-        left: 33,
+        ...frameInteriorBounds,
         overflow: "hidden",
         clipPath: frameClip,
         pointerEvents: "none",

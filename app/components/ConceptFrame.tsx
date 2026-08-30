@@ -1,14 +1,30 @@
-import { frameClip, frameMetalGradient } from "./styles";
+import {
+  frameBorderThickness,
+  frameClip,
+  frameMetalGradient,
+  frameOuterBottom,
+  frameOuterInset,
+} from "./styles";
 
 export function ConceptFrame() {
   return (
     <div aria-hidden="true" style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-      <FrameLayer inset={21} thickness={8} opacity={1} />
+      <FrameLayer inset={frameOuterInset} thickness={frameBorderThickness} opacity={1} />
     </div>
   );
 }
 
-function FrameLayer({ inset, thickness, opacity, bottom }: { inset: number; thickness: number; opacity: number; bottom?: number }) {
+function FrameLayer({
+  inset,
+  thickness,
+  opacity,
+  bottom,
+}: {
+  inset: number;
+  thickness: number;
+  opacity: number;
+  bottom?: number;
+}) {
   return (
     <div
       style={{
@@ -16,13 +32,16 @@ function FrameLayer({ inset, thickness, opacity, bottom }: { inset: number; thic
         top: inset,
         left: inset,
         right: inset,
-        bottom: bottom ?? 111 + inset - 21,
+        bottom: bottom ?? frameOuterBottom + inset - frameOuterInset,
         padding: thickness,
         boxSizing: "border-box",
         clipPath: frameClip,
         background: frameMetalGradient,
         opacity,
-        filter: inset === 21 ? "drop-shadow(0 0 10px rgba(54,157,255,.7)) drop-shadow(0 0 9px rgba(255,42,192,.38))" : undefined,
+        filter:
+          inset === frameOuterInset
+            ? "drop-shadow(0 0 10px rgba(54,157,255,.7)) drop-shadow(0 0 9px rgba(255,42,192,.38))"
+            : undefined,
       }}
     >
       <div style={{ width: "100%", height: "100%", clipPath: frameClip, background: "#020713" }} />
