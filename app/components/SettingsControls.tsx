@@ -730,6 +730,7 @@ function InfoBadge({ onClick }: { onClick?: () => void }) {
         placeItems: "center",
         border: "2px solid #55b8ff",
         borderRadius: "50%",
+        background: "transparent",
         color: "#bcf4ff",
         fontFamily: "Georgia, serif",
         fontSize: 27 * controlScale,
@@ -740,6 +741,8 @@ function InfoBadge({ onClick }: { onClick?: () => void }) {
         boxShadow: "0 0 8px #155eff, inset 0 0 7px rgba(13,76,180,.8)",
         transform: "translateY(1px) scaleX(.957)",
         padding: 0,
+        appearance: "none",
+        WebkitAppearance: "none",
         cursor: "pointer",
       }}
     >
