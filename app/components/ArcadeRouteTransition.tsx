@@ -21,6 +21,7 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
   const [reduceMotion, setReduceMotionState] = useState(false);
   const [activePath, setActivePath] = useState(pathname);
   const [hasNavigated, setHasNavigated] = useState(false);
+  const effectiveReduceMotion = reduceMotion || Boolean(prefersReducedMotion);
 
   const setReduceMotion = useCallback((value: boolean) => {
     setReduceMotionState(value);
@@ -47,13 +48,20 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
     router.prefetch("/settings");
   }, [router]);
 
+  useEffect(() => {
+    document.documentElement.dataset.reduceMotion = String(effectiveReduceMotion);
+    return () => {
+      delete document.documentElement.dataset.reduceMotion;
+    };
+  }, [effectiveReduceMotion]);
+
   return (
     <ArcadeNavigationContext.Provider
       value={{
         activePath,
         hasNavigated,
         navigate,
-        reduceMotion: reduceMotion || Boolean(prefersReducedMotion),
+        reduceMotion: effectiveReduceMotion,
         setReduceMotion,
       }}
     >

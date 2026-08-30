@@ -129,7 +129,11 @@ export function BackgroundMusicProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setControlPulse(heartbeatStrength(audio.currentTime));
+      setControlPulse(
+        document.documentElement.dataset.reduceMotion === "true"
+          ? 0
+          : heartbeatStrength(audio.currentTime),
+      );
       animationFrame = window.requestAnimationFrame(updatePulse);
     };
 
