@@ -3,7 +3,7 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { useReducedMotion } from "framer-motion";
 import { ArcadeSliderEffect } from "./ArcadeSliderEffect";
-import { ControlInteraction, keyboardFocusGradient } from "./ControlInteraction";
+import { keyboardFocusGradient } from "./ControlInteraction";
 import { ToggleControl } from "./SettingsControls";
 import { SettingRow } from "./SettingRow";
 import { useInteraction } from "./useInteraction";
@@ -86,7 +86,6 @@ function VolumeControl({
   const pointerActive = useRef(false);
   const { state, handlers } = useInteraction({ pressKeys: sliderPressKeys });
   const reduceMotion = useReducedMotion();
-  const highlighted = state.hovered || state.focused;
 
   const updateFromPointer = (event: ReactPointerEvent<HTMLInputElement>) => {
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -147,7 +146,6 @@ function VolumeControl({
                 boxShadow: "0 0 8px rgba(45,132,255,.8)",
               }}
             />
-            <ControlInteraction active={highlighted} clipPath="inset(0 round 5px)" />
           </div>
           <div
             aria-hidden="true"

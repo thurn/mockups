@@ -4,11 +4,7 @@ import { motion } from "framer-motion";
 import { ArcadeButtonEffect } from "./ArcadeButtonEffect";
 import { ClippedInset, tabInnerClip, tabOuterClip } from "./ClippedInset";
 import { useInteraction } from "./useInteraction";
-import {
-  ControlInteraction,
-  keyboardFocusFilter,
-  keyboardFocusGradient,
-} from "./ControlInteraction";
+import { keyboardFocusFilter, keyboardFocusGradient } from "./ControlInteraction";
 
 const tabs = ["Gameplay", "Graphics", "Sound", "Input"];
 
@@ -118,11 +114,6 @@ function SettingsTabButton({
           }
         />
         <span style={{ position: "relative", zIndex: 1 }}>{tab}</span>
-        <ControlInteraction
-          active={state.hovered || state.focused}
-          clipPath={tabInnerClip}
-          inset={3}
-        />
       </motion.button>
       <ArcadeButtonEffect burstId={state.releaseCount} compact />
     </span>

@@ -13,11 +13,7 @@ import {
 import { ArcadeCheckboxEffect } from "./ArcadeCheckboxEffect";
 import { SettingRow } from "./SettingRow";
 import { useInteraction } from "./useInteraction";
-import {
-  ControlInteraction,
-  keyboardFocusFilter,
-  keyboardFocusGradient,
-} from "./ControlInteraction";
+import { keyboardFocusFilter, keyboardFocusGradient } from "./ControlInteraction";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
 
@@ -211,7 +207,6 @@ export function SelectControl({
             />
             <span style={{ position: "relative", zIndex: 1 }}>{value}</span>
             <Caret isOpen={isOpen} />
-            <ControlInteraction active={highlighted} clipPath={controlInnerClip} inset={3} />
           </button>
           <ArcadeButtonEffect burstId={pressState.releaseCount} compact />
         </span>
@@ -397,11 +392,6 @@ function DropdownOptionButton({
         >
           {selected && <CheckMark scale={0.62} />}
         </span>
-        <ControlInteraction
-          active={state.hovered || state.focused}
-          clipPath={controlInnerClip}
-          inset={3}
-        />
       </button>
       <ArcadeButtonEffect burstId={state.releaseCount} compact />
     </>
@@ -524,10 +514,6 @@ export function ToggleControl({
             }}
           >
             {checked && <CheckMark />}
-            <ControlInteraction
-              active={state.hovered || state.focused}
-              clipPath="inset(0 round 7px)"
-            />
           </span>
         </span>
       </SettingRow>
@@ -538,7 +524,6 @@ export function ToggleControl({
 export function EraseControl() {
   const { state, handlers } = useInteraction();
   const reduceMotion = useReducedMotion();
-  const highlighted = state.hovered || state.focused;
 
   return (
     <SettingRow label="Erase Saved Data">
@@ -603,7 +588,6 @@ export function EraseControl() {
           >
             ERASE
           </span>
-          <ControlInteraction active={highlighted} clipPath={actionInnerClip} inset={4} />
         </button>
         <ArcadeButtonEffect burstId={state.releaseCount} compact />
       </span>
