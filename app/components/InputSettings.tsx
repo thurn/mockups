@@ -5,6 +5,7 @@ import { ArrowDownIcon } from "@phosphor-icons/react/dist/csr/ArrowDown";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/csr/ArrowLeft";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/csr/ArrowRight";
 import { ArrowUpIcon } from "@phosphor-icons/react/dist/csr/ArrowUp";
+import { motion } from "framer-motion";
 import { controlInnerClip, controlOuterClip, ClippedInset } from "./ClippedInset";
 import { ControllerButton, DPadIcon } from "./InputBindingIcons";
 import { settingsRowHeight } from "./SettingRow";
@@ -216,10 +217,12 @@ export function InputSettings() {
           Press a key for {editingBinding?.action}
         </span>
         <span
+          aria-label={conflictAction ? undefined : "Waiting for input"}
           aria-live="polite"
           style={{
             display: "block",
-            marginTop: 30,
+            minHeight: 42,
+            marginTop: 24,
             color: conflictAction ? "#ff5576" : "#67efff",
             fontSize: 40,
             letterSpacing: 1.5,
@@ -228,7 +231,23 @@ export function InputSettings() {
               : "0 0 12px rgba(45,221,255,.72)",
           }}
         >
-          {conflictAction ? `Already used by ${conflictAction}` : "Waiting for input..."}
+          {conflictAction ? (
+            `Already used by ${conflictAction}`
+          ) : (
+            <motion.span
+              aria-hidden="true"
+              animate={reduceMotion ? undefined : { opacity: [1, 1, 0.08, 0.08, 1] }}
+              transition={{ duration: 1.05, ease: "linear", repeat: Infinity }}
+              style={{
+                display: "inline-block",
+                width: 34,
+                height: 5,
+                marginBottom: 5,
+                background: "#67efff",
+                boxShadow: "0 0 10px rgba(45,221,255,.9)",
+              }}
+            />
+          )}
         </span>
       </ArcadeModal>
     </>
