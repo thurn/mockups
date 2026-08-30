@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import { useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArcadeButtonEffect } from "./ArcadeButtonEffect";
 import {
   actionInnerClip,
@@ -29,6 +29,7 @@ export function SelectControl({
   const [activeIndex, setActiveIndex] = useState(() => Math.max(0, options.indexOf(value)));
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const selectionTimerRef = useRef<number | null>(null);
   const listboxId = useId();
   const reduceMotion = useReducedMotion();
   const { state: pressState, handlers: pressHandlers } = useInteraction();
@@ -37,34 +38,60 @@ export function SelectControl({
     if (!isOpen) return;
 
     const dismiss = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) setIsOpen(false);
+      if (!rootRef.current?.contains(event.target as Node)) {
+        if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
+        selectionTimerRef.current = null;
+        setIsOpen(false);
+      }
     };
 
     document.addEventListener("pointerdown", dismiss);
     return () => document.removeEventListener("pointerdown", dismiss);
   }, [isOpen]);
 
+  useEffect(
+    () => () => {
+      if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
+    },
+    [],
+  );
+
   const openMenu = () => {
+    if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
+    selectionTimerRef.current = null;
     setActiveIndex(Math.max(0, options.indexOf(value)));
     setIsOpen(true);
   };
 
+  const closeMenu = () => {
+    if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
+    selectionTimerRef.current = null;
+    setIsOpen(false);
+  };
+
   const selectOption = (option: string) => {
     onChange(option);
-    setIsOpen(false);
-    triggerRef.current?.focus();
+    if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
+    selectionTimerRef.current = window.setTimeout(
+      () => {
+        selectionTimerRef.current = null;
+        setIsOpen(false);
+        triggerRef.current?.focus();
+      },
+      reduceMotion ? 0 : 210,
+    );
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement | HTMLDivElement>) => {
     if (event.key === "Escape" && isOpen) {
       event.preventDefault();
-      setIsOpen(false);
+      closeMenu();
       triggerRef.current?.focus();
       return;
     }
 
     if (event.key === "Tab") {
-      setIsOpen(false);
+      closeMenu();
       return;
     }
 
@@ -126,7 +153,7 @@ export function SelectControl({
             aria-expanded={isOpen}
             aria-controls={listboxId}
             aria-activedescendant={isOpen ? `${listboxId}-option-${activeIndex}` : undefined}
-            onClick={() => (isOpen ? setIsOpen(false) : openMenu())}
+            onClick={() => (isOpen ? closeMenu() : openMenu())}
             onKeyDown={(event) => {
               pressHandlers.onKeyDown(event);
               handleKeyDown(event);
@@ -168,92 +195,170 @@ export function SelectControl({
           </button>
           <ArcadeButtonEffect burstId={pressState.pressCount} compact />
         </span>
-        {isOpen && (
-          <div
-            id={listboxId}
-            role="listbox"
-            aria-label={`${String(label)} options`}
-            style={{
-              position: "absolute",
-              left: 0,
-              top: "calc(50% + 59px)",
-              zIndex: 30,
-              boxSizing: "border-box",
-              width: 396,
-              padding: 3,
-              clipPath: controlOuterClip,
-              background: "linear-gradient(145deg, #5df5ff, #718cff 48%, #ff4bc9)",
-              filter:
-                "drop-shadow(0 10px 14px rgba(0,0,0,.72)) drop-shadow(0 0 8px rgba(43,126,255,.65))",
-            }}
-          >
-            <div
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              id={listboxId}
+              role="listbox"
+              aria-label={`${String(label)} options`}
+              initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -12, scaleY: 0.76 }}
+              animate={{ opacity: 1, y: 0, scaleY: 1 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -9, scaleY: 0.82 }}
+              transition={{ duration: reduceMotion ? 0.01 : 0.2, ease: [0.2, 0.8, 0.25, 1] }}
               style={{
-                position: "relative",
-                overflow: "hidden",
-                clipPath: controlInnerClip,
-                padding: "8px 6px",
-                background:
-                  "radial-gradient(circle at 20% 0%, rgba(30,95,195,.25), transparent 48%), linear-gradient(180deg, #07152e, #020611)",
-                boxShadow: "inset 0 0 24px #000",
+                position: "absolute",
+                left: 0,
+                top: "calc(50% + 59px)",
+                zIndex: 30,
+                boxSizing: "border-box",
+                width: 396,
+                padding: 3,
+                clipPath: controlOuterClip,
+                background: "linear-gradient(145deg, #5df5ff, #718cff 48%, #ff4bc9)",
+                filter:
+                  "drop-shadow(0 10px 14px rgba(0,0,0,.72)) drop-shadow(0 0 8px rgba(43,126,255,.65))",
+                transformOrigin: "top center",
               }}
             >
-              {options.map((option, index) => {
-                const selected = option === value;
-                const active = index === activeIndex;
-
-                return (
-                  <button
-                    id={`${listboxId}-option-${index}`}
+              <div
+                style={{
+                  position: "relative",
+                  overflow: "hidden",
+                  clipPath: controlInnerClip,
+                  padding: "8px 6px",
+                  background:
+                    "radial-gradient(circle at 20% 0%, rgba(30,95,195,.25), transparent 48%), linear-gradient(180deg, #07152e, #020611)",
+                  boxShadow: "inset 0 0 24px #000",
+                }}
+              >
+                {options.map((option, index) => (
+                  <motion.span
                     key={option}
-                    type="button"
-                    role="option"
-                    aria-selected={selected}
-                    onPointerEnter={() => setActiveIndex(index)}
-                    onClick={() => selectOption(option)}
+                    initial={reduceMotion ? { opacity: 1 } : { opacity: 0, x: -17 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: 10 }}
+                    transition={{
+                      duration: reduceMotion ? 0.01 : 0.18,
+                      delay: reduceMotion ? 0 : index * 0.028,
+                      ease: "easeOut",
+                    }}
                     style={{
-                      boxSizing: "border-box",
+                      position: "relative",
+                      display: "block",
                       width: "100%",
                       minHeight: 76,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 14,
-                      border: 0,
-                      padding: "6px 20px 6px 25px",
-                      color: selected ? "#efffff" : "#d9e1f2",
-                      background: active
-                        ? "linear-gradient(90deg, rgba(11,113,207,.5), rgba(88,69,177,.28) 66%, rgba(229,39,177,.2))"
-                        : "transparent",
-                      fontFamily: "'Barlow Condensed', Impact, sans-serif",
-                      fontWeight: 700,
-                      fontSize: 47,
-                      lineHeight: 1,
-                      textAlign: "left",
-                      textShadow: "2px 3px 0 #172747, 0 3px 5px #000",
-                      cursor: "pointer",
+                      overflow: "visible",
                     }}
                   >
-                    <span>{option}</span>
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        position: "relative",
-                        flex: "none",
-                        width: 48,
-                        height: 44,
-                      }}
-                    >
-                      {selected && <CheckMark scale={0.62} />}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
+                    <DropdownOptionButton
+                      id={`${listboxId}-option-${index}`}
+                      option={option}
+                      selected={option === value}
+                      active={index === activeIndex}
+                      onPointerEnter={() => setActiveIndex(index)}
+                      onSelect={() => selectOption(option)}
+                    />
+                  </motion.span>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </SettingRow>
+  );
+}
+
+function DropdownOptionButton({
+  id,
+  option,
+  selected,
+  active,
+  onPointerEnter,
+  onSelect,
+}: {
+  id: string;
+  option: string;
+  selected: boolean;
+  active: boolean;
+  onPointerEnter: () => void;
+  onSelect: () => void;
+}) {
+  const reduceMotion = useReducedMotion();
+  const { state, handlers } = useInteraction();
+
+  return (
+    <>
+      <button
+        {...handlers}
+        id={id}
+        type="button"
+        role="option"
+        aria-selected={selected}
+        onPointerEnter={onPointerEnter}
+        onClick={onSelect}
+        style={{
+          position: "relative",
+          zIndex: 1,
+          boxSizing: "border-box",
+          width: "100%",
+          minHeight: 76,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 14,
+          border: 0,
+          padding: "6px 20px 6px 25px",
+          color: selected ? "#efffff" : "#d9e1f2",
+          background: active
+            ? "linear-gradient(90deg, rgba(11,113,207,.5), rgba(88,69,177,.28) 66%, rgba(229,39,177,.2))"
+            : "transparent",
+          boxShadow: selected ? "inset 3px 0 0 #67f5ff, inset -2px 0 0 #ff59d5" : undefined,
+          fontFamily: "'Barlow Condensed', Impact, sans-serif",
+          fontWeight: 700,
+          fontSize: 47,
+          lineHeight: 1,
+          textAlign: "left",
+          textShadow: "2px 3px 0 #172747, 0 3px 5px #000",
+          cursor: "pointer",
+          transform: `scale(${state.pressed && !reduceMotion ? 0.965 : 1})`,
+          transition: "transform 90ms cubic-bezier(.2,.8,.2,1), box-shadow 140ms ease",
+        }}
+      >
+        <AnimatePresence initial={false}>
+          {selected && (
+            <motion.span
+              key="selection-flash"
+              initial={{ opacity: 0.9, scale: 0.96 }}
+              animate={{ opacity: 0, scale: 1.035 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: reduceMotion ? 0.01 : 0.38, ease: "easeOut" }}
+              style={{
+                position: "absolute",
+                inset: 3,
+                border: "2px solid #66f6ff",
+                boxShadow: "inset 0 0 12px rgba(47,143,255,.55), 0 0 10px #ff50d1",
+                pointerEvents: "none",
+              }}
+            />
+          )}
+        </AnimatePresence>
+        <span style={{ position: "relative", zIndex: 1 }}>{option}</span>
+        <span
+          aria-hidden="true"
+          style={{
+            position: "relative",
+            zIndex: 1,
+            flex: "none",
+            width: 48,
+            height: 44,
+          }}
+        >
+          {selected && <CheckMark scale={0.62} />}
+        </span>
+      </button>
+      <ArcadeButtonEffect burstId={state.pressCount} compact />
+    </>
   );
 }
 
