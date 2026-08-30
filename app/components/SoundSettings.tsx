@@ -162,8 +162,8 @@ function VolumeControl({
                 : state.hovered
                   ? "0 0 15px rgba(49,189,255,.88), inset 0 0 7px #000"
                   : "0 0 9px rgba(24,104,255,.72), inset 0 0 8px #000",
-              filter: state.pressed ? "brightness(.74)" : undefined,
-              transform: `scaleY(${state.pressed && !reduceMotion ? 0.82 : 1})`,
+              filter: `${state.pressed ? "brightness(.74)" : ""} var(--music-control-pulse-filter, brightness(1))`,
+              transform: `scaleY(${state.pressed && !reduceMotion ? 0.82 : 1}) var(--music-control-pulse-transform, scale(1))`,
               transition:
                 "transform 90ms cubic-bezier(.2,.8,.2,1), filter 90ms ease, box-shadow 140ms ease",
             }}
@@ -216,12 +216,14 @@ function VolumeControl({
                   : state.hovered
                     ? "linear-gradient(135deg, #fff, #7edfff 55%, #b58cff)"
                     : "linear-gradient(135deg, #c8ffff, #599cff 55%, #875fff)",
-                filter: state.focused
-                  ? "drop-shadow(0 0 10px #ffe600)"
-                  : state.hovered
-                    ? "brightness(1.16) drop-shadow(0 0 10px #2bc8ff)"
-                    : "drop-shadow(0 0 7px #1479ff)",
-                transform: `scale(${state.pressed && !reduceMotion ? 0.88 : 1})`,
+                filter: `${
+                  state.focused
+                    ? "drop-shadow(0 0 10px #ffe600)"
+                    : state.hovered
+                      ? "brightness(1.16) drop-shadow(0 0 10px #2bc8ff)"
+                      : "drop-shadow(0 0 7px #1479ff)"
+                } var(--music-control-pulse-filter, brightness(1))`,
+                transform: `scale(${state.pressed && !reduceMotion ? 0.88 : 1}) var(--music-control-pulse-transform, scale(1))`,
                 transition: "transform 90ms cubic-bezier(.2,.8,.2,1), filter 140ms ease",
               }}
             >

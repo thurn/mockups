@@ -112,13 +112,15 @@ function SettingsTabButton({
             : state.hovered
               ? "linear-gradient(112deg, #efffff 0%, #6be6ff 40%, #c3adff 68%, #ff8de4 100%)"
               : "linear-gradient(112deg, #72f5ff 0%, #53afff 44%, #9a83ff 68%, #ff4ed3 100%)",
-          filter: state.focused
-            ? keyboardFocusFilter
-            : state.hovered
-              ? "brightness(1.16) drop-shadow(0 0 11px rgba(83,177,255,.78))"
-              : active
-                ? "drop-shadow(0 0 10px rgba(35,133,255,.86))"
-                : undefined,
+          filter: `${
+            state.focused
+              ? keyboardFocusFilter
+              : state.hovered
+                ? "brightness(1.16) drop-shadow(0 0 11px rgba(83,177,255,.78))"
+                : active
+                  ? "drop-shadow(0 0 10px rgba(35,133,255,.86))"
+                  : ""
+          } var(--music-control-pulse-filter, brightness(1))`,
           fontFamily: "'Barlow Condensed', Impact, sans-serif",
           fontWeight: 700,
           fontSize: active ? 55 : 51,

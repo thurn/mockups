@@ -59,6 +59,9 @@ export function MusicPlaybackIndicator() {
         textAlign: "center",
         textShadow: "0 3px 8px #000, 0 0 8px rgba(111,188,255,.35)",
         cursor: "pointer",
+        filter: "var(--music-control-pulse-filter, brightness(1))",
+        transform: "var(--music-control-pulse-transform, scale(1))",
+        transformOrigin: "50% 50%",
       }}
     >
       {!soundEnabled && (

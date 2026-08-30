@@ -214,11 +214,13 @@ export function SelectControl({
                 : highlighted
                   ? "linear-gradient(106deg, #b5ffff, #d3ddff 48%, #ff75dc)"
                   : "linear-gradient(106deg, #5df5ff, #a5cbff 48%, #ff4bc9)",
-              filter: pressState.focused
-                ? keyboardFocusFilter
-                : highlighted || isOpen
-                  ? "brightness(1.12) drop-shadow(0 0 13px rgba(83,226,255,.78))"
-                  : "drop-shadow(0 0 6px rgba(42,103,255,.38))",
+              filter: `${
+                pressState.focused
+                  ? keyboardFocusFilter
+                  : highlighted || isOpen
+                    ? "brightness(1.12) drop-shadow(0 0 13px rgba(83,226,255,.78))"
+                    : "drop-shadow(0 0 6px rgba(42,103,255,.38))"
+              } var(--music-control-pulse-filter, brightness(1))`,
               fontFamily: "'Barlow Condensed', Impact, sans-serif",
               fontWeight: 700,
               fontSize: 60,
@@ -226,7 +228,7 @@ export function SelectControl({
               lineHeight: 1,
               textShadow: "2px 4px 0 #19284a, 0 4px 7px #000",
               cursor: "pointer",
-              transform: `scale(${pressState.pressed && !reduceMotion ? 0.965 : 1})`,
+              transform: `scale(${pressState.pressed && !reduceMotion ? 0.965 : 1}) var(--music-control-pulse-transform, scale(1))`,
               transition: "transform 90ms cubic-bezier(.2,.8,.2,1), filter 140ms ease",
             }}
           >
@@ -392,7 +394,7 @@ function DropdownOptionButton({
           textShadow: "2px 3px 0 #172747, 0 3px 5px #000",
           cursor: "pointer",
           transform: `scale(${state.pressed && !reduceMotion ? 0.965 : 1})`,
-          filter: state.hovered ? "brightness(1.2)" : undefined,
+          filter: `${state.hovered ? "brightness(1.2)" : ""} var(--music-control-pulse-filter, brightness(1))`,
           transition:
             "transform 90ms cubic-bezier(.2,.8,.2,1), box-shadow 140ms ease, filter 140ms ease",
         }}
@@ -548,8 +550,8 @@ export function ToggleControl({
                 : state.hovered
                   ? "inset 0 0 12px #000, 0 0 15px #2acfff, 0 0 8px #b8ffff"
                   : "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff",
-              filter: state.pressed ? "brightness(.76)" : undefined,
-              transform: `scale(${state.pressed && !reduceMotion ? 0.88 : state.hovered ? 1.045 : 1})`,
+              filter: `${state.pressed ? "brightness(.76)" : ""} var(--music-control-pulse-filter, brightness(1))`,
+              transform: `scale(${state.pressed && !reduceMotion ? 0.88 : state.hovered ? 1.045 : 1}) var(--music-control-pulse-transform, scale(1))`,
               transition:
                 "transform 90ms cubic-bezier(.2,.8,.2,1), filter 90ms ease, border 140ms ease, box-shadow 140ms ease",
             }}
@@ -604,17 +606,19 @@ export function EraseControl() {
               : state.hovered
                 ? "linear-gradient(110deg, #ff657f, #ff204f 55%, #ff75a1)"
                 : "#ff355e",
-            filter: state.focused
-              ? keyboardFocusFilter
-              : state.hovered
-                ? "brightness(1.16) drop-shadow(0 0 15px rgba(255,45,101,.82))"
-                : "drop-shadow(0 0 9px rgba(255,20,78,.55))",
+            filter: `${
+              state.focused
+                ? keyboardFocusFilter
+                : state.hovered
+                  ? "brightness(1.16) drop-shadow(0 0 15px rgba(255,45,101,.82))"
+                  : "drop-shadow(0 0 9px rgba(255,20,78,.55))"
+            } var(--music-control-pulse-filter, brightness(1))`,
             fontFamily: "'Barlow Condensed', Impact, sans-serif",
             fontWeight: 700,
             fontSize: 67,
             textShadow: "0 0 11px rgba(255,25,76,.55)",
             cursor: "pointer",
-            transform: `scale(${state.pressed && !reduceMotion ? 0.96 : 1})`,
+            transform: `scale(${state.pressed && !reduceMotion ? 0.96 : 1}) var(--music-control-pulse-transform, scale(1))`,
             transition: "transform 90ms cubic-bezier(.2,.8,.2,1)",
           }}
         >
