@@ -1,10 +1,19 @@
 "use client";
 
 import { useReducedMotion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { frameOuterBottom, frameOuterInset, framePulseClip } from "./styles";
+
+const settingsReturnCutout = {
+  maskImage: "linear-gradient(#000 0 0), linear-gradient(#000 0 0), linear-gradient(#000 0 0)",
+  maskPosition: "0 0, 0 100%, 100% 100%",
+  maskRepeat: "no-repeat",
+  maskSize: "100% 1329px, 297px 75px, 297px 75px",
+} as const;
 
 export function ArcadeFramePulse() {
   const reduceMotion = Boolean(useReducedMotion());
+  const hasSettingsReturnCutout = usePathname() === "/settings";
 
   return (
     <div
@@ -22,6 +31,15 @@ export function ArcadeFramePulse() {
         opacity: reduceMotion ? 0.28 : 1,
         mixBlendMode: "screen",
         pointerEvents: "none",
+        ...(hasSettingsReturnCutout
+          ? {
+              ...settingsReturnCutout,
+              WebkitMaskImage: settingsReturnCutout.maskImage,
+              WebkitMaskPosition: settingsReturnCutout.maskPosition,
+              WebkitMaskRepeat: settingsReturnCutout.maskRepeat,
+              WebkitMaskSize: settingsReturnCutout.maskSize,
+            }
+          : undefined),
       }}
     >
       <style>{`
