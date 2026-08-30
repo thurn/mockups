@@ -41,65 +41,33 @@ export function AnimatedCheckboxVisual({ checked }: { checked: boolean }) {
     >
       <AnimatePresence initial={false}>
         {checked && (
-          <span
+          <motion.svg
+            key="traced-check"
+            viewBox="0 0 56 48"
             style={{
               position: "absolute",
               left: "50%",
               top: "50%",
-              width: 54,
-              height: 46,
+              width: 56,
+              height: 48,
+              overflow: "visible",
               transform: "translate(-50%, -50%)",
+              filter: "drop-shadow(0 0 7px #128dff)",
             }}
           >
-            <motion.span
-              key="short-stroke"
-              initial={{ scaleX: 0 }}
-              animate={{
-                scaleX: 1,
-                transition: { duration: 0.16, ease: "easeInOut" },
-              }}
-              exit={{
-                scaleX: 0,
-                transition: { duration: 0.13, delay: 0.18, ease: "easeInOut" },
-              }}
-              style={{
-                position: "absolute",
-                left: 1,
-                top: 18,
-                width: 22,
-                height: 8,
-                borderRadius: 4,
-                background: "#61f1ff",
-                filter: "drop-shadow(0 0 7px #128dff)",
-                rotate: 45,
-                transformOrigin: "left center",
-              }}
+            <motion.path
+              d="M 6 24 L 20 37 L 50 7"
+              fill="none"
+              stroke="#61f1ff"
+              strokeWidth="8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              exit={{ pathLength: 0 }}
+              transition={{ duration: 0.42, ease: "easeInOut" }}
             />
-            <motion.span
-              key="long-stroke"
-              initial={{ scaleX: 0 }}
-              animate={{
-                scaleX: 1,
-                transition: { duration: 0.24, delay: 0.13, ease: "easeInOut" },
-              }}
-              exit={{
-                scaleX: 0,
-                transition: { duration: 0.18, ease: "easeInOut" },
-              }}
-              style={{
-                position: "absolute",
-                left: 16,
-                top: 33,
-                width: 46,
-                height: 8,
-                borderRadius: 4,
-                background: "#61f1ff",
-                filter: "drop-shadow(0 0 7px #128dff)",
-                rotate: -43,
-                transformOrigin: "left center",
-              }}
-            />
-          </span>
+          </motion.svg>
         )}
       </AnimatePresence>
     </motion.span>
