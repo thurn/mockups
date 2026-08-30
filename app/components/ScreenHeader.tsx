@@ -47,8 +47,8 @@ function GameWordmarkImage() {
         unoptimized
         style={{
           position: "absolute",
-          left: "calc(50% + 5px)",
-          top: "calc(50% + 11px)",
+          left: "calc(50% + 14px)",
+          top: "calc(50% + 5px)",
           width: 900,
           height: 360,
           transform: "translate(-50%, -50%)",

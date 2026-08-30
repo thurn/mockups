@@ -353,9 +353,10 @@ def letterspaced_mask(text: str, font: ImageFont.FreeTypeFont, spacing: float,
     return mask
 
 
-def affine_logo(mask: Image.Image, scale_x: float, scale_y: float, skew_x: float) -> Image.Image:
-    transformed = mask.resize((round(mask.width * scale_x), round(mask.height * scale_y)),
-                              Image.Resampling.LANCZOS)
+def affine_logo(layer: Image.Image, scale_x: float, scale_y: float, skew_x: float) -> Image.Image:
+    """Apply the heading transform to an already-painted local text layer."""
+    transformed = layer.resize((round(layer.width * scale_x), round(layer.height * scale_y)),
+                               Image.Resampling.LANCZOS)
     shear = math.tan(math.radians(skew_x))
     extra = math.ceil(abs(shear) * transformed.height)
     return transformed.transform((transformed.width + extra, transformed.height), Image.Transform.AFFINE,
@@ -373,34 +374,49 @@ def render_logo(scale: int) -> Image.Image:
     masks = [letterspaced_mask(line, font, spacing) for line in css["lines"]]
     raw_width = max(mask.width for mask in masks)
     raw_height = line_gap * (len(masks) - 1) + max(mask.height for mask in masks)
-    raw = Image.new("L", (raw_width + 32 * scale, raw_height + 24 * scale), 0)
+    padding_top, padding_right, padding_bottom, padding_left = (18, 24, 34, 4)
+    local_size = (
+        raw_width + (padding_left + padding_right) * scale,
+        raw_height + (padding_top + padding_bottom) * scale,
+    )
+    raw = Image.new("L", local_size, 0)
     for index, mask in enumerate(masks):
-        raw.paste(mask, ((raw.width - mask.width) // 2, index * line_gap), mask)
+        raw.paste(
+            mask,
+            (
+                padding_left * scale + (raw_width - mask.width) // 2,
+                padding_top * scale + index * line_gap,
+            ),
+            mask,
+        )
+
+    # CSS paints the text gradient and stroke in the heading's local padding box.
+    # Only then is the complete colored element scaled and skewed.
+    stroke_px = max(1, round(css["-webkit-text-stroke"][0] * scale))
+    stroke_mask = raw.filter(ImageFilter.MaxFilter(stroke_px * 2 + 1))
+    local = Image.new("RGBA", local_size)
+    stroke_color = rgba(css["-webkit-text-stroke"][1])
+    stroke_layer = Image.new("RGBA", local_size, stroke_color)
+    stroke_layer.putalpha(stroke_mask)
+    local.alpha_composite(stroke_layer)
+    local.alpha_composite(apply_mask(linear_gradient(local_size, css["background"]), raw))
 
     transform = css["transform"]
-    fill_mask = affine_logo(raw, transform["scale-x"], transform["scale-y"], transform["skew-x"])
-    stroke_px = max(1, round(css["-webkit-text-stroke"][0] * scale))
-    stroke_mask = fill_mask.filter(ImageFilter.MaxFilter(stroke_px * 2 + 1))
+    transformed = affine_logo(
+        local, transform["scale-x"], transform["scale-y"], transform["skew-x"]
+    )
 
     result = Image.new("RGBA", canvas)
-    x = (canvas[0] - fill_mask.width) // 2
-    y = (canvas[1] - fill_mask.height) // 2
-    placed_fill = Image.new("L", canvas, 0)
-    placed_stroke = Image.new("L", canvas, 0)
-    placed_fill.paste(fill_mask, (x, y))
-    placed_stroke.paste(stroke_mask, (x, y))
+    x = (canvas[0] - transformed.width) // 2
+    y = (canvas[1] - transformed.height) // 2
+    placed_alpha = Image.new("L", canvas, 0)
+    placed_alpha.paste(transformed.getchannel("A"), (x, y))
 
     # CSS drop-shadow stack, rendered back-to-front.
     for shadow in reversed(css["filter"]):
-        result.alpha_composite(colored_shadow(placed_stroke, shadow, scale))
+        result.alpha_composite(colored_shadow(placed_alpha, shadow, scale))
 
-    stroke_color = rgba(css["-webkit-text-stroke"][1])
-    stroke_layer = Image.new("RGBA", canvas, stroke_color)
-    stroke_layer.putalpha(placed_stroke)
-    result.alpha_composite(stroke_layer)
-
-    fill = apply_mask(linear_gradient(canvas, css["background"]), placed_fill)
-    result.alpha_composite(fill)
+    result.alpha_composite(transformed, (x, y))
     return result
 
 
