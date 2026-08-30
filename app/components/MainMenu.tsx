@@ -1,7 +1,7 @@
 "use client";
 
 import { ActionButton } from "./ActionButton";
-import { ArcadeStarfield } from "./ArcadeStarfield";
+import { ArcadeAttractMode } from "./ArcadeAttractMode";
 import { useArcadeNavigation } from "./ArcadeRouteTransition";
 import { ScreenHeader } from "./ScreenHeader";
 
@@ -27,7 +27,7 @@ export function MainMenu() {
         pointerEvents: "auto",
       }}
     >
-      <ArcadeStarfield />
+      <ArcadeAttractMode />
       <div style={{ position: "absolute", inset: 0 }}>
         <ScreenHeader variant="game" />
       </div>
