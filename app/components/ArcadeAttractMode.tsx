@@ -5,6 +5,7 @@ import type { CSSProperties } from "react";
 import { frameClip, frameInteriorBounds } from "./styles";
 
 type Particle = {
+  accent: boolean;
   color: string;
   driftX: number;
   driftY: number;
@@ -25,18 +26,19 @@ function createParticles(count: number): Particle[] {
   };
 
   return Array.from({ length: count }, (_, index) => ({
+    accent: index % 9 === 0,
     color: particleColors[index % particleColors.length],
-    driftX: -36 + random() * 72,
-    driftY: -125 - random() * 155,
-    duration: 10 + random() * 9,
+    driftX: -58 + random() * 116,
+    driftY: -165 - random() * 210,
+    duration: 8 + random() * 7,
     phase: random(),
-    size: 2.5 + random() * 3.5,
-    x: 4 + random() * 92,
-    y: 18 + random() * 82,
+    size: 3 + random() * 4.5,
+    x: 3 + random() * 94,
+    y: 12 + random() * 86,
   }));
 }
 
-const particles = createParticles(20);
+const particles = createParticles(48);
 const gridRays = [-22, -16.5, -11, -5.5, 0, 5.5, 11, 16.5, 22];
 const gridHorizons = [
   { top: 23, width: 10 },
@@ -62,10 +64,11 @@ export function ArcadeAttractMode() {
           to { transform: translateY(12px) scaleY(1.02); opacity: 1; }
         }
         @keyframes arcade-particle-drift {
-          0% { transform: translate3d(0, 90px, 0) scale(.7); opacity: 0; }
-          16% { opacity: .38; }
-          72% { opacity: .5; }
-          100% { transform: translate3d(var(--particle-drift-x), var(--particle-drift-y), 0) scale(1.05); opacity: 0; }
+          0% { transform: translate3d(0, 110px, 0) scale(.55); opacity: 0; }
+          12% { opacity: .52; }
+          38% { opacity: .96; }
+          76% { opacity: .74; }
+          100% { transform: translate3d(var(--particle-drift-x), var(--particle-drift-y), 0) scale(1.22); opacity: 0; }
         }
         @media (prefers-reduced-motion: reduce) {
           [data-attract-motion="grid"] {
@@ -76,7 +79,7 @@ export function ArcadeAttractMode() {
           [data-attract-motion="particle"] {
             animation: none !important;
             transform: scale(.85) !important;
-            opacity: .23 !important;
+            opacity: .62 !important;
           }
         }
       `}</style>
@@ -107,15 +110,17 @@ export function ArcadeAttractMode() {
             style={
               {
                 position: "absolute",
-                zIndex: 2,
+                zIndex: 4,
                 top: `${particle.y}%`,
                 left: `${particle.x}%`,
                 width: particle.size,
                 height: particle.size,
                 borderRadius: "50%",
                 background: particle.color,
-                boxShadow: `0 0 ${particle.size * 3}px ${particle.color}`,
-                opacity: reduceMotion ? 0.23 : undefined,
+                boxShadow: particle.accent
+                  ? `0 0 3px #fff, 0 0 ${particle.size * 3}px ${particle.color}, 0 0 ${particle.size * 6}px ${particle.color}`
+                  : `0 0 2px #fff, 0 0 ${particle.size * 3.5}px ${particle.color}`,
+                opacity: reduceMotion ? 0.62 : undefined,
                 transform: reduceMotion ? "translate3d(0, 0, 0) scale(.85)" : undefined,
                 animation: reduceMotion
                   ? undefined
