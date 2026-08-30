@@ -46,12 +46,12 @@ export function ArcadeFramePulse() {
         @keyframes arcade-border-comet-lap {
           0% { left: 0%; top: 0%; transform: translate(-50%, -50%) rotate(0deg); }
           24% { left: 100%; top: 0%; transform: translate(-50%, -50%) rotate(0deg); }
-          25% { left: 100%; top: 0%; transform: translate(-50%, -50%) rotate(90deg); }
-          49% { left: 100%; top: 100%; transform: translate(-50%, -50%) rotate(90deg); }
+          25% { left: 98.1%; top: 0%; transform: translate(-50%, -50%) rotate(90deg); }
+          49% { left: 98.1%; top: 100%; transform: translate(-50%, -50%) rotate(90deg); }
           50% { left: 100%; top: 100%; transform: translate(-50%, -50%) rotate(180deg); }
           74% { left: 0%; top: 100%; transform: translate(-50%, -50%) rotate(180deg); }
-          75% { left: 0%; top: 100%; transform: translate(-50%, -50%) rotate(270deg); }
-          99% { left: 0%; top: 0%; transform: translate(-50%, -50%) rotate(270deg); }
+          75% { left: 1.9%; top: 100%; transform: translate(-50%, -50%) rotate(270deg); }
+          99% { left: 1.9%; top: 0%; transform: translate(-50%, -50%) rotate(270deg); }
           100% { left: 0%; top: 0%; transform: translate(-50%, -50%) rotate(360deg); }
         }
         @media (prefers-reduced-motion: reduce) {
