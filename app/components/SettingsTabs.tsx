@@ -103,7 +103,7 @@ function SettingsTabButton({
         />
         <span style={{ position: "relative", zIndex: 1 }}>{tab}</span>
       </motion.button>
-      <ArcadeButtonEffect burstId={state.pressCount} compact />
+      <ArcadeButtonEffect burstId={state.releaseCount} compact />
     </span>
   );
 }

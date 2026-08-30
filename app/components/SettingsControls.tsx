@@ -199,7 +199,7 @@ export function SelectControl({
             <span style={{ position: "relative", zIndex: 1 }}>{value}</span>
             <Caret isOpen={isOpen} />
           </button>
-          <ArcadeButtonEffect burstId={pressState.pressCount} compact />
+          <ArcadeButtonEffect burstId={pressState.releaseCount} compact />
         </span>
         {!isSuperseded && (
           <AnimatePresence initial={false} onExitComplete={() => setIsClosing(false)}>
@@ -375,7 +375,7 @@ function DropdownOptionButton({
           {selected && <CheckMark scale={0.62} />}
         </span>
       </button>
-      <ArcadeButtonEffect burstId={state.pressCount} compact />
+      <ArcadeButtonEffect burstId={state.releaseCount} compact />
     </>
   );
 }
@@ -545,7 +545,7 @@ export function EraseControl() {
             ERASE
           </span>
         </button>
-        <ArcadeButtonEffect burstId={state.pressCount} compact />
+        <ArcadeButtonEffect burstId={state.releaseCount} compact />
       </span>
     </SettingRow>
   );

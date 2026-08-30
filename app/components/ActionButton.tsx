@@ -84,7 +84,7 @@ export function ActionButton({ children, onClick }: { children: ReactNode; onCli
           {children}
         </span>
       </button>
-      <ArcadeButtonEffect burstId={state.pressCount} />
+      <ArcadeButtonEffect burstId={state.releaseCount} />
     </span>
   );
 }
