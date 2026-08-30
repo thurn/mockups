@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { useReducedMotion } from "framer-motion";
+import { ArcadeButtonEffect } from "./ArcadeButtonEffect";
 import {
   actionInnerClip,
   actionOuterClip,
@@ -10,6 +12,7 @@ import {
 } from "./ClippedInset";
 import { ArcadeCheckboxEffect } from "./ArcadeCheckboxEffect";
 import { SettingRow } from "./SettingRow";
+import { useInteraction } from "./useInteraction";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
 
@@ -27,6 +30,8 @@ export function SelectControl({
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const listboxId = useId();
+  const reduceMotion = useReducedMotion();
+  const { state: pressState, handlers: pressHandlers } = useInteraction();
 
   useEffect(() => {
     if (!isOpen) return;
@@ -102,50 +107,67 @@ export function SelectControl({
           transform: `translateY(${offsetY}px)`,
         }}
       >
-        <button
-          ref={triggerRef}
-          type="button"
-          role="combobox"
-          aria-label={String(label)}
-          aria-haspopup="listbox"
-          aria-expanded={isOpen}
-          aria-controls={listboxId}
-          aria-activedescendant={isOpen ? `${listboxId}-option-${activeIndex}` : undefined}
-          onClick={() => (isOpen ? setIsOpen(false) : openMenu())}
-          onKeyDown={handleKeyDown}
+        <span
           style={{
             position: "relative",
-            boxSizing: "border-box",
             width: 396,
             height: 106,
-            display: "flex",
-            alignItems: "center",
-            clipPath: controlOuterClip,
-            padding: "0 74px 0 39px",
-            border: 0,
-            color: "#f5f6fb",
-            background: "linear-gradient(106deg, #5df5ff, #a5cbff 48%, #ff4bc9)",
-            filter: isOpen
-              ? "drop-shadow(0 0 12px rgba(83,226,255,.7))"
-              : "drop-shadow(0 0 6px rgba(42,103,255,.38))",
-            fontFamily: "'Barlow Condensed', Impact, sans-serif",
-            fontWeight: 700,
-            fontSize: 60,
-            textAlign: "left",
-            lineHeight: 1,
-            textShadow: "2px 4px 0 #19284a, 0 4px 7px #000",
-            cursor: "pointer",
+            display: "block",
+            overflow: "visible",
           }}
         >
-          <ClippedInset
-            inset={3}
-            clipPath={controlInnerClip}
-            background="linear-gradient(180deg, #050b1c, #020611)"
-            boxShadow="inset 0 0 24px #000"
-          />
-          <span style={{ position: "relative", zIndex: 1 }}>{value}</span>
-          <Caret isOpen={isOpen} />
-        </button>
+          <button
+            {...pressHandlers}
+            ref={triggerRef}
+            type="button"
+            role="combobox"
+            aria-label={String(label)}
+            aria-haspopup="listbox"
+            aria-expanded={isOpen}
+            aria-controls={listboxId}
+            aria-activedescendant={isOpen ? `${listboxId}-option-${activeIndex}` : undefined}
+            onClick={() => (isOpen ? setIsOpen(false) : openMenu())}
+            onKeyDown={(event) => {
+              pressHandlers.onKeyDown(event);
+              handleKeyDown(event);
+            }}
+            style={{
+              position: "relative",
+              boxSizing: "border-box",
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              alignItems: "center",
+              clipPath: controlOuterClip,
+              padding: "0 74px 0 39px",
+              border: 0,
+              color: "#f5f6fb",
+              background: "linear-gradient(106deg, #5df5ff, #a5cbff 48%, #ff4bc9)",
+              filter: isOpen
+                ? "drop-shadow(0 0 12px rgba(83,226,255,.7))"
+                : "drop-shadow(0 0 6px rgba(42,103,255,.38))",
+              fontFamily: "'Barlow Condensed', Impact, sans-serif",
+              fontWeight: 700,
+              fontSize: 60,
+              textAlign: "left",
+              lineHeight: 1,
+              textShadow: "2px 4px 0 #19284a, 0 4px 7px #000",
+              cursor: "pointer",
+              transform: `scale(${pressState.pressed && !reduceMotion ? 0.965 : 1})`,
+              transition: "transform 90ms cubic-bezier(.2,.8,.2,1), filter 140ms ease",
+            }}
+          >
+            <ClippedInset
+              inset={3}
+              clipPath={controlInnerClip}
+              background="linear-gradient(180deg, #050b1c, #020611)"
+              boxShadow="inset 0 0 24px #000"
+            />
+            <span style={{ position: "relative", zIndex: 1 }}>{value}</span>
+            <Caret isOpen={isOpen} />
+          </button>
+          <ArcadeButtonEffect burstId={pressState.pressCount} compact />
+        </span>
         {isOpen && (
           <div
             id={listboxId}
@@ -342,49 +364,66 @@ export function ToggleControl({
 }
 
 export function EraseControl() {
+  const { state, handlers } = useInteraction();
+  const reduceMotion = useReducedMotion();
+
   return (
     <SettingRow label="Erase Saved Data">
-      <button
-        type="button"
+      <span
         style={{
           position: "relative",
-          boxSizing: "border-box",
           width: 362,
           height: 114,
           marginLeft: 21,
-          display: "grid",
-          placeItems: "center",
-          border: 0,
-          padding: 0,
-          clipPath: actionOuterClip,
-          color: "#ff3553",
-          background: "#ff355e",
-          filter: "drop-shadow(0 0 9px rgba(255,20,78,.55))",
-          fontFamily: "'Barlow Condensed', Impact, sans-serif",
-          fontWeight: 700,
-          fontSize: 67,
-          textShadow: "0 0 11px rgba(255,25,76,.55)",
-          cursor: "pointer",
+          display: "block",
+          overflow: "visible",
           transform: "translateY(-8px)",
         }}
       >
-        <ClippedInset
-          inset={4}
-          clipPath={actionInnerClip}
-          background="radial-gradient(ellipse at 50% 45%, #200511, #07030c 67%, #020208)"
-          boxShadow="inset 0 0 22px #000"
-        />
-        <span
+        <button
+          {...handlers}
+          type="button"
           style={{
             position: "relative",
-            zIndex: 1,
-            lineHeight: 0.9,
-            transform: "translateY(-1px)",
+            boxSizing: "border-box",
+            width: "100%",
+            height: "100%",
+            display: "grid",
+            placeItems: "center",
+            border: 0,
+            padding: 0,
+            clipPath: actionOuterClip,
+            color: "#ff3553",
+            background: "#ff355e",
+            filter: "drop-shadow(0 0 9px rgba(255,20,78,.55))",
+            fontFamily: "'Barlow Condensed', Impact, sans-serif",
+            fontWeight: 700,
+            fontSize: 67,
+            textShadow: "0 0 11px rgba(255,25,76,.55)",
+            cursor: "pointer",
+            transform: `scale(${state.pressed && !reduceMotion ? 0.96 : 1})`,
+            transition: "transform 90ms cubic-bezier(.2,.8,.2,1)",
           }}
         >
-          ERASE
-        </span>
-      </button>
+          <ClippedInset
+            inset={4}
+            clipPath={actionInnerClip}
+            background="radial-gradient(ellipse at 50% 45%, #200511, #07030c 67%, #020208)"
+            boxShadow="inset 0 0 22px #000"
+          />
+          <span
+            style={{
+              position: "relative",
+              zIndex: 1,
+              lineHeight: 0.9,
+              transform: "translateY(-1px)",
+            }}
+          >
+            ERASE
+          </span>
+        </button>
+        <ArcadeButtonEffect burstId={state.pressCount} compact />
+      </span>
     </SettingRow>
   );
 }
