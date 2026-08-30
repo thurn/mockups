@@ -1,4 +1,6 @@
-import type { ReactNode } from "react";
+"use client";
+
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import {
   actionInnerClip,
   actionOuterClip,
@@ -19,11 +21,78 @@ export function SelectControl({
   offsetY = 0,
   rowHeight,
 }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(() => Math.max(0, options.indexOf(value)));
+  const rootRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const listboxId = useId();
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const dismiss = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setIsOpen(false);
+    };
+
+    document.addEventListener("pointerdown", dismiss);
+    return () => document.removeEventListener("pointerdown", dismiss);
+  }, [isOpen]);
+
+  const openMenu = () => {
+    setActiveIndex(Math.max(0, options.indexOf(value)));
+    setIsOpen(true);
+  };
+
+  const selectOption = (option: string) => {
+    onChange(option);
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement | HTMLDivElement>) => {
+    if (event.key === "Escape" && isOpen) {
+      event.preventDefault();
+      setIsOpen(false);
+      triggerRef.current?.focus();
+      return;
+    }
+
+    if (event.key === "Tab") {
+      setIsOpen(false);
+      return;
+    }
+
+    if (event.key === "Home" || event.key === "End") {
+      event.preventDefault();
+      if (!isOpen) openMenu();
+      setActiveIndex(event.key === "Home" ? 0 : options.length - 1);
+      return;
+    }
+
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      if (!isOpen) {
+        openMenu();
+        return;
+      }
+      const direction = event.key === "ArrowDown" ? 1 : -1;
+      setActiveIndex((current) => (current + direction + options.length) % options.length);
+      return;
+    }
+
+    if ((event.key === "Enter" || event.key === " ") && isOpen) {
+      event.preventDefault();
+      selectOption(options[activeIndex]);
+    }
+  };
+
   return (
     <SettingRow first={first} label={label} rowHeight={rowHeight}>
       <div
+        ref={rootRef}
         style={{
           position: "relative",
+          zIndex: isOpen ? 20 : 1,
           width: 396,
           height: "100%",
           flex: "none",
@@ -32,8 +101,17 @@ export function SelectControl({
           transform: `translateY(${offsetY}px)`,
         }}
       >
-        <div
-          aria-hidden="true"
+        <button
+          ref={triggerRef}
+          type="button"
+          role="combobox"
+          aria-label={String(label)}
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          aria-controls={listboxId}
+          aria-activedescendant={isOpen ? `${listboxId}-option-${activeIndex}` : undefined}
+          onClick={() => (isOpen ? setIsOpen(false) : openMenu())}
+          onKeyDown={handleKeyDown}
           style={{
             position: "relative",
             boxSizing: "border-box",
@@ -43,15 +121,19 @@ export function SelectControl({
             alignItems: "center",
             clipPath: controlOuterClip,
             padding: "0 74px 0 39px",
+            border: 0,
             color: "#f5f6fb",
             background: "linear-gradient(106deg, #5df5ff, #a5cbff 48%, #ff4bc9)",
-            filter: "drop-shadow(0 0 6px rgba(42,103,255,.38))",
+            filter: isOpen
+              ? "drop-shadow(0 0 12px rgba(83,226,255,.7))"
+              : "drop-shadow(0 0 6px rgba(42,103,255,.38))",
             fontFamily: "'Barlow Condensed', Impact, sans-serif",
             fontWeight: 700,
             fontSize: 60,
+            textAlign: "left",
             lineHeight: 1,
             textShadow: "2px 4px 0 #19284a, 0 4px 7px #000",
-            pointerEvents: "none",
+            cursor: "pointer",
           }}
         >
           <ClippedInset
@@ -61,49 +143,125 @@ export function SelectControl({
             boxShadow="inset 0 0 24px #000"
           />
           <span style={{ position: "relative", zIndex: 1 }}>{value}</span>
-        </div>
-        <select
-          aria-label={String(label)}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          style={{
-            position: "absolute",
-            left: 0,
-            top: "50%",
-            zIndex: 3,
-            width: 396,
-            height: 106,
-            appearance: "none",
-            border: 0,
-            padding: 0,
-            outline: 0,
-            opacity: 0,
-            cursor: "pointer",
-            transform: "translateY(-50%)",
-          }}
-        >
-          {options.map((option) => (
-            <option key={option}>{option}</option>
-          ))}
-        </select>
-        <span
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            top: "50%",
-            right: 45,
-            width: 0,
-            height: 0,
-            borderLeft: "15px solid transparent",
-            borderRight: "15px solid transparent",
-            borderTop: "18px solid #f4f5fa",
-            filter: "drop-shadow(0 3px 2px #000)",
-            pointerEvents: "none",
-            transform: "translateY(-50%)",
-          }}
-        />
+          <Caret isOpen={isOpen} />
+        </button>
+        {isOpen && (
+          <div
+            id={listboxId}
+            role="listbox"
+            aria-label={`${String(label)} options`}
+            style={{
+              position: "absolute",
+              left: 0,
+              top: "calc(50% + 59px)",
+              zIndex: 30,
+              boxSizing: "border-box",
+              width: 396,
+              padding: 3,
+              clipPath: controlOuterClip,
+              background: "linear-gradient(145deg, #5df5ff, #718cff 48%, #ff4bc9)",
+              filter:
+                "drop-shadow(0 10px 14px rgba(0,0,0,.72)) drop-shadow(0 0 8px rgba(43,126,255,.65))",
+            }}
+          >
+            <div
+              style={{
+                position: "relative",
+                overflow: "hidden",
+                clipPath: controlInnerClip,
+                padding: "8px 6px",
+                background:
+                  "radial-gradient(circle at 20% 0%, rgba(30,95,195,.25), transparent 48%), linear-gradient(180deg, #07152e, #020611)",
+                boxShadow: "inset 0 0 24px #000",
+              }}
+            >
+              {options.map((option, index) => {
+                const selected = option === value;
+                const active = index === activeIndex;
+
+                return (
+                  <button
+                    id={`${listboxId}-option-${index}`}
+                    key={option}
+                    type="button"
+                    role="option"
+                    aria-selected={selected}
+                    onPointerEnter={() => setActiveIndex(index)}
+                    onClick={() => selectOption(option)}
+                    style={{
+                      boxSizing: "border-box",
+                      width: "100%",
+                      minHeight: 76,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      gap: 14,
+                      border: 0,
+                      borderTop: index === 0 ? 0 : "2px solid rgba(70,112,179,.28)",
+                      padding: "6px 20px 6px 25px",
+                      color: selected ? "#efffff" : "#d9e1f2",
+                      background: active
+                        ? "linear-gradient(90deg, rgba(11,113,207,.5), rgba(88,69,177,.28) 66%, rgba(229,39,177,.2))"
+                        : "transparent",
+                      boxShadow: active ? "inset 4px 0 0 #61f1ff" : "none",
+                      fontFamily: "'Barlow Condensed', Impact, sans-serif",
+                      fontWeight: 700,
+                      fontSize: 47,
+                      lineHeight: 1,
+                      textAlign: "left",
+                      textShadow: "2px 3px 0 #172747, 0 3px 5px #000",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <span>{option}</span>
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        position: "relative",
+                        flex: "none",
+                        width: 48,
+                        height: 48,
+                        border: `3px solid ${selected ? "#55cfff" : "#334f7c"}`,
+                        borderRadius: 8,
+                        background: "linear-gradient(180deg, #06142b, #02091a)",
+                        boxShadow: selected
+                          ? "inset 0 0 10px #000, 0 0 8px #166cff"
+                          : "inset 0 0 10px #000",
+                      }}
+                    >
+                      {selected && <CheckMark scale={0.62} />}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </SettingRow>
+  );
+}
+
+function Caret({ isOpen }: { isOpen: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      style={{
+        position: "absolute",
+        zIndex: 2,
+        top: "50%",
+        right: 45,
+        width: 0,
+        height: 0,
+        borderLeft: "15px solid transparent",
+        borderRight: "15px solid transparent",
+        borderTop: "18px solid #f4f5fa",
+        filter: "drop-shadow(0 3px 2px #000)",
+        pointerEvents: "none",
+        transform: `translateY(-50%) rotate(${isOpen ? 180 : 0}deg)`,
+        transition: "transform 140ms ease",
+      }}
+    />
   );
 }
 
@@ -228,7 +386,7 @@ export function EraseControl() {
   );
 }
 
-function CheckMark() {
+function CheckMark({ scale = 1 }: { scale?: number }) {
   return (
     <span
       style={{
@@ -239,7 +397,7 @@ function CheckMark() {
         height: 44,
         clipPath: "polygon(0 47%, 14% 32%, 35% 58%, 85% 0, 100% 14%, 35% 100%)",
         background: "#61f1ff",
-        transform: "translate(-50%, -50%)",
+        transform: `translate(-50%, -50%) scale(${scale})`,
         filter: "drop-shadow(0 0 7px #128dff)",
       }}
     />
