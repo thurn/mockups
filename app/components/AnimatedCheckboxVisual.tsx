@@ -3,21 +3,18 @@
 import { AnimatePresence, motion } from "framer-motion";
 
 const restingShadow = "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff";
+const checkedShadow = "inset 0 0 15px #000, 0 0 13px #168dff, 0 0 7px #6af6ff";
 
 const frameVariants = {
   checked: {
-    borderColor: ["#4ba3ff", "#8bfbff", "#4ba3ff"],
-    boxShadow: [
-      restingShadow,
-      "inset 0 0 17px #02091a, 0 0 18px #25d9ff, 0 0 9px #a15eff",
-      restingShadow,
-    ],
-    transition: { duration: 0.4, times: [0, 0.45, 1] },
+    borderColor: "#62cfff",
+    boxShadow: checkedShadow,
+    transition: { duration: 0.12 },
   },
   unchecked: {
-    borderColor: ["#4ba3ff", "#315d9d", "#4ba3ff"],
-    boxShadow: [restingShadow, "inset 0 0 16px #000, 0 0 5px #166cff", restingShadow],
-    transition: { duration: 0.3, times: [0, 0.4, 1] },
+    borderColor: "#4ba3ff",
+    boxShadow: restingShadow,
+    transition: { duration: 0.12 },
   },
 };
 
@@ -62,10 +59,23 @@ export function AnimatedCheckboxVisual({ checked }: { checked: boolean }) {
               strokeWidth="8"
               strokeLinecap="round"
               strokeLinejoin="round"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              exit={{ pathLength: 0 }}
-              transition={{ duration: 0.42, ease: "easeInOut" }}
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{
+                pathLength: 1,
+                opacity: 1,
+                transition: {
+                  pathLength: { duration: 0.24, ease: "easeOut" },
+                  opacity: { duration: 0.01 },
+                },
+              }}
+              exit={{
+                pathLength: 0,
+                opacity: 0,
+                transition: {
+                  pathLength: { duration: 0.16, ease: "easeIn" },
+                  opacity: { duration: 0.04, delay: 0.11 },
+                },
+              }}
             />
           </motion.svg>
         )}
