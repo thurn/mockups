@@ -38,7 +38,8 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
-    setActivePath(pathname);
+    const syncPath = window.setTimeout(() => setActivePath(pathname), 0);
+    return () => window.clearTimeout(syncPath);
   }, [pathname]);
 
   useEffect(() => {

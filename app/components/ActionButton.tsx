@@ -5,6 +5,11 @@ import { useReducedMotion } from "framer-motion";
 import { ArcadeButtonEffect } from "./ArcadeButtonEffect";
 import { actionInnerClip, actionOuterClip, ClippedInset } from "./ClippedInset";
 import { useInteraction } from "./useInteraction";
+import {
+  ControlInteraction,
+  keyboardFocusFilter,
+  keyboardFocusGradient,
+} from "./ControlInteraction";
 
 export function ActionButton({ children, onClick }: { children: ReactNode; onClick?: () => void }) {
   const { state, handlers } = useInteraction();
@@ -37,14 +42,18 @@ export function ActionButton({ children, onClick }: { children: ReactNode; onCli
           clipPath: actionOuterClip,
           color: "transparent",
           outline: 0,
-          background: highlighted
-            ? "linear-gradient(110deg, #fff, #70d7ff 22%, #c0b6ff 56%, #ff73da 90%)"
-            : "linear-gradient(110deg, #b9fbff, #3bb9ff 22%, #a49cff 56%, #ff4bd1 90%)",
-          filter: state.pressed
-            ? "brightness(.82) drop-shadow(0 0 8px rgba(58,154,255,.65))"
+          background: state.focused
+            ? keyboardFocusGradient
             : highlighted
-              ? "brightness(1.12) drop-shadow(0 0 16px rgba(118,182,255,.88))"
-              : "drop-shadow(0 0 10px rgba(58,154,255,.65))",
+              ? "linear-gradient(110deg, #fff, #70d7ff 22%, #c0b6ff 56%, #ff73da 90%)"
+              : "linear-gradient(110deg, #b9fbff, #3bb9ff 22%, #a49cff 56%, #ff4bd1 90%)",
+          filter: state.focused
+            ? keyboardFocusFilter
+            : state.pressed
+              ? "brightness(.82) drop-shadow(0 0 8px rgba(58,154,255,.65))"
+              : highlighted
+                ? "brightness(1.12) drop-shadow(0 0 16px rgba(118,182,255,.88))"
+                : "drop-shadow(0 0 10px rgba(58,154,255,.65))",
           cursor: "pointer",
           transform: `scale(${state.pressed && !reduceMotion ? 0.955 : 1})`,
           transition:
@@ -83,6 +92,7 @@ export function ActionButton({ children, onClick }: { children: ReactNode; onCli
         >
           {children}
         </span>
+        <ControlInteraction active={highlighted} clipPath={actionInnerClip} inset={6} />
       </button>
       <ArcadeButtonEffect burstId={state.releaseCount} />
     </span>

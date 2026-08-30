@@ -44,11 +44,7 @@ export function GraphicsSettings({
         options={["Borderless", "Fullscreen", "Windowed"]}
         onChange={onDisplayModeChange}
       />
-      <ToggleControl
-        checked={screenshake}
-        label="Screenshake"
-        onChange={onScreenshakeChange}
-      />
+      <ToggleControl checked={screenshake} label="Screenshake" onChange={onScreenshakeChange} />
       <ToggleControl checked={vsync} label="VSync" onChange={onVsyncChange} />
     </div>
   );

@@ -13,6 +13,11 @@ import {
 import { ArcadeCheckboxEffect } from "./ArcadeCheckboxEffect";
 import { SettingRow } from "./SettingRow";
 import { useInteraction } from "./useInteraction";
+import {
+  ControlInteraction,
+  keyboardFocusFilter,
+  keyboardFocusGradient,
+} from "./ControlInteraction";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
 
@@ -38,6 +43,7 @@ export function SelectControl({
   const listboxId = useId();
   const reduceMotion = useReducedMotion();
   const { state: pressState, handlers: pressHandlers } = useInteraction();
+  const highlighted = pressState.hovered || pressState.focused;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -174,11 +180,18 @@ export function SelectControl({
               clipPath: controlOuterClip,
               padding: "0 74px 0 39px",
               border: 0,
+              outline: 0,
               color: "#f5f6fb",
-              background: "linear-gradient(106deg, #5df5ff, #a5cbff 48%, #ff4bc9)",
-              filter: isOpen
-                ? "drop-shadow(0 0 12px rgba(83,226,255,.7))"
-                : "drop-shadow(0 0 6px rgba(42,103,255,.38))",
+              background: pressState.focused
+                ? keyboardFocusGradient
+                : highlighted
+                  ? "linear-gradient(106deg, #b5ffff, #d3ddff 48%, #ff75dc)"
+                  : "linear-gradient(106deg, #5df5ff, #a5cbff 48%, #ff4bc9)",
+              filter: pressState.focused
+                ? keyboardFocusFilter
+                : highlighted || isOpen
+                  ? "brightness(1.12) drop-shadow(0 0 13px rgba(83,226,255,.78))"
+                  : "drop-shadow(0 0 6px rgba(42,103,255,.38))",
               fontFamily: "'Barlow Condensed', Impact, sans-serif",
               fontWeight: 700,
               fontSize: 60,
@@ -198,6 +211,7 @@ export function SelectControl({
             />
             <span style={{ position: "relative", zIndex: 1 }}>{value}</span>
             <Caret isOpen={isOpen} />
+            <ControlInteraction active={highlighted} clipPath={controlInnerClip} inset={3} />
           </button>
           <ArcadeButtonEffect burstId={pressState.releaseCount} compact />
         </span>
@@ -326,12 +340,19 @@ function DropdownOptionButton({
           justifyContent: "space-between",
           gap: 14,
           border: 0,
+          outline: 0,
           padding: "6px 20px 6px 25px",
           color: selected ? "#efffff" : "#d9e1f2",
-          background: active
-            ? "linear-gradient(90deg, rgba(11,113,207,.5), rgba(88,69,177,.28) 66%, rgba(229,39,177,.2))"
-            : "transparent",
-          boxShadow: selected ? "inset 3px 0 0 #67f5ff, inset -2px 0 0 #ff59d5" : undefined,
+          background: state.focused
+            ? "linear-gradient(90deg, rgba(255,238,0,.32), rgba(255,167,0,.14))"
+            : active
+              ? "linear-gradient(90deg, rgba(11,113,207,.5), rgba(88,69,177,.28) 66%, rgba(229,39,177,.2))"
+              : "transparent",
+          boxShadow: state.focused
+            ? "inset 0 0 0 3px #fff400, 0 0 11px rgba(255,219,0,.72)"
+            : active
+              ? "inset 0 0 18px rgba(55,156,255,.28)"
+              : undefined,
           fontFamily: "'Barlow Condensed', Impact, sans-serif",
           fontWeight: 700,
           fontSize: 47,
@@ -340,7 +361,9 @@ function DropdownOptionButton({
           textShadow: "2px 3px 0 #172747, 0 3px 5px #000",
           cursor: "pointer",
           transform: `scale(${state.pressed && !reduceMotion ? 0.965 : 1})`,
-          transition: "transform 90ms cubic-bezier(.2,.8,.2,1), box-shadow 140ms ease",
+          filter: state.hovered ? "brightness(1.2)" : undefined,
+          transition:
+            "transform 90ms cubic-bezier(.2,.8,.2,1), box-shadow 140ms ease, filter 140ms ease",
         }}
       >
         <AnimatePresence initial={false}>
@@ -374,6 +397,11 @@ function DropdownOptionButton({
         >
           {selected && <CheckMark scale={0.62} />}
         </span>
+        <ControlInteraction
+          active={state.hovered || state.focused}
+          clipPath={controlInnerClip}
+          inset={3}
+        />
       </button>
       <ArcadeButtonEffect burstId={state.releaseCount} compact />
     </>
@@ -417,6 +445,9 @@ export function ToggleControl({
   onChange: (checked: boolean) => void;
   withInfo?: boolean;
 }) {
+  const { state, handlers } = useInteraction();
+  const reduceMotion = useReducedMotion();
+
   return (
     <label
       style={{
@@ -448,6 +479,7 @@ export function ToggleControl({
         >
           <ArcadeCheckboxEffect checked={checked} />
           <input
+            {...handlers}
             suppressHydrationWarning
             aria-label={ariaLabel ?? String(label)}
             checked={checked}
@@ -462,6 +494,7 @@ export function ToggleControl({
               margin: 0,
               opacity: 0,
               cursor: "pointer",
+              outline: 0,
             }}
           />
           <span
@@ -472,13 +505,29 @@ export function ToggleControl({
               boxSizing: "border-box",
               width: 77,
               height: 77,
-              border: "4px solid #4ba3ff",
+              border: state.focused
+                ? "4px solid #fff400"
+                : state.hovered
+                  ? "4px solid #91faff"
+                  : "4px solid #4ba3ff",
               borderRadius: 11,
               background: "linear-gradient(180deg, #06142b, #02091a)",
-              boxShadow: "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff",
+              boxShadow: state.focused
+                ? "inset 0 0 14px #000, 0 0 4px #fff, 0 0 16px #ffd900"
+                : state.hovered
+                  ? "inset 0 0 12px #000, 0 0 15px #2acfff, 0 0 8px #b8ffff"
+                  : "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff",
+              filter: state.pressed ? "brightness(.76)" : undefined,
+              transform: `scale(${state.pressed && !reduceMotion ? 0.88 : state.hovered ? 1.045 : 1})`,
+              transition:
+                "transform 90ms cubic-bezier(.2,.8,.2,1), filter 90ms ease, border 140ms ease, box-shadow 140ms ease",
             }}
           >
             {checked && <CheckMark />}
+            <ControlInteraction
+              active={state.hovered || state.focused}
+              clipPath="inset(0 round 7px)"
+            />
           </span>
         </span>
       </SettingRow>
@@ -489,6 +538,7 @@ export function ToggleControl({
 export function EraseControl() {
   const { state, handlers } = useInteraction();
   const reduceMotion = useReducedMotion();
+  const highlighted = state.hovered || state.focused;
 
   return (
     <SettingRow label="Erase Saved Data">
@@ -514,11 +564,20 @@ export function EraseControl() {
             display: "grid",
             placeItems: "center",
             border: 0,
+            outline: 0,
             padding: 0,
             clipPath: actionOuterClip,
             color: "#ff3553",
-            background: "#ff355e",
-            filter: "drop-shadow(0 0 9px rgba(255,20,78,.55))",
+            background: state.focused
+              ? keyboardFocusGradient
+              : state.hovered
+                ? "linear-gradient(110deg, #ff657f, #ff204f 55%, #ff75a1)"
+                : "#ff355e",
+            filter: state.focused
+              ? keyboardFocusFilter
+              : state.hovered
+                ? "brightness(1.16) drop-shadow(0 0 15px rgba(255,45,101,.82))"
+                : "drop-shadow(0 0 9px rgba(255,20,78,.55))",
             fontFamily: "'Barlow Condensed', Impact, sans-serif",
             fontWeight: 700,
             fontSize: 67,
@@ -544,6 +603,7 @@ export function EraseControl() {
           >
             ERASE
           </span>
+          <ControlInteraction active={highlighted} clipPath={actionInnerClip} inset={4} />
         </button>
         <ArcadeButtonEffect burstId={state.releaseCount} compact />
       </span>
@@ -576,24 +636,24 @@ function InfoBadge() {
       title="Crash reports help diagnose errors"
       style={{
         position: "absolute",
-        left: 201,
-        bottom: 25,
+        left: 205,
+        bottom: 37,
         boxSizing: "border-box",
-        width: 58,
-        height: 58,
+        width: 38,
+        height: 38,
         display: "grid",
         placeItems: "center",
-        border: "3px solid #55b8ff",
+        border: "2px solid #55b8ff",
         borderRadius: "50%",
         color: "#bcf4ff",
         fontFamily: "Georgia, serif",
-        fontSize: 39,
+        fontSize: 27,
         fontStyle: "normal",
         fontWeight: 700,
         lineHeight: 1,
         textTransform: "lowercase",
-        boxShadow: "0 0 11px #155eff, inset 0 0 10px rgba(13,76,180,.8)",
-        transform: "scaleX(.957)",
+        boxShadow: "0 0 8px #155eff, inset 0 0 7px rgba(13,76,180,.8)",
+        transform: "translateY(1px) scaleX(.957)",
       }}
     >
       i

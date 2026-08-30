@@ -16,7 +16,7 @@ const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsScreen() {
   const { navigate, reduceMotion, setReduceMotion } = useArcadeNavigation();
-  const [activeTab, setActiveTab] = useState<SettingsTab>("Graphics");
+  const [activeTab, setActiveTab] = useState<SettingsTab>("Gameplay");
   const [tabDirection, setTabDirection] = useState(1);
   const [language, setLanguage] = useState("English");
   const [textSize, setTextSize] = useState("Medium");
@@ -70,15 +70,14 @@ export function SettingsScreen() {
             boxSizing: "border-box",
             height: 1021,
             overflow: "hidden",
-            clipPath:
-              "polygon(0 0, 98.5% 0, 100% 1.4%, 100% 98.5%, 98.4% 100%, 1.5% 100%, 0 98.5%)",
+            clipPath: "polygon(0 0, 100% 0, 100% 98.5%, 98.4% 100%, 1.5% 100%, 0 98.5%)",
             background: "linear-gradient(110deg, #446690, #2c456f 54%, #875984)",
             filter: "drop-shadow(0 0 5px rgba(28,89,180,.28))",
           }}
         >
           <ClippedInset
             inset={2}
-            clipPath="polygon(0 0, 98.35% 0, 100% 1.35%, 100% 98.45%, 98.25% 100%, 1.35% 100%, 0 98.4%)"
+            clipPath="polygon(0 0, 100% 0, 100% 98.45%, 98.25% 100%, 1.35% 100%, 0 98.4%)"
             background="radial-gradient(ellipse at 7% 46%, rgba(5,83,184,.15), transparent 36%), linear-gradient(90deg, rgba(0,83,190,.07), transparent 25% 75%, rgba(126,0,145,.055)), linear-gradient(180deg, #041126 0%, #020b1b 100%)"
             boxShadow="inset 0 0 45px #000710"
           />

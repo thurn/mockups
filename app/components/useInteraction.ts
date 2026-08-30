@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type KeyboardEvent } from "react";
+import { useRef, useState, type FocusEvent, type KeyboardEvent } from "react";
 
 export function useInteraction() {
   const [hovered, setHovered] = useState(false);
@@ -35,7 +35,8 @@ export function useInteraction() {
         setHovered(false);
         cancelPress();
       },
-      onFocus: () => setFocused(true),
+      onFocus: (event: FocusEvent<HTMLElement>) =>
+        setFocused(event.currentTarget.matches(":focus-visible")),
       onBlur: () => {
         setFocused(false);
         cancelPress();

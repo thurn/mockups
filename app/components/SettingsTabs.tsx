@@ -4,6 +4,11 @@ import { motion } from "framer-motion";
 import { ArcadeButtonEffect } from "./ArcadeButtonEffect";
 import { ClippedInset, tabInnerClip, tabOuterClip } from "./ClippedInset";
 import { useInteraction } from "./useInteraction";
+import {
+  ControlInteraction,
+  keyboardFocusFilter,
+  keyboardFocusGradient,
+} from "./ControlInteraction";
 
 const tabs = ["Gameplay", "Graphics", "Sound", "Input"];
 
@@ -74,10 +79,21 @@ function SettingsTabButton({
           padding: 0,
           clipPath: tabOuterClip,
           color: "#f7f7fb",
-          background: active
-            ? "linear-gradient(112deg, #72f5ff 0%, #53afff 44%, #9a83ff 68%, #ff4ed3 100%)"
-            : "linear-gradient(110deg, #45678e, #253f67 52%, #75517d)",
-          filter: active ? "drop-shadow(0 0 10px rgba(35,133,255,.86))" : undefined,
+          outline: 0,
+          background: state.focused
+            ? keyboardFocusGradient
+            : active
+              ? "linear-gradient(112deg, #72f5ff 0%, #53afff 44%, #9a83ff 68%, #ff4ed3 100%)"
+              : state.hovered
+                ? "linear-gradient(110deg, #70d9ff, #5e80bd 52%, #ae69a4)"
+                : "linear-gradient(110deg, #45678e, #253f67 52%, #75517d)",
+          filter: state.focused
+            ? keyboardFocusFilter
+            : state.hovered
+              ? "brightness(1.16) drop-shadow(0 0 11px rgba(83,177,255,.78))"
+              : active
+                ? "drop-shadow(0 0 10px rgba(35,133,255,.86))"
+                : undefined,
           fontFamily: "'Barlow Condensed', Impact, sans-serif",
           fontWeight: 700,
           fontSize: active ? 55 : 51,
@@ -102,6 +118,11 @@ function SettingsTabButton({
           }
         />
         <span style={{ position: "relative", zIndex: 1 }}>{tab}</span>
+        <ControlInteraction
+          active={state.hovered || state.focused}
+          clipPath={tabInnerClip}
+          inset={3}
+        />
       </motion.button>
       <ArcadeButtonEffect burstId={state.releaseCount} compact />
     </span>
