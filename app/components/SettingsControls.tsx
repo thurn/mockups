@@ -203,7 +203,6 @@ export function SelectControl({
                       background: active
                         ? "linear-gradient(90deg, rgba(11,113,207,.5), rgba(88,69,177,.28) 66%, rgba(229,39,177,.2))"
                         : "transparent",
-                      boxShadow: active ? "inset 4px 0 0 #61f1ff" : "none",
                       fontFamily: "'Barlow Condensed', Impact, sans-serif",
                       fontWeight: 700,
                       fontSize: 47,
@@ -220,13 +219,7 @@ export function SelectControl({
                         position: "relative",
                         flex: "none",
                         width: 48,
-                        height: 48,
-                        border: `3px solid ${selected ? "#55cfff" : "#334f7c"}`,
-                        borderRadius: 8,
-                        background: "linear-gradient(180deg, #06142b, #02091a)",
-                        boxShadow: selected
-                          ? "inset 0 0 10px #000, 0 0 8px #166cff"
-                          : "inset 0 0 10px #000",
+                        height: 44,
                       }}
                     >
                       {selected && <CheckMark scale={0.62} />}
