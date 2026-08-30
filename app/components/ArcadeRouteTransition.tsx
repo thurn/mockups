@@ -31,9 +31,15 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
     (href: string) => {
       if (href === activePath) return;
 
+      const target = new URL(href, window.location.origin);
+      const current = new URL(window.location.href);
+      if (current.searchParams.get("render") === "png") {
+        target.searchParams.set("render", "png");
+      }
+
       setHasNavigated(true);
-      setActivePath(href);
-      router.push(href);
+      setActivePath(target.pathname);
+      router.push(`${target.pathname}${target.search}${target.hash}`);
     },
     [activePath, router],
   );

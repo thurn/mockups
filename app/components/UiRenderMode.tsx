@@ -2,9 +2,25 @@
 
 import { CodeIcon } from "@phosphor-icons/react/dist/csr/Code";
 import { ImageSquareIcon } from "@phosphor-icons/react/dist/csr/ImageSquare";
-import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 type UiRenderMode = "css" | "png";
+const renderModeParameter = "render";
+
+function readUrlRenderMode(): UiRenderMode {
+  if (typeof window === "undefined") return "css";
+  return new URL(window.location.href).searchParams.get(renderModeParameter) === "png"
+    ? "png"
+    : "css";
+}
 
 const UiRenderModeContext = createContext<{
   mode: UiRenderMode;
@@ -13,12 +29,31 @@ const UiRenderModeContext = createContext<{
 
 export function UiRenderModeProvider({ children }: { children: ReactNode }) {
   const [mode, setMode] = useState<UiRenderMode>("css");
+  const setModeAndUrl = useCallback((nextMode: UiRenderMode) => {
+    setMode(nextMode);
+
+    const url = new URL(window.location.href);
+    if (nextMode === "png") {
+      url.searchParams.set(renderModeParameter, "png");
+    } else {
+      url.searchParams.delete(renderModeParameter);
+    }
+    window.history.replaceState(window.history.state, "", url);
+  }, []);
+
+  useEffect(() => {
+    const syncFromUrl = () => setMode(readUrlRenderMode());
+    syncFromUrl();
+    window.addEventListener("popstate", syncFromUrl);
+    return () => window.removeEventListener("popstate", syncFromUrl);
+  }, []);
+
   const value = useMemo(
     () => ({
       mode,
-      toggleMode: () => setMode((current) => (current === "css" ? "png" : "css")),
+      toggleMode: () => setModeAndUrl(mode === "css" ? "png" : "css"),
     }),
-    [mode],
+    [mode, setModeAndUrl],
   );
 
   return <UiRenderModeContext.Provider value={value}>{children}</UiRenderModeContext.Provider>;
