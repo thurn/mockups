@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ArcadeFramePulse } from "./ArcadeFramePulse";
 import { ConceptFrame } from "./ConceptFrame";
 import { PORTRAIT_DESIGN_HEIGHT, PORTRAIT_DESIGN_WIDTH } from "./PortraitViewport";
 
@@ -17,6 +18,7 @@ export function ScreenFrame({ children }: { children: ReactNode }) {
       }}
     >
       <ConceptFrame />
+      <ArcadeFramePulse />
       {children}
     </div>
   );

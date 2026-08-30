@@ -2,13 +2,7 @@
 
 import { useReducedMotion } from "framer-motion";
 import type { CSSProperties } from "react";
-import {
-  frameClip,
-  frameInteriorBounds,
-  frameOuterBottom,
-  frameOuterInset,
-  framePulseClip,
-} from "./styles";
+import { frameClip, frameInteriorBounds } from "./styles";
 
 type Particle = {
   color: string;
@@ -73,17 +67,6 @@ export function ArcadeAttractMode() {
           72% { opacity: .5; }
           100% { transform: translate3d(var(--particle-drift-x), var(--particle-drift-y), 0) scale(1.05); opacity: 0; }
         }
-        @keyframes arcade-border-comet-lap {
-          0% { left: 0%; top: 0%; transform: translate(-50%, -50%) rotate(0deg); }
-          24% { left: 100%; top: 0%; transform: translate(-50%, -50%) rotate(0deg); }
-          25% { left: 100%; top: 0%; transform: translate(-50%, -50%) rotate(90deg); }
-          49% { left: 100%; top: 100%; transform: translate(-50%, -50%) rotate(90deg); }
-          50% { left: 100%; top: 100%; transform: translate(-50%, -50%) rotate(180deg); }
-          74% { left: 0%; top: 100%; transform: translate(-50%, -50%) rotate(180deg); }
-          75% { left: 0%; top: 100%; transform: translate(-50%, -50%) rotate(270deg); }
-          99% { left: 0%; top: 0%; transform: translate(-50%, -50%) rotate(270deg); }
-          100% { left: 0%; top: 0%; transform: translate(-50%, -50%) rotate(360deg); }
-        }
         @media (prefers-reduced-motion: reduce) {
           [data-attract-motion="grid"] {
             animation: none !important;
@@ -95,10 +78,6 @@ export function ArcadeAttractMode() {
             transform: scale(.85) !important;
             opacity: .23 !important;
           }
-          [data-attract-motion="border"] {
-            opacity: .28 !important;
-          }
-          [data-border-beam] { animation: none !important; }
         }
       `}</style>
 
@@ -159,60 +138,6 @@ export function ArcadeAttractMode() {
           }}
         />
       </div>
-
-      <BorderPulse reduceMotion={Boolean(reduceMotion)} />
-    </div>
-  );
-}
-
-function BorderPulse({ reduceMotion }: { reduceMotion: boolean }) {
-  return (
-    <div
-      data-attract-motion="border"
-      style={
-        {
-          position: "absolute",
-          zIndex: 4,
-          top: frameOuterInset,
-          right: frameOuterInset,
-          bottom: frameOuterBottom,
-          left: frameOuterInset,
-          overflow: "hidden",
-          clipPath: framePulseClip,
-          opacity: reduceMotion ? 0.28 : 1,
-          mixBlendMode: "screen",
-        } as CSSProperties
-      }
-    >
-      <div
-        data-border-beam
-        style={{
-          position: "absolute",
-          width: 270,
-          height: 76,
-          borderRadius: "50%",
-          background:
-            "radial-gradient(ellipse, rgba(255,255,255,.95) 0 7%, rgba(69,225,255,.92) 24%, rgba(48,138,255,.6) 49%, rgba(255,61,205,.34) 68%, transparent 78%)",
-          filter:
-            "brightness(2) drop-shadow(0 0 11px rgba(255,255,255,.95)) drop-shadow(0 0 25px rgba(71,211,255,1)) drop-shadow(0 0 34px rgba(255,71,207,.92))",
-          animation: reduceMotion ? undefined : "arcade-border-comet-lap 6.5s linear infinite",
-          willChange: reduceMotion ? undefined : "left, top, transform",
-        }}
-      />
-      <div
-        data-border-beam
-        style={{
-          position: "absolute",
-          width: 86,
-          height: 30,
-          borderRadius: "50%",
-          background:
-            "radial-gradient(ellipse, #fff 0 20%, #bdf5ff 42%, #ffb5ec 64%, transparent 76%)",
-          filter: "brightness(2.8) drop-shadow(0 0 7px #fff) drop-shadow(0 0 15px #77e6ff)",
-          animation: reduceMotion ? undefined : "arcade-border-comet-lap 6.5s linear infinite",
-          willChange: reduceMotion ? undefined : "left, top, transform",
-        }}
-      />
     </div>
   );
 }
