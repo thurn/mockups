@@ -26,7 +26,8 @@ export function MainMenu() {
   const { mode } = useUiRenderMode();
   const usingPng = mode === "png";
   const { fontScale } = useFontScale();
-  const menuElementScale = 1 + (fontScale - 1) * 0.35;
+  const menuElementScale = 1 + (fontScale - 1) * 0.12;
+  const menuGapScale = 1 + (fontScale - 1) * 0.1;
 
   const dismissMenu = useCallback(() => {
     setExitState((current) => {
@@ -169,25 +170,19 @@ export function MainMenu() {
             style={{
               position: "absolute",
               zIndex: 4,
-              top: menuTop + (fontScale - 1) * 100,
+              top: menuTop + (fontScale - 1) * 64,
               left: 132,
               width: 760,
               display: "grid",
               gridAutoRows: menuButtonHeight * menuElementScale,
-              height: fontScale === 1 ? undefined : 700 - (fontScale - 1) * 290,
-              gap: menuGap * menuElementScale,
-              overflowX: "hidden",
-              overflowY: fontScale === 1 ? "visible" : "auto",
-              overscrollBehavior: "contain",
-              scrollbarColor: "#4b86d2 #061126",
-              scrollbarWidth: "thin",
-              touchAction: fontScale === 1 ? undefined : "pan-y",
+              gap: menuGap * menuGapScale,
             }}
           >
             {menuItems.map((item) => (
               <div key={item} style={{ height: menuButtonHeight * menuElementScale }}>
                 <ActionButton
                   disabled={isExiting}
+                  maxTextScale={1.2}
                   onClick={
                     item === "Settings"
                       ? () => navigate("/settings")

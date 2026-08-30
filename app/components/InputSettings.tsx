@@ -160,6 +160,7 @@ function KeyCap({
   const { fontScale } = useFontScale();
   const usingPng = mode === "png";
   const controlScale = dynamicTypeScale(fontScale, "control");
+  const compact = value.length === 1 && !direction;
 
   return (
     <div
@@ -168,7 +169,7 @@ function KeyCap({
       style={{
         position: "relative",
         boxSizing: "border-box",
-        width: 205 * controlScale,
+        width: (compact ? 120 : 205) * controlScale,
         height: 75 * controlScale,
         display: "grid",
         placeItems: "center",
@@ -222,8 +223,9 @@ function KeyboardArrow({ direction }: { direction: "left" | "right" | "up" | "do
   return <ArrowDownIcon {...props} />;
 }
 
-function InputLabel({ children }: { children: ReactNode }) {
+function InputLabel({ children }: { children: string }) {
   const { fontScale } = useFontScale();
+  const labelScale = children.length >= 7 ? dynamicTypeScale(fontScale, "control") : fontScale;
 
   return (
     <div
@@ -233,7 +235,7 @@ function InputLabel({ children }: { children: ReactNode }) {
         paddingLeft: 18,
         color: "#f5f5f8",
         fontFamily: displayFont,
-        fontSize: 54 * fontScale,
+        fontSize: 54 * labelScale,
         lineHeight: 0.92,
         letterSpacing: "1.3px",
         textTransform: "uppercase",
