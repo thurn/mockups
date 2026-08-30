@@ -1,9 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { arcadeExitDuration } from "./arcadeExit";
 import { frameClip, frameInteriorBounds } from "./styles";
-
-export const arcadeExitDuration = 0.62;
 
 export function ArcadeExitSequence({
   active,

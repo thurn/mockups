@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { ActionButton } from "./ActionButton";
 import { ArcadeAttractMode } from "./ArcadeAttractMode";
-import { arcadeExitDuration, ArcadeExitSequence } from "./ArcadeExitSequence";
+import { arcadeExitDuration, arcadeMenuExitEvent } from "./arcadeExit";
+import { ArcadeExitSequence } from "./ArcadeExitSequence";
 import { useArcadeNavigation } from "./ArcadeRouteTransition";
 import { ScreenHeader } from "./ScreenHeader";
 import { frameClip, frameInteriorBounds } from "./styles";
@@ -21,8 +22,17 @@ export function MainMenu() {
   const isExiting = exitState === "exiting";
 
   const dismissMenu = useCallback(() => {
-    setExitState((current) => (current === "idle" ? "exiting" : current));
-  }, []);
+    setExitState((current) => {
+      if (current !== "idle") return current;
+
+      window.dispatchEvent(
+        new CustomEvent(arcadeMenuExitEvent, {
+          detail: { reduceMotion },
+        }),
+      );
+      return "exiting";
+    });
+  }, [reduceMotion]);
 
   useEffect(() => {
     if (!isExiting) return;
