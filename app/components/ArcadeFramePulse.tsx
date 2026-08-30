@@ -12,7 +12,7 @@ export function ArcadeFramePulse() {
       data-frame-pulse
       style={{
         position: "absolute",
-        zIndex: 3,
+        zIndex: 1,
         top: frameOuterInset,
         right: frameOuterInset,
         bottom: frameOuterBottom,
