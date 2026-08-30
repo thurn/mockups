@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { PortraitViewport } from "./components/PortraitViewport";
 import { ScreenFrame } from "./components/ScreenFrame";
-import { ArcadeRouteTransition } from "./components/ArcadeRouteTransition";
-import { ArcadeScreenRouter } from "./components/ArcadeScreenRouter";
 import { BackgroundMusicProvider } from "./components/BackgroundMusic";
 import { UiRenderModeProvider } from "./components/UiRenderMode";
 import { FontScaleProvider } from "./components/FontScale";
@@ -22,12 +20,10 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-  children: _children,
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  void _children;
-
   return (
     <html lang="en" suppressHydrationWarning style={{ minHeight: "100%", background: "#02050d" }}>
       <head>
@@ -94,11 +90,7 @@ export default function RootLayout({
           <UiRenderModeProvider>
             <FontScaleProvider>
               <PortraitViewport>
-                <ScreenFrame>
-                  <ArcadeRouteTransition>
-                    <ArcadeScreenRouter />
-                  </ArcadeRouteTransition>
-                </ScreenFrame>
+                <ScreenFrame>{children}</ScreenFrame>
               </PortraitViewport>
             </FontScaleProvider>
           </UiRenderModeProvider>

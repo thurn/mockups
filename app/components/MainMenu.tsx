@@ -185,7 +185,7 @@ export function MainMenu() {
                   maxTextScale={1.2}
                   onClick={
                     item === "Settings"
-                      ? () => navigate("/settings")
+                      ? () => navigate("settings")
                       : item === "Play" || item === "Quit"
                         ? dismissMenu
                         : undefined

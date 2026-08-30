@@ -37,7 +37,7 @@ export function ArcadeMenuTransition({
   reduceMotion,
   screenKey,
 }: ArcadeMenuTransitionProps) {
-  const direction = screenKey === "/settings" ? 1 : -1;
+  const direction = screenKey === "settings" ? 1 : -1;
 
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>

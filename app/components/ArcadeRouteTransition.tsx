@@ -2,12 +2,13 @@
 
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
-import { usePathname, useRouter } from "next/navigation";
+
+export type ArcadeScreen = "main" | "settings";
 
 type ArcadeNavigationContextValue = {
-  activePath: string;
+  activeScreen: ArcadeScreen;
   hasNavigated: boolean;
-  navigate: (href: string) => void;
+  navigate: (screen: ArcadeScreen) => void;
   reduceMotion: boolean;
   setReduceMotion: (reduceMotion: boolean) => void;
 };
@@ -15,11 +16,9 @@ type ArcadeNavigationContextValue = {
 const ArcadeNavigationContext = createContext<ArcadeNavigationContextValue | null>(null);
 
 export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
-  const router = useRouter();
-  const pathname = usePathname();
   const prefersReducedMotion = useReducedMotion();
   const [reduceMotion, setReduceMotionState] = useState(false);
-  const [activePath, setActivePath] = useState(pathname);
+  const [activeScreen, setActiveScreen] = useState<ArcadeScreen>("main");
   const [hasNavigated, setHasNavigated] = useState(false);
   const effectiveReduceMotion = reduceMotion || Boolean(prefersReducedMotion);
 
@@ -28,31 +27,14 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
   }, []);
 
   const navigate = useCallback(
-    (href: string) => {
-      if (href === activePath) return;
-
-      const target = new URL(href, window.location.origin);
-      const current = new URL(window.location.href);
-      if (current.searchParams.get("render") === "png") {
-        target.searchParams.set("render", "png");
-      }
+    (screen: ArcadeScreen) => {
+      if (screen === activeScreen) return;
 
       setHasNavigated(true);
-      setActivePath(target.pathname);
-      router.push(`${target.pathname}${target.search}${target.hash}`);
+      setActiveScreen(screen);
     },
-    [activePath, router],
+    [activeScreen],
   );
-
-  useEffect(() => {
-    const syncPath = window.setTimeout(() => setActivePath(pathname), 0);
-    return () => window.clearTimeout(syncPath);
-  }, [pathname]);
-
-  useEffect(() => {
-    router.prefetch("/");
-    router.prefetch("/settings");
-  }, [router]);
 
   useEffect(() => {
     document.documentElement.dataset.reduceMotion = String(effectiveReduceMotion);
@@ -64,7 +46,7 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
   return (
     <ArcadeNavigationContext.Provider
       value={{
-        activePath,
+        activeScreen,
         hasNavigated,
         navigate,
         reduceMotion: effectiveReduceMotion,

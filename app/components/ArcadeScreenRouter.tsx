@@ -6,15 +6,15 @@ import { MainMenu } from "./MainMenu";
 import { SettingsScreen } from "./SettingsScreen";
 
 export function ArcadeScreenRouter() {
-  const { activePath, hasNavigated, reduceMotion } = useArcadeNavigation();
+  const { activeScreen, hasNavigated, reduceMotion } = useArcadeNavigation();
 
   return (
     <ArcadeMenuTransition
       playTransition={hasNavigated}
-      screenKey={activePath}
+      screenKey={activeScreen}
       reduceMotion={reduceMotion}
     >
-      {activePath === "/settings" ? <SettingsScreen /> : <MainMenu />}
+      {activeScreen === "settings" ? <SettingsScreen /> : <MainMenu />}
     </ArcadeMenuTransition>
   );
 }

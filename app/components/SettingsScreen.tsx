@@ -209,7 +209,7 @@ export function SettingsScreen() {
           pointerEvents: "none",
         }}
       >
-        <ReturnButton onClick={() => navigate("/")} />
+        <ReturnButton onClick={() => navigate("main")} />
       </div>
       <ArcadeModal
         open={activeModal === "erase"}
