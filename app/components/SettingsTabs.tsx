@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import type { KeyboardEvent } from "react";
 import { ArcadeButtonEffect } from "./ArcadeButtonEffect";
 import { ClippedInset, tabInnerClip, tabOuterClip } from "./ClippedInset";
 import { useInteraction } from "./useInteraction";
@@ -18,8 +19,9 @@ export function SettingsTabs({
   onSelect: (tab: SettingsTab) => void;
 }) {
   return (
-    <nav
+    <div
       aria-label="Settings categories"
+      role="tablist"
       style={{
         height: 129,
         display: "grid",
@@ -31,7 +33,7 @@ export function SettingsTabs({
       {tabs.map((tab) => (
         <SettingsTabButton key={tab} tab={tab} active={tab === activeTab} onSelect={onSelect} />
       ))}
-    </nav>
+    </div>
   );
 }
 
@@ -46,6 +48,27 @@ function SettingsTabButton({
 }) {
   const { state, handlers } = useInteraction();
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    const currentIndex = tabs.indexOf(tab);
+    let nextIndex: number | undefined;
+
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+      nextIndex = (currentIndex + 1) % tabs.length;
+    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+      nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+    } else if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = tabs.length - 1;
+    }
+
+    if (nextIndex === undefined) return;
+    event.preventDefault();
+    const nextTab = tabs[nextIndex];
+    onSelect(nextTab);
+    document.getElementById(`settings-tab-${nextTab.toLowerCase()}`)?.focus();
+  };
+
   return (
     <span
       style={{
@@ -59,8 +82,16 @@ function SettingsTabButton({
       <motion.button
         {...handlers}
         type="button"
+        id={`settings-tab-${tab.toLowerCase()}`}
+        role="tab"
+        aria-selected={active}
+        aria-controls={`settings-panel-${tab.toLowerCase()}`}
+        tabIndex={active ? 0 : -1}
         onClick={() => onSelect(tab)}
-        aria-current={active ? "page" : undefined}
+        onKeyDown={(event) => {
+          handlers.onKeyDown(event);
+          handleKeyDown(event);
+        }}
         animate={{ y: active ? 0 : 3, scale: 1 }}
         whileHover={{ y: active ? 0 : -1, scale: 1 }}
         whileTap={{ scale: 0.955 }}

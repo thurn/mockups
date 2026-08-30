@@ -5,11 +5,13 @@ export const settingsRowHeight = 159;
 
 export function SettingRow({
   label,
+  labelId,
   children,
   first = false,
   rowHeight,
 }: {
   label: ReactNode;
+  labelId?: string;
   children: ReactNode;
   first?: boolean;
   rowHeight?: number;
@@ -26,6 +28,7 @@ export function SettingRow({
       }}
     >
       <div
+        id={labelId}
         style={{
           position: "relative",
           display: "flex",

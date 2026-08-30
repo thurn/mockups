@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { ActionButton } from "./ActionButton";
 import { ArcadeAttractMode } from "./ArcadeAttractMode";
 import { useArcadeNavigation } from "./ArcadeRouteTransition";
@@ -12,7 +13,12 @@ const menuTop = 476;
 const soundRecommendationBottom = 218;
 
 export function MainMenu() {
-  const { navigate } = useArcadeNavigation();
+  const { hasNavigated, navigate } = useArcadeNavigation();
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (hasNavigated) headingRef.current?.focus();
+  }, [hasNavigated]);
 
   return (
     <section
@@ -27,7 +33,7 @@ export function MainMenu() {
     >
       <ArcadeAttractMode />
       <div style={{ position: "absolute", inset: 0 }}>
-        <ScreenHeader variant="game" />
+        <ScreenHeader variant="game" headingRef={headingRef} />
       </div>
       <nav
         aria-label="Main navigation"

@@ -1,6 +1,12 @@
 "use client";
 
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import {
+  useId,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
 import { useReducedMotion } from "framer-motion";
 import { ArcadeSliderEffect } from "./ArcadeSliderEffect";
 import { keyboardFocusGradient } from "./ControlInteraction";
@@ -83,6 +89,7 @@ function VolumeControl({
   first?: boolean;
 }) {
   const [burstId, setBurstId] = useState(0);
+  const labelId = useId();
   const pointerActive = useRef(false);
   const { state, handlers } = useInteraction({ pressKeys: sliderPressKeys });
   const reduceMotion = useReducedMotion();
@@ -96,8 +103,33 @@ function VolumeControl({
     onChange(Math.round(ratio * 100));
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    handlers.onKeyDown(event);
+    const changes: Record<string, number> = {
+      ArrowDown: -1,
+      ArrowLeft: -1,
+      ArrowRight: 1,
+      ArrowUp: 1,
+      PageDown: -10,
+      PageUp: 10,
+    };
+
+    let nextValue: number | undefined;
+    if (event.key === "Home") nextValue = 0;
+    else if (event.key === "End") nextValue = 100;
+    else if (event.key in changes) nextValue = value + changes[event.key];
+
+    if (nextValue === undefined) return;
+    event.preventDefault();
+    const clampedValue = Math.max(0, Math.min(100, nextValue));
+    if (clampedValue !== value) {
+      onChange(clampedValue);
+      setBurstId((current) => current + 1);
+    }
+  };
+
   return (
-    <SettingRow first={first} label={label}>
+    <SettingRow first={first} label={label} labelId={labelId}>
       <div
         style={{
           position: "relative",
@@ -207,12 +239,14 @@ function VolumeControl({
           </div>
           <input
             {...handlers}
-            aria-label={label}
+            aria-labelledby={labelId}
+            aria-valuetext={`${value} percent`}
             type="range"
             min={0}
             max={100}
             step={1}
             value={value}
+            onKeyDown={handleKeyDown}
             onChange={(event) => {
               const nextValue = Number(event.target.value);
               onChange(nextValue);
@@ -266,8 +300,8 @@ function VolumeControl({
             }}
           />
         </div>
-        <output
-          aria-live="polite"
+        <div
+          aria-hidden="true"
           style={{
             width: 96,
             color: "#f5f5f8",
@@ -279,7 +313,7 @@ function VolumeControl({
           }}
         >
           {value}%
-        </output>
+        </div>
       </div>
     </SettingRow>
   );

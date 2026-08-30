@@ -1,7 +1,7 @@
 "use client";
 
 import { type ReactNode, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "framer-motion";
 
 const tabVariants = {
   enter: (travelDirection: number) => ({
@@ -45,6 +45,8 @@ export function ArcadeTabTransition({
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <ArcadeTabPanel
           key={activeKey}
+          panelId={`settings-panel-${activeKey.toLowerCase()}`}
+          labelledBy={`settings-tab-${activeKey.toLowerCase()}`}
           animateTransition={!shouldReduceMotion}
           direction={direction}
         >
@@ -59,15 +61,26 @@ function ArcadeTabPanel({
   animateTransition,
   children,
   direction,
+  labelledBy,
+  panelId,
 }: {
   animateTransition: boolean;
   children: ReactNode;
   direction: number;
+  labelledBy: string;
+  panelId: string;
 }) {
   const [animateOnMount] = useState(animateTransition);
+  const isPresent = useIsPresent();
 
   return (
     <motion.div
+      id={panelId}
+      role="tabpanel"
+      aria-labelledby={labelledBy}
+      aria-hidden={!isPresent}
+      inert={!isPresent}
+      tabIndex={0}
       custom={direction}
       initial={animateOnMount ? "enter" : false}
       animate="center"

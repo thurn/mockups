@@ -87,7 +87,7 @@ export function InputSettings() {
           boxShadow: "0 8px 14px rgba(0,4,15,.35)",
         }}
       >
-        <span />
+        <ColumnHeading>Action</ColumnHeading>
         <ColumnHeading>Keyboard</ColumnHeading>
         <ColumnHeading>Controller</ColumnHeading>
       </div>

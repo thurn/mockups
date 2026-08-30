@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useIsPresent } from "framer-motion";
 import type { ReactNode } from "react";
 import { frameClip, frameInteriorBounds } from "./styles";
 
@@ -42,27 +42,9 @@ export function ArcadeMenuTransition({
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden" }}>
       <AnimatePresence initial={false} mode="sync">
-        <motion.div
-          key={screenKey}
-          variants={screenVariants}
-          initial={reduceMotion ? false : "initial"}
-          animate="animate"
-          exit={reduceMotion ? undefined : "exit"}
-          transition={{
-            duration: reduceMotion ? 0 : 0.3,
-            delay: reduceMotion ? 0 : 0.17,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-          style={{
-            position: "absolute",
-            inset: 0,
-            overflow: "hidden",
-            pointerEvents: "auto",
-            willChange: "clip-path, filter, opacity",
-          }}
-        >
+        <ArcadeScreen key={screenKey} reduceMotion={reduceMotion}>
           {children}
-        </motion.div>
+        </ArcadeScreen>
       </AnimatePresence>
 
       <ContainedCrtEffect
@@ -72,6 +54,35 @@ export function ArcadeMenuTransition({
         screenKey={screenKey}
       />
     </div>
+  );
+}
+
+function ArcadeScreen({ children, reduceMotion }: { children: ReactNode; reduceMotion: boolean }) {
+  const isPresent = useIsPresent();
+
+  return (
+    <motion.div
+      aria-hidden={!isPresent}
+      inert={!isPresent}
+      variants={screenVariants}
+      initial={reduceMotion ? false : "initial"}
+      animate="animate"
+      exit={reduceMotion ? undefined : "exit"}
+      transition={{
+        duration: reduceMotion ? 0 : 0.3,
+        delay: reduceMotion ? 0 : 0.17,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      style={{
+        position: "absolute",
+        inset: 0,
+        overflow: "hidden",
+        pointerEvents: isPresent ? "auto" : "none",
+        willChange: "clip-path, filter, opacity",
+      }}
+    >
+      {children}
+    </motion.div>
   );
 }
 

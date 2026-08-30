@@ -1,4 +1,12 @@
-export function ScreenHeader({ variant }: { variant: "game" | "settings" }) {
+import type { Ref } from "react";
+
+export function ScreenHeader({
+  variant,
+  headingRef,
+}: {
+  variant: "game" | "settings";
+  headingRef?: Ref<HTMLHeadingElement>;
+}) {
   const game = variant === "game";
 
   return (
@@ -16,14 +24,16 @@ export function ScreenHeader({ variant }: { variant: "game" | "settings" }) {
     >
       <StripeBar side="left" top={game ? 132 : 44} />
       <StripeBar side="right" top={game ? 132 : 44} />
-      {game ? <GameWordmark /> : <SettingsTitle />}
+      {game ? <GameWordmark headingRef={headingRef} /> : <SettingsTitle headingRef={headingRef} />}
     </header>
   );
 }
 
-function GameWordmark() {
+function GameWordmark({ headingRef }: { headingRef?: Ref<HTMLHeadingElement> }) {
   return (
     <h1
+      ref={headingRef}
+      tabIndex={-1}
       style={{
         position: "relative",
         zIndex: 2,
@@ -57,9 +67,11 @@ function GameWordmark() {
   );
 }
 
-function SettingsTitle() {
+function SettingsTitle({ headingRef }: { headingRef?: Ref<HTMLHeadingElement> }) {
   return (
     <h1
+      ref={headingRef}
+      tabIndex={-1}
       style={{
         position: "relative",
         zIndex: 2,

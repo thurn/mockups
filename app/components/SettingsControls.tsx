@@ -14,6 +14,7 @@ import { ArcadeCheckboxEffect } from "./ArcadeCheckboxEffect";
 import { SettingRow } from "./SettingRow";
 import { useInteraction } from "./useInteraction";
 import { keyboardFocusFilter, keyboardFocusGradient } from "./ControlInteraction";
+import { ScreenReaderOnly } from "./ScreenReaderOnly";
 
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
 
@@ -36,6 +37,9 @@ export function SelectControl({
   const [activeIndex, setActiveIndex] = useState(() => Math.max(0, options.indexOf(value)));
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const listboxRef = useRef<HTMLDivElement>(null);
+  const labelId = useId();
+  const valueId = useId();
   const listboxId = useId();
   const reduceMotion = useReducedMotion();
   const { state: pressState, handlers: pressHandlers } = useInteraction();
@@ -53,6 +57,12 @@ export function SelectControl({
 
     document.addEventListener("pointerdown", dismiss);
     return () => document.removeEventListener("pointerdown", dismiss);
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const focusMenu = window.requestAnimationFrame(() => listboxRef.current?.focus());
+    return () => window.cancelAnimationFrame(focusMenu);
   }, [isOpen]);
 
   useEffect(() => {
@@ -90,8 +100,28 @@ export function SelectControl({
     triggerRef.current?.focus();
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement | HTMLDivElement>) => {
-    if (event.key === "Escape" && isOpen) {
+  const handleTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === "Home" || event.key === "End") {
+      event.preventDefault();
+      if (!isOpen) openMenu();
+      setActiveIndex(event.key === "Home" ? 0 : options.length - 1);
+      return;
+    }
+
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const selectedIndex = Math.max(0, options.indexOf(value));
+      if (!isOpen) openMenu();
+      setActiveIndex(
+        event.key === "ArrowDown"
+          ? Math.min(options.length - 1, selectedIndex + 1)
+          : Math.max(0, selectedIndex - 1),
+      );
+    }
+  };
+
+  const handleListboxKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Escape") {
       event.preventDefault();
       closeMenu();
       triggerRef.current?.focus();
@@ -105,30 +135,33 @@ export function SelectControl({
 
     if (event.key === "Home" || event.key === "End") {
       event.preventDefault();
-      if (!isOpen) openMenu();
       setActiveIndex(event.key === "Home" ? 0 : options.length - 1);
       return;
     }
 
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault();
-      if (!isOpen) {
-        openMenu();
-        return;
-      }
       const direction = event.key === "ArrowDown" ? 1 : -1;
       setActiveIndex((current) => (current + direction + options.length) % options.length);
       return;
     }
 
-    if ((event.key === "Enter" || event.key === " ") && isOpen) {
+    if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       selectOption(options[activeIndex]);
+      return;
+    }
+
+    if (event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey) {
+      const matchIndex = options.findIndex((option) =>
+        option.toLocaleLowerCase().startsWith(event.key.toLocaleLowerCase()),
+      );
+      if (matchIndex >= 0) setActiveIndex(matchIndex);
     }
   };
 
   return (
-    <SettingRow first={first} label={label} rowHeight={rowHeight}>
+    <SettingRow first={first} label={label} labelId={labelId} rowHeight={rowHeight}>
       <div
         ref={rootRef}
         style={{
@@ -155,16 +188,14 @@ export function SelectControl({
             {...pressHandlers}
             ref={triggerRef}
             type="button"
-            role="combobox"
-            aria-label={String(label)}
+            aria-labelledby={`${labelId} ${valueId}`}
             aria-haspopup="listbox"
             aria-expanded={isOpen}
             aria-controls={listboxId}
-            aria-activedescendant={isOpen ? `${listboxId}-option-${activeIndex}` : undefined}
             onClick={() => (isOpen ? closeMenu() : openMenu())}
             onKeyDown={(event) => {
               pressHandlers.onKeyDown(event);
-              handleKeyDown(event);
+              handleTriggerKeyDown(event);
             }}
             style={{
               position: "relative",
@@ -205,7 +236,9 @@ export function SelectControl({
               background="linear-gradient(180deg, #050b1c, #020611)"
               boxShadow="inset 0 0 24px #000"
             />
-            <span style={{ position: "relative", zIndex: 1 }}>{value}</span>
+            <span id={valueId} style={{ position: "relative", zIndex: 1 }}>
+              {value}
+            </span>
             <Caret isOpen={isOpen} />
           </button>
           <ArcadeButtonEffect burstId={pressState.releaseCount} compact />
@@ -215,9 +248,13 @@ export function SelectControl({
             {isOpen && (
               <motion.div
                 key={`${listboxId}-menu`}
+                ref={listboxRef}
                 id={listboxId}
                 role="listbox"
-                aria-label={`${String(label)} options`}
+                aria-labelledby={labelId}
+                aria-activedescendant={`${listboxId}-option-${activeIndex}`}
+                tabIndex={0}
+                onKeyDown={handleListboxKeyDown}
                 initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -12, scaleY: 0.76 }}
                 animate={{ opacity: 1, y: 0, scaleY: 1 }}
                 exit={
@@ -316,10 +353,9 @@ function DropdownOptionButton({
 
   return (
     <>
-      <button
+      <motion.div
         {...handlers}
         id={id}
-        type="button"
         role="option"
         aria-selected={selected}
         onPointerEnter={onPointerEnter}
@@ -392,7 +428,7 @@ function DropdownOptionButton({
         >
           {selected && <CheckMark scale={0.62} />}
         </span>
-      </button>
+      </motion.div>
       <ArcadeButtonEffect burstId={state.releaseCount} compact />
     </>
   );
@@ -437,6 +473,8 @@ export function ToggleControl({
 }) {
   const { state, handlers } = useInteraction();
   const reduceMotion = useReducedMotion();
+  const labelId = useId();
+  const descriptionId = useId();
 
   return (
     <label
@@ -447,6 +485,7 @@ export function ToggleControl({
       }}
     >
       <SettingRow
+        labelId={labelId}
         label={
           <>
             {label}
@@ -471,7 +510,9 @@ export function ToggleControl({
           <input
             {...handlers}
             suppressHydrationWarning
-            aria-label={ariaLabel ?? String(label)}
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabel ? undefined : labelId}
+            aria-describedby={withInfo ? descriptionId : undefined}
             checked={checked}
             onChange={(event) => onChange(event.target.checked)}
             type="checkbox"
@@ -517,6 +558,9 @@ export function ToggleControl({
           </span>
         </span>
       </SettingRow>
+      {withInfo && (
+        <ScreenReaderOnly id={descriptionId}>Crash reports help diagnose errors.</ScreenReaderOnly>
+      )}
     </label>
   );
 }
@@ -524,9 +568,10 @@ export function ToggleControl({
 export function EraseControl() {
   const { state, handlers } = useInteraction();
   const reduceMotion = useReducedMotion();
+  const labelId = useId();
 
   return (
-    <SettingRow label="Erase Saved Data">
+    <SettingRow label="Erase Saved Data" labelId={labelId}>
       <span
         style={{
           position: "relative",
@@ -541,6 +586,7 @@ export function EraseControl() {
         <button
           {...handlers}
           type="button"
+          aria-labelledby={labelId}
           style={{
             position: "relative",
             boxSizing: "border-box",
@@ -616,7 +662,7 @@ function CheckMark({ scale = 1 }: { scale?: number }) {
 function InfoBadge() {
   return (
     <span
-      aria-label="Crash reports help diagnose errors"
+      aria-hidden="true"
       title="Crash reports help diagnose errors"
       style={{
         position: "absolute",
