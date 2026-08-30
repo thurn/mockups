@@ -246,7 +246,7 @@ export function SettingsScreen() {
             textShadow: "0 0 12px rgba(55,210,255,.65)",
           }}
         >
-          Learn More
+          Privacy Policy
         </a>
       </ArcadeModal>
     </section>
