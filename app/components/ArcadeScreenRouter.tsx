@@ -6,10 +6,14 @@ import { MainMenu } from "./MainMenu";
 import { SettingsScreen } from "./SettingsScreen";
 
 export function ArcadeScreenRouter() {
-  const { activePath, reduceMotion } = useArcadeNavigation();
+  const { activePath, hasNavigated, reduceMotion } = useArcadeNavigation();
 
   return (
-    <ArcadeMenuTransition screenKey={activePath} reduceMotion={reduceMotion}>
+    <ArcadeMenuTransition
+      playTransition={hasNavigated}
+      screenKey={activePath}
+      reduceMotion={reduceMotion}
+    >
       {activePath === "/settings" ? <SettingsScreen /> : <MainMenu />}
     </ArcadeMenuTransition>
   );

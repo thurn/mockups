@@ -8,6 +8,7 @@ const transitionDuration = 0.5;
 
 type ArcadeMenuTransitionProps = {
   children: ReactNode;
+  playTransition: boolean;
   reduceMotion: boolean;
   screenKey: string;
 };
@@ -32,6 +33,7 @@ const screenVariants = {
 
 export function ArcadeMenuTransition({
   children,
+  playTransition,
   reduceMotion,
   screenKey,
 }: ArcadeMenuTransitionProps) {
@@ -63,17 +65,24 @@ export function ArcadeMenuTransition({
         </motion.div>
       </AnimatePresence>
 
-      <ContainedCrtEffect direction={direction} reduceMotion={reduceMotion} screenKey={screenKey} />
+      <ContainedCrtEffect
+        direction={direction}
+        playTransition={playTransition}
+        reduceMotion={reduceMotion}
+        screenKey={screenKey}
+      />
     </div>
   );
 }
 
 function ContainedCrtEffect({
   direction,
+  playTransition,
   reduceMotion,
   screenKey,
 }: {
   direction: number;
+  playTransition: boolean;
   reduceMotion: boolean;
   screenKey: string;
 }) {
@@ -92,9 +101,13 @@ function ContainedCrtEffect({
     >
       <motion.div
         key={`${screenKey}-scan`}
-        initial={reduceMotion ? false : { clipPath: "inset(49.7% 0 49.7% 0)", opacity: 0 }}
+        initial={
+          reduceMotion || !playTransition
+            ? false
+            : { clipPath: "inset(49.7% 0 49.7% 0)", opacity: 0 }
+        }
         animate={
-          reduceMotion
+          reduceMotion || !playTransition
             ? { clipPath: "inset(0% 0 0% 0)", opacity: 0 }
             : {
                 clipPath: ["inset(49.7% 0 49.7% 0)", "inset(46% 0 46% 0)", "inset(0% 0 0% 0)"],
@@ -119,8 +132,12 @@ function ContainedCrtEffect({
 
       <motion.div
         key={`${screenKey}-beam`}
-        initial={reduceMotion ? false : { opacity: 0, scaleX: 0.25 }}
-        animate={reduceMotion ? { opacity: 0 } : { opacity: [0, 0.68, 0], scaleX: [0.25, 1, 0.7] }}
+        initial={reduceMotion || !playTransition ? false : { opacity: 0, scaleX: 0.25 }}
+        animate={
+          reduceMotion || !playTransition
+            ? { opacity: 0 }
+            : { opacity: [0, 0.68, 0], scaleX: [0.25, 1, 0.7] }
+        }
         transition={{ duration: reduceMotion ? 0 : transitionDuration, times: [0, 0.46, 1] }}
         style={{
           position: "absolute",

@@ -1,18 +1,12 @@
 "use client";
 
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 import { usePathname, useRouter } from "next/navigation";
 
 type ArcadeNavigationContextValue = {
   activePath: string;
+  hasNavigated: boolean;
   navigate: (href: string) => void;
   reduceMotion: boolean;
   setReduceMotion: (reduceMotion: boolean) => void;
@@ -26,6 +20,7 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
   const prefersReducedMotion = useReducedMotion();
   const [reduceMotion, setReduceMotionState] = useState(false);
   const [activePath, setActivePath] = useState(pathname);
+  const [hasNavigated, setHasNavigated] = useState(false);
 
   const setReduceMotion = useCallback((value: boolean) => {
     setReduceMotionState(value);
@@ -35,6 +30,7 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
     (href: string) => {
       if (href === activePath) return;
 
+      setHasNavigated(true);
       setActivePath(href);
       router.push(href);
     },
@@ -54,6 +50,7 @@ export function ArcadeRouteTransition({ children }: { children: ReactNode }) {
     <ArcadeNavigationContext.Provider
       value={{
         activePath,
+        hasNavigated,
         navigate,
         reduceMotion: reduceMotion || Boolean(prefersReducedMotion),
         setReduceMotion,
