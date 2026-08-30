@@ -2,7 +2,11 @@
 
 import { useRef, useState, type FocusEvent, type KeyboardEvent } from "react";
 
-export function useInteraction() {
+const defaultPressKeys = ["Enter", " "];
+
+export function useInteraction({
+  pressKeys = defaultPressKeys,
+}: { pressKeys?: readonly string[] } = {}) {
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const [pressed, setPressed] = useState(false);
@@ -41,14 +45,19 @@ export function useInteraction() {
         setFocused(false);
         cancelPress();
       },
-      onPointerDown: beginPress,
+      onPointerDown: () => {
+        setFocused(false);
+        beginPress();
+      },
       onPointerUp: releasePress,
       onPointerCancel: cancelPress,
       onKeyDown: (event: KeyboardEvent) => {
-        if (!event.repeat && (event.key === "Enter" || event.key === " ")) beginPress();
+        if (event.key !== "Tab" && !event.metaKey && !event.ctrlKey && !event.altKey)
+          setFocused(true);
+        if (!event.repeat && pressKeys.includes(event.key)) beginPress();
       },
       onKeyUp: (event: KeyboardEvent) => {
-        if (event.key === "Enter" || event.key === " ") releasePress();
+        if (pressKeys.includes(event.key)) releasePress();
       },
     },
   };

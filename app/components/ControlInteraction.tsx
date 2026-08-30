@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import { useArcadeNavigation } from "./ArcadeRouteTransition";
 
 export const keyboardFocusGradient =
   "linear-gradient(110deg, #fffbd0 0%, #fff700 20%, #ffbd00 72%, #fff56a 100%)";
@@ -17,7 +18,7 @@ export function ControlInteraction({
   clipPath: string;
   inset?: number;
 }) {
-  const reduceMotion = useReducedMotion();
+  const { reduceMotion } = useArcadeNavigation();
 
   return (
     <AnimatePresence>

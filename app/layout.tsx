@@ -18,7 +18,13 @@ export const metadata: Metadata = {
   description: "A neon arcade chess experience.",
 };
 
-export default function RootLayout() {
+export default function RootLayout({
+  children: _children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  void _children;
+
   return (
     <html lang="en" suppressHydrationWarning style={{ minHeight: "100%", background: "#02050d" }}>
       <head>

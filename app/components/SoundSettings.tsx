@@ -11,6 +11,16 @@ import { useInteraction } from "./useInteraction";
 const sliderTrackWidth = 284;
 const sliderHorizontalTouchPadding = 42;
 const sliderTouchWidth = sliderTrackWidth + sliderHorizontalTouchPadding * 2;
+const sliderPressKeys = [
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowUp",
+  "PageDown",
+  "PageUp",
+  "Home",
+  "End",
+] as const;
 
 export function SoundSettings({
   masterVolume,
@@ -74,7 +84,7 @@ function VolumeControl({
 }) {
   const [burstId, setBurstId] = useState(0);
   const pointerActive = useRef(false);
-  const { state, handlers } = useInteraction();
+  const { state, handlers } = useInteraction({ pressKeys: sliderPressKeys });
   const reduceMotion = useReducedMotion();
   const highlighted = state.hovered || state.focused;
 
