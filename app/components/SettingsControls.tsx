@@ -26,10 +26,10 @@ export function SelectControl({
   rowHeight,
 }: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [activeIndex, setActiveIndex] = useState(() => Math.max(0, options.indexOf(value)));
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
-  const selectionTimerRef = useRef<number | null>(null);
   const listboxId = useId();
   const reduceMotion = useReducedMotion();
   const { state: pressState, handlers: pressHandlers } = useInteraction();
@@ -39,9 +39,8 @@ export function SelectControl({
 
     const dismiss = (event: PointerEvent) => {
       if (!rootRef.current?.contains(event.target as Node)) {
-        if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
-        selectionTimerRef.current = null;
         setIsOpen(false);
+        setIsClosing(true);
       }
     };
 
@@ -49,37 +48,21 @@ export function SelectControl({
     return () => document.removeEventListener("pointerdown", dismiss);
   }, [isOpen]);
 
-  useEffect(
-    () => () => {
-      if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
-    },
-    [],
-  );
-
   const openMenu = () => {
-    if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
-    selectionTimerRef.current = null;
     setActiveIndex(Math.max(0, options.indexOf(value)));
+    setIsClosing(false);
     setIsOpen(true);
   };
 
   const closeMenu = () => {
-    if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
-    selectionTimerRef.current = null;
     setIsOpen(false);
+    setIsClosing(true);
   };
 
   const selectOption = (option: string) => {
     onChange(option);
-    if (selectionTimerRef.current !== null) window.clearTimeout(selectionTimerRef.current);
-    selectionTimerRef.current = window.setTimeout(
-      () => {
-        selectionTimerRef.current = null;
-        setIsOpen(false);
-        triggerRef.current?.focus();
-      },
-      reduceMotion ? 0 : 210,
-    );
+    closeMenu();
+    triggerRef.current?.focus();
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement | HTMLDivElement>) => {
@@ -125,7 +108,7 @@ export function SelectControl({
         ref={rootRef}
         style={{
           position: "relative",
-          zIndex: isOpen ? 20 : 1,
+          zIndex: isOpen || isClosing ? 20 : 1,
           width: 396,
           height: "100%",
           flex: "none",
@@ -195,15 +178,25 @@ export function SelectControl({
           </button>
           <ArcadeButtonEffect burstId={pressState.pressCount} compact />
         </span>
-        <AnimatePresence initial={false}>
+        <AnimatePresence initial={false} onExitComplete={() => setIsClosing(false)}>
           {isOpen && (
             <motion.div
+              key={`${listboxId}-menu`}
               id={listboxId}
               role="listbox"
               aria-label={`${String(label)} options`}
               initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -12, scaleY: 0.76 }}
               animate={{ opacity: 1, y: 0, scaleY: 1 }}
-              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -9, scaleY: 0.82 }}
+              exit={
+                reduceMotion
+                  ? { opacity: 0, transition: { duration: 0.01 } }
+                  : {
+                      opacity: 0,
+                      y: -16,
+                      scaleY: 0.42,
+                      transition: { duration: 0.26, ease: [0.4, 0, 0.75, 0.3] },
+                    }
+              }
               transition={{ duration: reduceMotion ? 0.01 : 0.2, ease: [0.2, 0.8, 0.25, 1] }}
               style={{
                 position: "absolute",
