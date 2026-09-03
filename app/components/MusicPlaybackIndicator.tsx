@@ -1,6 +1,7 @@
 "use client";
 
 import { SpeakerSlashIcon } from "@phosphor-icons/react/dist/csr/SpeakerSlash";
+import { useArcadeButton } from "./useArcadeButton";
 import { useBackgroundMusic } from "./BackgroundMusic";
 import { dynamicTypeScale, useFontScale } from "./FontScale";
 
@@ -31,15 +32,17 @@ export function MusicPlaybackIndicator() {
     startMusic();
   };
 
+  const { buttonProps, ref, state } = useArcadeButton({
+    onPress: toggleSound,
+    "aria-label": soundEnabled ? "Mute background music" : "Enable background music",
+  });
+
   return (
     <button
-      type="button"
-      aria-label={soundEnabled ? "Mute background music" : "Enable background music"}
+      {...buttonProps}
+      ref={ref}
       aria-live="polite"
       data-testid="music-playback-indicator"
-      onClick={toggleSound}
-      onKeyDown={(event) => event.stopPropagation()}
-      onPointerDown={(event) => event.stopPropagation()}
       style={{
         position: "absolute",
         zIndex: 4,
@@ -52,6 +55,7 @@ export function MusicPlaybackIndicator() {
         justifyContent: "center",
         padding: 0,
         border: 0,
+        outline: state.focused ? "3px solid #fff400" : "none",
         color: "#fff",
         background: "transparent",
         fontFamily: "'Barlow Condensed', Impact, sans-serif",

@@ -1,485 +1,25 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useId, useRef, type ReactNode } from "react";
+import { useReducedMotion } from "framer-motion";
 import { ArcadeButtonEffect } from "./ArcadeButtonEffect";
-import {
-  actionInnerClip,
-  actionOuterClip,
-  ClippedInset,
-  controlInnerClip,
-  controlOuterClip,
-} from "./ClippedInset";
+import { actionInnerClip, actionOuterClip, ClippedInset } from "./ClippedInset";
 import { ArcadeCheckboxEffect } from "./ArcadeCheckboxEffect";
 import { SettingRow } from "./SettingRow";
 import { useInteraction } from "./useInteraction";
 import { keyboardFocusFilter, keyboardFocusGradient } from "./ControlInteraction";
 import { ScreenReaderOnly } from "./ScreenReaderOnly";
-import { CheckboxRasterParts, SmallControlRasterFrame } from "./RasterFrame";
+import { CheckboxRasterParts } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
 import { dynamicTypeScale, useFontScale } from "./FontScale";
 
+import { mergeProps, useCheckbox } from "react-aria";
+import { useToggleState } from "react-stately";
+import { useArcadeButton } from "./useArcadeButton";
+import { CheckMark } from "./CheckMark";
+export { SelectControl } from "./SelectControl";
+
 type BaseProps = { label: ReactNode; first?: boolean; offsetY?: number; rowHeight?: number };
-
-const dropdownOpenEvent = "arcade-dropdown-open";
-let nextDropdownLayer = 20;
-
-export function SelectControl({
-  label,
-  options,
-  value,
-  onChange,
-  first = false,
-  offsetY = 0,
-  rowHeight,
-}: BaseProps & { options: string[]; value: string; onChange: (value: string) => void }) {
-  const { mode } = useUiRenderMode();
-  const { fontScale } = useFontScale();
-  const usingPng = mode === "png";
-  const controlScale = dynamicTypeScale(fontScale, "control");
-  const controlWidth = Math.round(396 + (fontScale - 1) * 300);
-  const controlHeight = Math.round(106 * (1 + (fontScale - 1) * 0.35));
-  const [isOpen, setIsOpen] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
-  const [isSuperseded, setIsSuperseded] = useState(false);
-  const [menuLayer, setMenuLayer] = useState(20);
-  const [activeIndex, setActiveIndex] = useState(() => Math.max(0, options.indexOf(value)));
-  const rootRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const listboxRef = useRef<HTMLDivElement>(null);
-  const labelId = useId();
-  const valueId = useId();
-  const listboxId = useId();
-  const reduceMotion = useReducedMotion();
-  const { state: pressState, handlers: pressHandlers } = useInteraction();
-  const highlighted = pressState.hovered || pressState.focused;
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const dismiss = (event: PointerEvent) => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
-        setIsClosing(true);
-      }
-    };
-
-    document.addEventListener("pointerdown", dismiss);
-    return () => document.removeEventListener("pointerdown", dismiss);
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const focusMenu = window.requestAnimationFrame(() => listboxRef.current?.focus());
-    return () => window.cancelAnimationFrame(focusMenu);
-  }, [isOpen]);
-
-  useEffect(() => {
-    const yieldToNewMenu = (event: Event) => {
-      const { detail } = event as CustomEvent<string>;
-      if (detail === listboxId || (!isOpen && !isClosing)) return;
-
-      setIsSuperseded(true);
-      setIsOpen(false);
-      setIsClosing(false);
-    };
-
-    document.addEventListener(dropdownOpenEvent, yieldToNewMenu);
-    return () => document.removeEventListener(dropdownOpenEvent, yieldToNewMenu);
-  }, [isClosing, isOpen, listboxId]);
-
-  const openMenu = () => {
-    nextDropdownLayer += 1;
-    setMenuLayer(nextDropdownLayer);
-    setIsSuperseded(false);
-    setActiveIndex(Math.max(0, options.indexOf(value)));
-    setIsClosing(false);
-    setIsOpen(true);
-    document.dispatchEvent(new CustomEvent<string>(dropdownOpenEvent, { detail: listboxId }));
-  };
-
-  const closeMenu = () => {
-    setIsOpen(false);
-    setIsClosing(true);
-  };
-
-  const selectOption = (option: string) => {
-    onChange(option);
-    closeMenu();
-    triggerRef.current?.focus();
-  };
-
-  const handleTriggerKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === "Home" || event.key === "End") {
-      event.preventDefault();
-      if (!isOpen) openMenu();
-      setActiveIndex(event.key === "Home" ? 0 : options.length - 1);
-      return;
-    }
-
-    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-      event.preventDefault();
-      const selectedIndex = Math.max(0, options.indexOf(value));
-      if (!isOpen) openMenu();
-      setActiveIndex(
-        event.key === "ArrowDown"
-          ? Math.min(options.length - 1, selectedIndex + 1)
-          : Math.max(0, selectedIndex - 1),
-      );
-    }
-  };
-
-  const handleListboxKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      closeMenu();
-      triggerRef.current?.focus();
-      return;
-    }
-
-    if (event.key === "Tab") {
-      closeMenu();
-      return;
-    }
-
-    if (event.key === "Home" || event.key === "End") {
-      event.preventDefault();
-      setActiveIndex(event.key === "Home" ? 0 : options.length - 1);
-      return;
-    }
-
-    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-      event.preventDefault();
-      const direction = event.key === "ArrowDown" ? 1 : -1;
-      setActiveIndex((current) => (current + direction + options.length) % options.length);
-      return;
-    }
-
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      selectOption(options[activeIndex]);
-      return;
-    }
-
-    if (event.key.length === 1 && !event.altKey && !event.ctrlKey && !event.metaKey) {
-      const matchIndex = options.findIndex((option) =>
-        option.toLocaleLowerCase().startsWith(event.key.toLocaleLowerCase()),
-      );
-      if (matchIndex >= 0) setActiveIndex(matchIndex);
-    }
-  };
-
-  return (
-    <SettingRow first={first} label={label} labelId={labelId} rowHeight={rowHeight}>
-      <div
-        ref={rootRef}
-        style={{
-          position: "relative",
-          zIndex: isOpen || isClosing ? menuLayer : 1,
-          width: controlWidth,
-          height: controlHeight,
-          flex: "none",
-          display: "flex",
-          alignItems: "center",
-          transform: `translateY(${offsetY}px)`,
-        }}
-      >
-        <span
-          style={{
-            position: "relative",
-            width: controlWidth,
-            height: controlHeight,
-            display: "block",
-            overflow: "visible",
-          }}
-        >
-          <button
-            {...pressHandlers}
-            ref={triggerRef}
-            type="button"
-            aria-labelledby={`${labelId} ${valueId}`}
-            aria-haspopup="listbox"
-            aria-expanded={isOpen}
-            aria-controls={listboxId}
-            onClick={() => (isOpen ? closeMenu() : openMenu())}
-            onKeyDown={(event) => {
-              pressHandlers.onKeyDown(event);
-              handleTriggerKeyDown(event);
-            }}
-            style={{
-              position: "relative",
-              boxSizing: "border-box",
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              clipPath: controlOuterClip,
-              padding: `0 ${74 * controlScale}px 0 ${39 * controlScale}px`,
-              border: 0,
-              outline: 0,
-              color: "#f5f6fb",
-              background: usingPng
-                ? "transparent"
-                : pressState.focused
-                  ? keyboardFocusGradient
-                  : highlighted
-                    ? "linear-gradient(106deg, #b5ffff, #d3ddff 48%, #ff75dc)"
-                    : "linear-gradient(106deg, #5df5ff, #a5cbff 48%, #ff4bc9)",
-              filter: `${
-                pressState.focused
-                  ? keyboardFocusFilter
-                  : highlighted || isOpen
-                    ? "brightness(1.12) drop-shadow(0 0 13px rgba(83,226,255,.78))"
-                    : usingPng
-                      ? ""
-                      : "drop-shadow(0 0 6px rgba(42,103,255,.38))"
-              } var(--music-control-pulse-filter, brightness(1))`,
-              fontFamily: "'Barlow Condensed', Impact, sans-serif",
-              fontWeight: 700,
-              fontSize: 60 * controlScale,
-              textAlign: "left",
-              lineHeight: 1,
-              textShadow: "2px 4px 0 #19284a, 0 4px 7px #000",
-              cursor: "pointer",
-              transform: `scale(${pressState.pressed && !reduceMotion ? 0.965 : 1}) var(--music-control-pulse-transform, scale(1))`,
-              transition: "transform 90ms cubic-bezier(.2,.8,.2,1), filter 140ms ease",
-            }}
-          >
-            {usingPng ? (
-              <SmallControlRasterFrame />
-            ) : (
-              <ClippedInset
-                inset={3}
-                clipPath={controlInnerClip}
-                background="linear-gradient(180deg, #050b1c, #020611)"
-                boxShadow="inset 0 0 24px #000"
-              />
-            )}
-            <span id={valueId} style={{ position: "relative", zIndex: 1 }}>
-              {value}
-            </span>
-            <Caret isOpen={isOpen} />
-          </button>
-          <ArcadeButtonEffect burstId={pressState.releaseCount} compact />
-        </span>
-        {!isSuperseded && (
-          <AnimatePresence initial={false} onExitComplete={() => setIsClosing(false)}>
-            {isOpen && (
-              <motion.div
-                key={`${listboxId}-menu`}
-                ref={listboxRef}
-                id={listboxId}
-                role="listbox"
-                aria-labelledby={labelId}
-                aria-activedescendant={`${listboxId}-option-${activeIndex}`}
-                tabIndex={0}
-                onKeyDown={handleListboxKeyDown}
-                initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: -12, scaleY: 0.76 }}
-                animate={{ opacity: 1, y: 0, scaleY: 1 }}
-                exit={
-                  reduceMotion
-                    ? { opacity: 0, transition: { duration: 0.01 } }
-                    : {
-                        opacity: 0,
-                        y: -16,
-                        scaleY: 0.42,
-                        transition: { duration: 0.26, ease: [0.4, 0, 0.75, 0.3] },
-                      }
-                }
-                transition={{ duration: reduceMotion ? 0.01 : 0.2, ease: [0.2, 0.8, 0.25, 1] }}
-                style={{
-                  position: "absolute",
-                  left: 0,
-                  top: controlHeight + 6,
-                  zIndex: 30,
-                  boxSizing: "border-box",
-                  width: controlWidth,
-                  padding: 3,
-                  clipPath: controlOuterClip,
-                  background: "linear-gradient(145deg, #5df5ff, #718cff 48%, #ff4bc9)",
-                  filter:
-                    "drop-shadow(0 10px 14px rgba(0,0,0,.72)) drop-shadow(0 0 8px rgba(43,126,255,.65))",
-                  transformOrigin: "top center",
-                }}
-              >
-                <div
-                  style={{
-                    position: "relative",
-                    overflow: "hidden",
-                    clipPath: controlInnerClip,
-                    padding: "8px 6px",
-                    background:
-                      "radial-gradient(circle at 20% 0%, rgba(30,95,195,.25), transparent 48%), linear-gradient(180deg, #07152e, #020611)",
-                    boxShadow: "inset 0 0 24px #000",
-                  }}
-                >
-                  {options.map((option, index) => (
-                    <motion.span
-                      key={option}
-                      initial={reduceMotion ? { opacity: 1 } : { opacity: 0, x: -17 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, x: 10 }}
-                      transition={{
-                        duration: reduceMotion ? 0.01 : 0.18,
-                        delay: reduceMotion ? 0 : index * 0.028,
-                        ease: "easeOut",
-                      }}
-                      style={{
-                        position: "relative",
-                        display: "block",
-                        width: "100%",
-                        minHeight: 76 * controlScale,
-                        overflow: "visible",
-                      }}
-                    >
-                      <DropdownOptionButton
-                        id={`${listboxId}-option-${index}`}
-                        option={option}
-                        selected={option === value}
-                        active={index === activeIndex}
-                        onPointerEnter={() => setActiveIndex(index)}
-                        onSelect={() => selectOption(option)}
-                      />
-                    </motion.span>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        )}
-      </div>
-    </SettingRow>
-  );
-}
-
-function DropdownOptionButton({
-  id,
-  option,
-  selected,
-  active,
-  onPointerEnter,
-  onSelect,
-}: {
-  id: string;
-  option: string;
-  selected: boolean;
-  active: boolean;
-  onPointerEnter: () => void;
-  onSelect: () => void;
-}) {
-  const reduceMotion = useReducedMotion();
-  const { fontScale } = useFontScale();
-  const controlScale = dynamicTypeScale(fontScale, "control");
-  const { state, handlers } = useInteraction();
-
-  return (
-    <>
-      <motion.div
-        {...handlers}
-        id={id}
-        role="option"
-        aria-selected={selected}
-        onPointerEnter={onPointerEnter}
-        onClick={onSelect}
-        style={{
-          position: "relative",
-          zIndex: 1,
-          boxSizing: "border-box",
-          width: "100%",
-          minHeight: 76 * controlScale,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          gap: 14,
-          border: 0,
-          outline: 0,
-          padding: `${6 * controlScale}px ${20 * controlScale}px ${6 * controlScale}px ${25 * controlScale}px`,
-          color: selected ? "#efffff" : "#d9e1f2",
-          background: state.focused
-            ? "linear-gradient(90deg, rgba(255,238,0,.32), rgba(255,167,0,.14))"
-            : active
-              ? "linear-gradient(90deg, rgba(11,113,207,.5), rgba(88,69,177,.28) 66%, rgba(229,39,177,.2))"
-              : "transparent",
-          boxShadow: state.focused
-            ? "inset 0 0 0 3px #fff400, 0 0 11px rgba(255,219,0,.72)"
-            : active
-              ? "inset 0 0 18px rgba(55,156,255,.28)"
-              : undefined,
-          fontFamily: "'Barlow Condensed', Impact, sans-serif",
-          fontWeight: 700,
-          fontSize: 47 * fontScale,
-          lineHeight: 1,
-          textAlign: "left",
-          textShadow: "2px 3px 0 #172747, 0 3px 5px #000",
-          cursor: "pointer",
-          transform: `scale(${state.pressed && !reduceMotion ? 0.965 : 1})`,
-          filter: `${state.hovered ? "brightness(1.2)" : ""} var(--music-control-pulse-filter, brightness(1))`,
-          transition:
-            "transform 90ms cubic-bezier(.2,.8,.2,1), box-shadow 140ms ease, filter 140ms ease",
-        }}
-      >
-        <AnimatePresence initial={false}>
-          {selected && (
-            <motion.span
-              key="selection-flash"
-              initial={{ opacity: 0.9, scale: 0.96 }}
-              animate={{ opacity: 0, scale: 1.035 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: reduceMotion ? 0.01 : 0.38, ease: "easeOut" }}
-              style={{
-                position: "absolute",
-                inset: 3,
-                border: "2px solid #66f6ff",
-                boxShadow: "inset 0 0 12px rgba(47,143,255,.55), 0 0 10px #ff50d1",
-                pointerEvents: "none",
-              }}
-            />
-          )}
-        </AnimatePresence>
-        <span style={{ position: "relative", zIndex: 1 }}>{option}</span>
-        <span
-          aria-hidden="true"
-          style={{
-            position: "relative",
-            zIndex: 1,
-            flex: "none",
-            width: 48,
-            height: 44,
-          }}
-        >
-          {selected && <CheckMark scale={0.62} />}
-        </span>
-      </motion.div>
-      <ArcadeButtonEffect burstId={state.releaseCount} compact />
-    </>
-  );
-}
-
-function Caret({ isOpen }: { isOpen: boolean }) {
-  const { fontScale } = useFontScale();
-  const controlScale = dynamicTypeScale(fontScale, "control");
-
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        position: "absolute",
-        zIndex: 2,
-        top: "50%",
-        right: 45 * controlScale,
-        width: 0,
-        height: 0,
-        borderLeft: `${15 * controlScale}px solid transparent`,
-        borderRight: `${15 * controlScale}px solid transparent`,
-        borderTop: `${18 * controlScale}px solid #f4f5fa`,
-        filter: "drop-shadow(0 3px 2px #000)",
-        pointerEvents: "none",
-        transform: `translateY(-50%) rotate(${isOpen ? 180 : 0}deg)`,
-        transition: "transform 140ms ease",
-      }}
-    />
-  );
-}
 
 export function ToggleControl({
   checked,
@@ -497,10 +37,21 @@ export function ToggleControl({
   withInfo?: boolean;
   onInfoClick?: () => void;
 }) {
-  const { state, handlers } = useInteraction();
+  const { state: interaction, handlers } = useInteraction();
   const reduceMotion = useReducedMotion();
   const labelId = useId();
   const descriptionId = useId();
+  const ref = useRef<HTMLInputElement>(null);
+  const checkboxProps = {
+    isSelected: checked,
+    onChange,
+    "aria-label": ariaLabel,
+    "aria-labelledby": ariaLabel ? undefined : labelId,
+    "aria-describedby": withInfo ? descriptionId : undefined,
+  };
+  const toggleState = useToggleState(checkboxProps);
+  const { inputProps, labelProps, isPressed } = useCheckbox(checkboxProps, toggleState, ref);
+  const state = { ...interaction, pressed: isPressed };
   const { mode } = useUiRenderMode();
   const { fontScale } = useFontScale();
   const usingPng = mode === "png";
@@ -508,7 +59,7 @@ export function ToggleControl({
   const checkboxSize = 77 * controlScale;
 
   return (
-    <label
+    <div
       style={{
         display: "block",
         height: rowHeight,
@@ -519,7 +70,9 @@ export function ToggleControl({
         labelId={labelId}
         label={
           <>
-            {label}
+            <label {...labelProps} style={{ cursor: "pointer" }}>
+              {label}
+            </label>
             {withInfo && <InfoBadge onClick={onInfoClick} />}
           </>
         }
@@ -539,14 +92,8 @@ export function ToggleControl({
         >
           <ArcadeCheckboxEffect checked={checked} />
           <input
-            {...handlers}
-            suppressHydrationWarning
-            aria-label={ariaLabel}
-            aria-labelledby={ariaLabel ? undefined : labelId}
-            aria-describedby={withInfo ? descriptionId : undefined}
-            checked={checked}
-            onChange={(event) => onChange(event.target.checked)}
-            type="checkbox"
+            {...mergeProps(inputProps, handlers)}
+            ref={ref}
             style={{
               position: "absolute",
               inset: 0,
@@ -583,7 +130,7 @@ export function ToggleControl({
                   : state.hovered
                     ? "inset 0 0 12px #000, 0 0 15px #2acfff, 0 0 8px #b8ffff"
                     : "inset 0 0 14px #000, 0 0 10px #166cff, 0 0 5px #6af6ff",
-              filter: `${state.pressed ? "brightness(.76)" : ""} var(--music-control-pulse-filter, brightness(1))`,
+              filter: `${state.focused ? keyboardFocusFilter : state.pressed ? "brightness(.76)" : ""} var(--music-control-pulse-filter, brightness(1))`,
               transform: `scale(${state.pressed && !reduceMotion ? 0.88 : state.hovered ? 1.045 : 1}) var(--music-control-pulse-transform, scale(1))`,
               transition:
                 "transform 90ms cubic-bezier(.2,.8,.2,1), filter 90ms ease, border 140ms ease, box-shadow 140ms ease",
@@ -602,14 +149,17 @@ export function ToggleControl({
           We upload crash reports to Unity Diagnostics.
         </ScreenReaderOnly>
       )}
-    </label>
+    </div>
   );
 }
 
 export function EraseControl({ onClick }: { onClick?: () => void }) {
-  const { state, handlers } = useInteraction();
-  const reduceMotion = useReducedMotion();
   const labelId = useId();
+  const { state, buttonProps, ref } = useArcadeButton({
+    onPress: onClick,
+    "aria-labelledby": labelId,
+  });
+  const reduceMotion = useReducedMotion();
   const { fontScale } = useFontScale();
   const controlScale = dynamicTypeScale(fontScale, "control");
 
@@ -627,10 +177,8 @@ export function EraseControl({ onClick }: { onClick?: () => void }) {
         }}
       >
         <button
-          {...handlers}
-          type="button"
-          aria-labelledby={labelId}
-          onClick={onClick}
+          {...buttonProps}
+          ref={ref}
           style={{
             position: "relative",
             boxSizing: "border-box",
@@ -687,38 +235,19 @@ export function EraseControl({ onClick }: { onClick?: () => void }) {
   );
 }
 
-function CheckMark({ scale = 1 }: { scale?: number }) {
-  return (
-    <span
-      style={{
-        position: "absolute",
-        left: "50%",
-        top: "50%",
-        width: 50,
-        height: 44,
-        clipPath: "polygon(0 47%, 14% 32%, 35% 58%, 85% 0, 100% 14%, 35% 100%)",
-        background: "#61f1ff",
-        transform: `translate(-50%, -50%) scale(${scale})`,
-        filter: "drop-shadow(0 0 7px #128dff)",
-      }}
-    />
-  );
-}
-
 function InfoBadge({ onClick }: { onClick?: () => void }) {
+  const { buttonProps, ref, state } = useArcadeButton({
+    onPress: onClick,
+    "aria-label": "About crash report uploads",
+  });
   const { fontScale } = useFontScale();
   const controlScale = dynamicTypeScale(fontScale, "control");
 
   return (
     <button
-      type="button"
-      aria-label="About crash report uploads"
+      {...buttonProps}
+      ref={ref}
       title="About crash report uploads"
-      onClick={(event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        onClick?.();
-      }}
       style={{
         position: "absolute",
         left: 205 * fontScale,
@@ -729,6 +258,7 @@ function InfoBadge({ onClick }: { onClick?: () => void }) {
         display: "grid",
         placeItems: "center",
         border: "2px solid #55b8ff",
+        outline: state.focused ? "3px solid #fff400" : "none",
         borderRadius: "50%",
         background: "transparent",
         color: "#bcf4ff",

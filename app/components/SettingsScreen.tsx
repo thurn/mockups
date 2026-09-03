@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { ReturnButton } from "./ReturnButton";
 import { EraseControl, SelectControl, ToggleControl } from "./SettingsControls";
-import { SettingsTabs, type SettingsTab } from "./SettingsTabs";
+import { SettingsTabs, settingsTabs, useSettingsTabState, type SettingsTab } from "./SettingsTabs";
 import { ClippedInset } from "./ClippedInset";
 import { ScreenHeader } from "./ScreenHeader";
 import { GraphicsSettings } from "./GraphicsSettings";
@@ -16,9 +16,8 @@ import { useBackgroundMusic } from "./BackgroundMusic";
 import { fixedRasterImageStyle } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
 import { fontScaleFromLabel, fontScaleOptions, fontScaleToLabel, useFontScale } from "./FontScale";
+import { AriaLink } from "./AriaLink";
 import { ArcadeModal } from "./ArcadeModal";
-
-const settingsTabs: SettingsTab[] = ["Gameplay", "Graphics", "Sound", "Input"];
 
 export function SettingsScreen() {
   const { mode } = useUiRenderMode();
@@ -52,6 +51,8 @@ export function SettingsScreen() {
     setActiveTab(tab);
   };
 
+  const tabState = useSettingsTabState(activeTab, handleTabSelect);
+
   return (
     <section
       aria-label={`${activeTab} settings`}
@@ -76,7 +77,7 @@ export function SettingsScreen() {
         }}
       >
         <div>
-          <SettingsTabs activeTab={activeTab} onSelect={handleTabSelect} />
+          <SettingsTabs tabState={tabState} />
         </div>
         <div
           style={{
@@ -118,6 +119,7 @@ export function SettingsScreen() {
             }}
           >
             <ArcadeTabTransition
+              tabState={tabState}
               activeKey={activeTab}
               direction={tabDirection}
               reduceMotion={reduceMotion}
@@ -231,7 +233,7 @@ export function SettingsScreen() {
         onConfirm={() => setActiveModal(null)}
       >
         <span style={{ display: "block" }}>We upload crash reports to Unity Diagnostics.</span>
-        <a
+        <AriaLink
           href="https://unity.com/legal/game-player-and-app-user-privacy-policy"
           target="_blank"
           rel="noreferrer"
@@ -247,7 +249,7 @@ export function SettingsScreen() {
           }}
         >
           Privacy Policy
-        </a>
+        </AriaLink>
       </ArcadeModal>
     </section>
   );

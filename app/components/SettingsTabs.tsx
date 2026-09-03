@@ -1,7 +1,11 @@
 "use client";
 
+import { motionAriaProps } from "./motionAriaProps";
+
 import { motion } from "framer-motion";
-import type { KeyboardEvent } from "react";
+import { useRef } from "react";
+import { mergeProps, useTab, useTabList } from "react-aria";
+import { Item, useTabListState, type TabListState } from "react-stately";
 import { ArcadeButtonEffect } from "./ArcadeButtonEffect";
 import { ClippedInset, tabInnerClip, tabOuterClip } from "./ClippedInset";
 import { useInteraction } from "./useInteraction";
@@ -10,21 +14,25 @@ import { SettingsTabRasterFrame } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
 import { useFontScale } from "./FontScale";
 
-const tabs = ["Gameplay", "Graphics", "Sound", "Input"];
+export const settingsTabs = ["Gameplay", "Graphics", "Sound", "Input"] as const;
 
-export type SettingsTab = (typeof tabs)[number];
+export type SettingsTab = (typeof settingsTabs)[number];
 
-export function SettingsTabs({
-  activeTab,
-  onSelect,
-}: {
-  activeTab: SettingsTab;
-  onSelect: (tab: SettingsTab) => void;
-}) {
+export function useSettingsTabState(activeTab: SettingsTab, onSelect: (tab: SettingsTab) => void) {
+  return useTabListState({
+    selectedKey: activeTab,
+    onSelectionChange: (key) => onSelect(key as SettingsTab),
+    children: settingsTabs.map((tab) => <Item key={tab}>{tab}</Item>),
+  });
+}
+
+export function SettingsTabs({ tabState }: { tabState: TabListState<object> }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { tabListProps } = useTabList({ "aria-label": "Settings categories" }, tabState, ref);
   return (
     <div
-      aria-label="Settings categories"
-      role="tablist"
+      {...tabListProps}
+      ref={ref}
       style={{
         height: 129,
         display: "grid",
@@ -33,8 +41,8 @@ export function SettingsTabs({
         alignItems: "end",
       }}
     >
-      {tabs.map((tab) => (
-        <SettingsTabButton key={tab} tab={tab} active={tab === activeTab} onSelect={onSelect} />
+      {settingsTabs.map((tab) => (
+        <SettingsTabButton key={tab} tab={tab} tabState={tabState} />
       ))}
     </div>
   );
@@ -42,40 +50,20 @@ export function SettingsTabs({
 
 function SettingsTabButton({
   tab,
-  active,
-  onSelect,
+  tabState,
 }: {
   tab: SettingsTab;
-  active: boolean;
-  onSelect: (tab: SettingsTab) => void;
+  tabState: TabListState<object>;
 }) {
-  const { state, handlers } = useInteraction();
+  const ref = useRef<HTMLButtonElement>(null);
+  const { tabProps, isSelected: active, isPressed } = useTab({ key: tab }, tabState, ref);
+  const { state: interaction, handlers } = useInteraction({ isPressed });
+  const state = { ...interaction, pressed: isPressed };
   const { mode } = useUiRenderMode();
   const { fontScale } = useFontScale();
   const usingPng = mode === "png";
   const tabTextScale = 1 + (fontScale - 1) * 0.25;
   const longLabelScale = fontScale === 1 || (tab !== "Gameplay" && tab !== "Graphics") ? 1 : 0.92;
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    const currentIndex = tabs.indexOf(tab);
-    let nextIndex: number | undefined;
-
-    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
-      nextIndex = (currentIndex + 1) % tabs.length;
-    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
-      nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
-    } else if (event.key === "Home") {
-      nextIndex = 0;
-    } else if (event.key === "End") {
-      nextIndex = tabs.length - 1;
-    }
-
-    if (nextIndex === undefined) return;
-    event.preventDefault();
-    const nextTab = tabs[nextIndex];
-    onSelect(nextTab);
-    document.getElementById(`settings-tab-${nextTab.toLowerCase()}`)?.focus();
-  };
 
   return (
     <span
@@ -88,18 +76,9 @@ function SettingsTabButton({
       }}
     >
       <motion.button
-        {...handlers}
+        {...motionAriaProps(mergeProps(tabProps, handlers))}
+        ref={ref}
         type="button"
-        id={`settings-tab-${tab.toLowerCase()}`}
-        role="tab"
-        aria-selected={active}
-        aria-controls={`settings-panel-${tab.toLowerCase()}`}
-        tabIndex={0}
-        onClick={() => onSelect(tab)}
-        onKeyDown={(event) => {
-          handlers.onKeyDown(event);
-          handleKeyDown(event);
-        }}
         animate={{ y: active ? 0 : 3, scale: 1 }}
         whileHover={{ y: active ? 0 : -1, scale: 1 }}
         whileTap={{ scale: 0.955 }}

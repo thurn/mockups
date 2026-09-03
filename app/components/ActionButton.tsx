@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { useReducedMotion } from "framer-motion";
 import { ArcadeButtonEffect } from "./ArcadeButtonEffect";
 import { actionInnerClip, actionOuterClip, ClippedInset } from "./ClippedInset";
-import { useInteraction } from "./useInteraction";
+import { useArcadeButton } from "./useArcadeButton";
 import {
   ControlInteraction,
   keyboardFocusFilter,
@@ -25,7 +25,7 @@ export function ActionButton({
   maxTextScale?: number;
   onClick?: () => void;
 }) {
-  const { state, handlers } = useInteraction();
+  const { state, buttonProps, ref } = useArcadeButton({ isDisabled: disabled, onPress: onClick });
   const reduceMotion = useReducedMotion();
   const highlighted = state.hovered || state.focused;
   const { mode } = useUiRenderMode();
@@ -48,10 +48,8 @@ export function ActionButton({
       }}
     >
       <button
-        {...handlers}
-        disabled={disabled}
-        onClick={disabled ? undefined : onClick}
-        type="button"
+        {...buttonProps}
+        ref={ref}
         style={{
           position: "relative",
           boxSizing: "border-box",

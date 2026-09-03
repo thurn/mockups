@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode, HTMLAttributes } from "react";
 import { displayFont } from "./styles";
 import { useFontScale } from "./FontScale";
 
@@ -7,12 +7,14 @@ export const settingsRowHeight = 159;
 export function SettingRow({
   label,
   labelId,
+  labelProps,
   children,
   first = false,
   rowHeight,
 }: {
   label: ReactNode;
   labelId?: string;
+  labelProps?: HTMLAttributes<HTMLDivElement>;
   children: ReactNode;
   first?: boolean;
   rowHeight?: number;
@@ -37,6 +39,7 @@ export function SettingRow({
     >
       <div
         id={labelId}
+        {...labelProps}
         style={{
           position: "relative",
           display: "flex",

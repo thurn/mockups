@@ -1,9 +1,20 @@
 "use client";
 
-import { type ReactNode, useState } from "react";
-import { AnimatePresence, motion, useIsPresent, useReducedMotion } from "framer-motion";
+import { motionAriaProps } from "./motionAriaProps";
 
-const tabVariants = {
+import { type ReactNode, useState, useRef } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useIsPresent,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
+
+import { useTabPanel } from "react-aria";
+import type { TabListState } from "react-stately";
+
+const tabVariants: Variants = {
   enter: (travelDirection: number) => ({
     opacity: 0,
     x: travelDirection * 58,
@@ -27,11 +38,13 @@ const tabVariants = {
 };
 
 export function ArcadeTabTransition({
+  tabState,
   activeKey,
   direction,
   reduceMotion,
   children,
 }: {
+  tabState: TabListState<object>;
   activeKey: string;
   direction: number;
   reduceMotion: boolean;
@@ -45,8 +58,7 @@ export function ArcadeTabTransition({
       <AnimatePresence initial={false} custom={direction} mode="popLayout">
         <ArcadeTabPanel
           key={activeKey}
-          panelId={`settings-panel-${activeKey.toLowerCase()}`}
-          labelledBy={`settings-tab-${activeKey.toLowerCase()}`}
+          tabState={tabState}
           animateTransition={!shouldReduceMotion}
           direction={direction}
         >
@@ -61,23 +73,22 @@ function ArcadeTabPanel({
   animateTransition,
   children,
   direction,
-  labelledBy,
-  panelId,
+  tabState,
 }: {
   animateTransition: boolean;
   children: ReactNode;
   direction: number;
-  labelledBy: string;
-  panelId: string;
+  tabState: TabListState<object>;
 }) {
   const [animateOnMount] = useState(animateTransition);
   const isPresent = useIsPresent();
+  const ref = useRef<HTMLDivElement>(null);
+  const { tabPanelProps } = useTabPanel({}, tabState, ref);
 
   return (
     <motion.div
-      id={panelId}
-      role="tabpanel"
-      aria-labelledby={labelledBy}
+      {...motionAriaProps(tabPanelProps)}
+      ref={ref}
       aria-hidden={!isPresent}
       inert={!isPresent}
       custom={direction}

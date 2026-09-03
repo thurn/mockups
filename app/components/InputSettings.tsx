@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useState, type ReactNode } from "react";
 import { ArrowDownIcon } from "@phosphor-icons/react/dist/csr/ArrowDown";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/csr/ArrowLeft";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/csr/ArrowRight";
@@ -14,8 +14,9 @@ import { SmallControlRasterFrame } from "./RasterFrame";
 import { useUiRenderMode } from "./UiRenderMode";
 import { dynamicTypeScale, useFontScale } from "./FontScale";
 import { useArcadeNavigation } from "./ArcadeRouteTransition";
+import { ShortcutCapture } from "./ShortcutCapture";
 import { ArcadeModal } from "./ArcadeModal";
-import { useInteraction } from "./useInteraction";
+import { useArcadeButton } from "./useArcadeButton";
 import { keyboardFocusFilter, keyboardFocusGradient } from "./ControlInteraction";
 
 type Binding = {
@@ -82,40 +83,30 @@ export function InputSettings() {
     setConflictAction(null);
   }, []);
 
-  useEffect(() => {
+  const captureShortcut = (key: string) => {
     if (!editingAction) return;
+    const nextShortcut = formatShortcut(key);
+    const conflict = bindings.find(
+      (binding) => binding.action !== editingAction && binding.keyboard === nextShortcut,
+    );
+    if (conflict) {
+      setConflictAction(conflict.action);
+      return;
+    }
 
-    const captureShortcut = (event: KeyboardEvent) => {
-      if (["Shift", "Control", "Alt", "Meta"].includes(event.key)) return;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-
-      const nextShortcut = formatShortcut(event.key);
-      const conflict = bindings.find(
-        (binding) => binding.action !== editingAction && binding.keyboard === nextShortcut,
-      );
-      if (conflict) {
-        setConflictAction(conflict.action);
-        return;
-      }
-
-      setBindings((current) =>
-        current.map((binding) =>
-          binding.action === editingAction
-            ? {
-                ...binding,
-                keyboard: nextShortcut,
-                keyboardDirection: shortcutDirection(nextShortcut),
-              }
-            : binding,
-        ),
-      );
-      closeShortcutDialog();
-    };
-
-    window.addEventListener("keydown", captureShortcut, true);
-    return () => window.removeEventListener("keydown", captureShortcut, true);
-  }, [bindings, closeShortcutDialog, editingAction]);
+    setBindings((current) =>
+      current.map((binding) =>
+        binding.action === editingAction
+          ? {
+              ...binding,
+              keyboard: nextShortcut,
+              keyboardDirection: shortcutDirection(nextShortcut),
+            }
+          : binding,
+      ),
+    );
+    closeShortcutDialog();
+  };
 
   const resetEditingShortcut = () => {
     const defaultBinding = defaultBindings.find((binding) => binding.action === editingAction);
@@ -209,46 +200,49 @@ export function InputSettings() {
         cancelLabel="Cancel"
         confirmLabel="Reset"
         closeOnEscape={false}
+        autoFocusActions={false}
         reduceMotion={reduceMotion}
         onClose={closeShortcutDialog}
         onConfirm={resetEditingShortcut}
       >
-        <span style={{ display: "block", color: "#ffffff" }}>
-          Press a key for {editingBinding?.action}
-        </span>
-        <span
-          aria-label={conflictAction ? undefined : "Waiting for input"}
-          aria-live="polite"
-          style={{
-            display: "block",
-            minHeight: 42,
-            marginTop: 24,
-            color: conflictAction ? "#ff5576" : "#67efff",
-            fontSize: 40,
-            letterSpacing: 1.5,
-            textShadow: conflictAction
-              ? "0 0 12px rgba(255,45,101,.72)"
-              : "0 0 12px rgba(45,221,255,.72)",
-          }}
-        >
-          {conflictAction ? (
-            `Already used by ${conflictAction}`
-          ) : (
-            <motion.span
-              aria-hidden="true"
-              animate={reduceMotion ? undefined : { opacity: [1, 1, 0.08, 0.08, 1] }}
-              transition={{ duration: 1.05, ease: "linear", repeat: Infinity }}
-              style={{
-                display: "inline-block",
-                width: 34,
-                height: 5,
-                marginBottom: 5,
-                background: "#67efff",
-                boxShadow: "0 0 10px rgba(45,221,255,.9)",
-              }}
-            />
-          )}
-        </span>
+        <ShortcutCapture onKey={captureShortcut}>
+          <span style={{ display: "block", color: "#ffffff" }}>
+            Press a key for {editingBinding?.action}
+          </span>
+          <span
+            aria-label={conflictAction ? undefined : "Waiting for input"}
+            aria-live="polite"
+            style={{
+              display: "block",
+              minHeight: 42,
+              marginTop: 24,
+              color: conflictAction ? "#ff5576" : "#67efff",
+              fontSize: 40,
+              letterSpacing: 1.5,
+              textShadow: conflictAction
+                ? "0 0 12px rgba(255,45,101,.72)"
+                : "0 0 12px rgba(45,221,255,.72)",
+            }}
+          >
+            {conflictAction ? (
+              `Already used by ${conflictAction}`
+            ) : (
+              <motion.span
+                aria-hidden="true"
+                animate={reduceMotion ? undefined : { opacity: [1, 1, 0.08, 0.08, 1] }}
+                transition={{ duration: 1.05, ease: "linear", repeat: Infinity }}
+                style={{
+                  display: "inline-block",
+                  width: 34,
+                  height: 5,
+                  marginBottom: 5,
+                  background: "#67efff",
+                  boxShadow: "0 0 10px rgba(45,221,255,.9)",
+                }}
+              />
+            )}
+          </span>
+        </ShortcutCapture>
       </ArcadeModal>
     </>
   );
@@ -291,15 +285,16 @@ function KeyCap({
   const usingPng = mode === "png";
   const controlScale = dynamicTypeScale(fontScale, "control");
   const compact = value.length === 1 && !direction;
-  const { state, handlers } = useInteraction();
+  const { state, buttonProps, ref } = useArcadeButton({
+    onPress: onClick,
+    "aria-label": `Change ${action} keyboard shortcut. Current key: ${value}`,
+  });
   const highlighted = state.hovered || state.focused;
 
   return (
     <button
-      {...handlers}
-      type="button"
-      aria-label={`Change ${action} keyboard shortcut. Current key: ${value}`}
-      onClick={onClick}
+      {...buttonProps}
+      ref={ref}
       style={{
         position: "relative",
         boxSizing: "border-box",

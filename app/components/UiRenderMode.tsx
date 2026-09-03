@@ -9,8 +9,12 @@ import {
   useEffect,
   useMemo,
   useState,
+  useRef,
   type ReactNode,
 } from "react";
+
+import { mergeProps, useFocusRing, useToggleButton } from "react-aria";
+import { useToggleState } from "react-stately";
 
 type UiRenderMode = "css" | "png";
 const renderModeParameter = "render";
@@ -70,14 +74,16 @@ export function DebugRenderModeToggle() {
   const usingPng = mode === "png";
   const label = usingPng ? "Switch to CSS rendering" : "Switch to PNG rendering";
   const Icon = usingPng ? ImageSquareIcon : CodeIcon;
+  const ref = useRef<HTMLButtonElement>(null);
+  const state = useToggleState({ isSelected: usingPng, onChange: toggleMode });
+  const { buttonProps } = useToggleButton({ "aria-label": label }, state, ref);
+  const { focusProps, isFocusVisible } = useFocusRing();
 
   return (
     <button
-      type="button"
-      aria-label={label}
-      aria-pressed={usingPng}
+      {...mergeProps(buttonProps, focusProps)}
+      ref={ref}
       data-testid="render-mode-toggle"
-      onClick={toggleMode}
       title={`${label} (currently ${usingPng ? "PNG" : "CSS"})`}
       style={{
         position: "absolute",
@@ -98,6 +104,7 @@ export function DebugRenderModeToggle() {
           ? "inset 0 0 13px #000, 0 0 13px rgba(255,75,209,.72)"
           : "inset 0 0 13px #000, 0 0 13px rgba(58,185,255,.72)",
         cursor: "pointer",
+        outline: isFocusVisible ? "3px solid #fff400" : "none",
       }}
     >
       <Icon aria-hidden="true" size={36} weight="bold" />
