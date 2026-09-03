@@ -128,6 +128,15 @@ export async function checkAccessibility(page) {
       );
       await page.keyboard.press("ArrowRight");
       const volume = page.getByRole("slider", { name: "Master Volume", exact: true });
+      const track = volume.locator("xpath=../../..");
+      const sliderAppearance = () =>
+        track.evaluate((el) =>
+          JSON.stringify({
+            groupFilter: getComputedStyle(el.parentElement).filter,
+            rail: getComputedStyle(el.querySelector("div[aria-hidden]") ?? el).backgroundImage,
+          }),
+        );
+      const unfocusedAppearance = await sliderAppearance();
       await volume.focus();
       for (const [key, value] of [
         ["Home", "0"],
@@ -139,7 +148,10 @@ export async function checkAccessibility(page) {
         await page.keyboard.press(key);
         assert.equal(await volume.inputValue(), value, `Slider ${key}`);
       }
-      const track = volume.locator("xpath=../../..");
+      assert(
+        (await sliderAppearance()) !== unfocusedAppearance,
+        "Keyboard focus visibly changes the slider in both rendering modes",
+      );
       const box = await track.boundingBox();
       await page.mouse.click(box.x + box.width * 0.25, box.y + box.height / 2);
       assert.equal(await volume.inputValue(), "25", "Scaled track click sets value");

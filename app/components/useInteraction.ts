@@ -4,9 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { mergeProps, useFocusRing, useHover } from "react-aria";
 
 // Visual feedback only. Each control's React Aria hook owns its input behavior.
-export function useInteraction({ isDisabled = false, isPressed = false } = {}) {
+export function useInteraction({ isDisabled = false, isPressed = false, within = false } = {}) {
   const { hoverProps, isHovered } = useHover({ isDisabled });
-  const { focusProps, isFocusVisible } = useFocusRing();
+  const { focusProps, isFocusVisible } = useFocusRing({ within });
   const [pressed, setPressed] = useState(false);
   const [releaseCount, setReleaseCount] = useState(0);
 

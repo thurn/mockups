@@ -56,7 +56,7 @@ export function VolumeControl({
     { index: 0, trackRef, inputRef },
     sliderState,
   );
-  const { state: interaction, handlers } = useInteraction();
+  const { state: interaction, handlers } = useInteraction({ within: true });
   const state = { ...interaction, pressed: isDragging };
   const reduceMotion = useReducedMotion();
   const { mode } = useUiRenderMode();
